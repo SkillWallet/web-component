@@ -13,7 +13,7 @@ import MainDialog from './components/MainDialog';
 import { isOpen, showDialog } from './store/sw-auth.reducer';
 import store from './store/store';
 
-const MainEntry = withRouter(({ container }: any) => {
+const App = withRouter(({ container }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
 
@@ -32,7 +32,7 @@ const MainEntry = withRouter(({ container }: any) => {
           height: '40px',
           width: '100px',
         }}
-        mode="light"
+        mode="dark"
         onClick={handleClickOpen}
       >
         Login
@@ -86,7 +86,7 @@ export class SWAuth extends HTMLElement {
             <Provider store={store}>
               <PersistGate persistor={persistor}>
                 <Router initialEntries={['/']}>
-                  <MainEntry container={rootContainer} />
+                  <App container={rootContainer} />
                 </Router>
               </PersistGate>
             </Provider>
