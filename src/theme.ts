@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 import { Fade } from '@mui/material';
 import React from 'react';
+import { PlayLessonOutlined } from '@mui/icons-material';
 
 const palette = {
   type: 'dark',
@@ -18,7 +19,7 @@ const palette = {
     main: '#000000',
   },
   secondary: {
-    main: '#8F37AA',
+    main: '#FFFFFF',
   },
   info: {
     main: '#FFFFFF',
@@ -60,12 +61,13 @@ export const SwTheme = (container: Element) =>
           container,
         },
       },
-      MuiDialogContent: {
+      MuiPaper: {
         styleOverrides: {
           root: {
             borderStyle: 'solid',
-            borderWidth: '2px',
-            borderColor: palette.primary.main,
+            borderWidth: '1px',
+            borderColor: palette.secondary.main,
+            backgroundColor: palette.primary.main,
           },
         },
       },

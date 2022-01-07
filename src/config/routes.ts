@@ -1,6 +1,6 @@
 import IRoute from '../interfaces/route';
 import LoginWith from '../pages/LoginWith';
-import SecondPage from '../pages/SecondPage';
+import LoginWithSkillWallet from '../pages/LoginWithSkillWallet';
 
 const routes: IRoute[] = [
   {
@@ -10,9 +10,9 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/second',
-    name: 'Second',
-    component: SecondPage,
+    path: '/skillwallet',
+    name: 'SkillWallet',
+    component: LoginWithSkillWallet,
     exact: true,
   },
 ];

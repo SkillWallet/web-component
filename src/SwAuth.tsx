@@ -8,14 +8,45 @@ import ReactDOM from 'react-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
+import { useEffect } from 'react';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog } from './store/sw-auth.reducer';
+import { isOpen, showDialog, setPartnerKey } from './store/sw-auth.reducer';
 import store from './store/store';
 
-const App = withRouter(({ container }: any) => {
+function extractAttributes(nodeMap) {
+  if (!nodeMap.attributes) {
+    return {};
+  }
+
+  const obj = {};
+  let attribute;
+  const attributesAsNodeMap = [...nodeMap.attributes];
+  console.log(attributesAsNodeMap);
+  const attributes = attributesAsNodeMap.map((attr) => {
+    return { [attr.name]: attr.value };
+  });
+
+  for (attribute of attributes) {
+    const key = Object.keys(attribute)[0];
+    const camelCasedKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    obj[camelCasedKey] = attribute[key];
+  }
+
+  return obj;
+}
+
+const App = withRouter(({ attributes, container }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
+
+  useEffect(() => {
+    console.log(attributes);
+    const { partnerKey } = attributes;
+    if (partnerKey) {
+      dispatch(setPartnerKey(partnerKey));
+    }
+  });
 
   const handleClickOpen = () => {
     dispatch(showDialog(true));
@@ -35,7 +66,7 @@ const App = withRouter(({ container }: any) => {
         mode="dark"
         onClick={handleClickOpen}
       >
-        Login
+        Connect
       </SwButton>
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
@@ -79,6 +110,8 @@ export class SWAuth extends HTMLElement {
 
     const persistor = persistStore(store);
 
+    const attributes = extractAttributes(this);
+
     ReactDOM.render(
       <StylesProvider jss={jss}>
         <CacheProvider value={cache}>
@@ -86,7 +119,7 @@ export class SWAuth extends HTMLElement {
             <Provider store={store}>
               <PersistGate persistor={persistor}>
                 <Router initialEntries={['/']}>
-                  <App container={rootContainer} />
+                  <App attributes={attributes} container={rootContainer} />
                 </Router>
               </PersistGate>
             </Provider>

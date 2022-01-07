@@ -8,11 +8,9 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
   return (
     <Box
       sx={{
-        border: 1,
-        borderColor: '#FFFFFF',
+        width: '100%',
         minHeight: '460px',
         display: 'flex',
-        background: '#000000',
         justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
@@ -53,12 +51,12 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
             <Box
               sx={{ width: '36px', height: '36px' }}
               component="img"
-              src="https://dito-assets.s3.eu-west-1.amazonaws.com/plus-button-white.svg"
+              src="https://dito-assets.s3.eu-west-1.amazonaws.com/sw-logo-revised.svg"
             />
           }
           mode="dark"
           component={Link}
-          to="/second"
+          to="/skillwallet"
           label="Skill Wallet"
         />
         <SwButton
@@ -77,7 +75,7 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
           }
           mode="dark"
           component={Link}
-          to="/second"
+          to="/skillwallet"
           label="New User"
         />
       </Box>
