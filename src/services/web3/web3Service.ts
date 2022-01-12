@@ -72,26 +72,48 @@ export const changeNetwork = async () => {
   }
 };
 
+export const getCommunity = async (partnerKey) => {
+  await changeNetwork();
+  const res = await fetch(`https://api.distributed.town/api/community/key/${partnerKey}`, {
+    method: 'GET',
+  });
+  const community = await res.json();
+  // this probably shouldn't be here
+  // partnersAgreementAddress = community.partnersAgreementAddress;
+  // console.log('partnersA address: ', partnersAgreementAddress);
+  // membershipAddress = await getMembershipAddress();
+  return community;
+};
+
 export const fetchSkillWallet = async (provider: any, address: string) => {
   try {
-    console.log('fetching...');
+    console.log(address);
 
     const skillWalletAddress = await getSkillwalletAddress();
+    console.log(skillWalletAddress);
     const signer = provider.getSigner();
+    console.log(signer);
     const contract = new ethers.Contract(skillWalletAddress.skillWalletAddress, skillWalletAbi, signer);
 
+    console.log(contract);
     const tokenId = await contract.getSkillWalletIdByOwner(address);
     console.log(tokenId);
 
     const isActive = await contract.isSkillWalletActivated(tokenId);
+    console.log(isActive);
     if (isActive) {
       const jsonUri = await contract.tokenURI(tokenId);
+      console.log(jsonUri);
       const community = await contract.getActiveCommunity(tokenId);
+      console.log(community);
 
       const partnersAgreementKey = await fetchKeyAndPAByCommunity(community);
+      console.log(partnersAgreementKey);
       const res = await fetch(jsonUri);
+      console.log(res);
       const jsonMetadata = await res.json();
       const isCoreTeam = await isCoreTeamMember(partnersAgreementKey.partnersAgreementAddress, address);
+      console.log(isCoreTeam);
       console.log('is core team member?', isCoreTeam);
 
       const skillWallet: any = {

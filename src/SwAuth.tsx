@@ -11,10 +11,12 @@ import { persistStore } from 'redux-persist';
 import { useEffect } from 'react';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog, setPartnerKey } from './store/sw-auth.reducer';
+import { isOpen, showDialog, setPartnerKey, setCommunity } from './store/sw-auth.reducer';
 import store from './store/store';
+import IAttributes from './interfaces/attributes';
+import { getCommunity } from './services/web3/web3Service';
 
-function extractAttributes(nodeMap) {
+const extractAttributes = (nodeMap) => {
   if (!nodeMap.attributes) {
     return {};
   }
@@ -34,19 +36,24 @@ function extractAttributes(nodeMap) {
   }
 
   return obj;
-}
+};
 
 const App = withRouter(({ attributes, container }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
 
   useEffect(() => {
-    console.log(attributes);
-    const { partnerKey } = attributes;
-    if (partnerKey) {
-      dispatch(setPartnerKey(partnerKey));
-    }
-  });
+    const fetchData = async () => {
+      const { partnerKey } = attributes;
+      if (partnerKey) {
+        console.log('use efecs');
+        dispatch(setPartnerKey(partnerKey));
+        const community = await getCommunity(partnerKey);
+        dispatch(setCommunity(community));
+      }
+    };
+    fetchData();
+  }, [attributes, dispatch]);
 
   const handleClickOpen = () => {
     dispatch(showDialog(true));

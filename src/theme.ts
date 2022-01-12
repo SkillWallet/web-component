@@ -64,6 +64,7 @@ export const SwTheme = (container: Element) =>
       MuiPaper: {
         styleOverrides: {
           root: {
+            minWidth: '480px',
             borderStyle: 'solid',
             borderWidth: '1px',
             borderColor: palette.secondary.main,

@@ -1,46 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import IPage from '../interfaces/page';
-import { setLoading } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 
-const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
+const NewUser: React.FunctionComponent<IPage> = (props) => {
+  const [metamaskSelected, setMetamaskSelected] = useState(false);
   const dispatch = useDispatch();
+  const community = useSelector(currentCommunity);
 
-  const handleMetamaskClick = async () => {
-    dispatch(setLoading(true));
+  const handleInjectFromMetamaskClick = async () => {
+    console.log('click');
+    // do this in the service
+    await changeNetwork();
+    console.log('changed network');
     const { ethereum } = window;
     try {
       if (ethereum.request) {
-        console.log('change network');
-        await changeNetwork();
-        console.log('eth request');
-        await ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(ethers.providers);
-        const web3Provider = new ethers.providers.Web3Provider(ethereum);
-        if (ethereum.selectedAddress) {
-          const community = await fetchSkillWallet(web3Provider, ethereum.selectedAddress);
-          console.log('sw found...', window.sessionStorage.getItem('skillWallet'));
-          console.log(community);
-        }
-        dispatch(setLoading(false));
-      } else {
-        dispatch(setLoading(false));
-        // Onboarding?
+        const result = await ethereum.request({ method: 'eth_requestAccounts' });
+        console.log(result);
+        // figure out where to store this
+        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+        setMetamaskSelected(true);
       }
     } catch (error) {
-      dispatch(setLoading(false));
-      // this.onSkillwalletError.emit();
-      // this.isLoadingEvent.emit(false);
-      // alert(error);
+      //   this.onSkillwalletError.emit();
+      //   alert(error);
     }
-    setTimeout(() => {
-      dispatch(setLoading(false));
-    }, 4000);
   };
 
   return (
@@ -57,14 +47,20 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
       <Box
         sx={{
           display: 'flex',
+          flexDirection: 'column',
           justifyContent: 'center',
-          gap: '30px',
-          // mt: '55px',
-          // mb: '95px',
+          alignContent: 'center',
         }}
       >
-        <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
-          Welcome back! 🙌
+        <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+          Welcome to{' '}
+          <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+            {community.name}
+          </Typography>
+          !
+        </Typography>
+        <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
+          First, Import your Wallet, or create a brand new account.
         </Typography>
       </Box>
       <Box
@@ -84,12 +80,13 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
             height: '75px',
             maxWidth: '320px',
           }}
+          className={metamaskSelected ? 'active-link' : ''}
           startIcon={
             <Box sx={{ width: '36px', height: '36px' }} component="img" src="https://dito-assets.s3.eu-west-1.amazonaws.com/metamask.svg" />
           }
           mode="dark"
-          onClick={handleMetamaskClick}
-          label="Login with Metamask"
+          onClick={handleInjectFromMetamaskClick}
+          label="Inject from Metamask"
         />
         <SwButton
           sx={{
@@ -108,7 +105,8 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
           mode="dark"
           component={Link}
           to="/"
-          label="User your Password"
+          label="Import Social Account"
+          disabled
         />
         <SwButton
           sx={{
@@ -119,12 +117,13 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
           }}
           mode="dark"
           component={Link}
-          to="/qr"
-          label="Scan QR Code"
+          disabled={!metamaskSelected}
+          to="/userdetails"
+          label="Next: Introduce yourself!"
         />
       </Box>
     </Box>
   );
 };
 
-export default LoginWithSkillWallet;
+export default NewUser;

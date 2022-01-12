@@ -75,7 +75,7 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
           }
           mode="dark"
           component={Link}
-          to="/skillwallet"
+          to="/newuser"
           label="New User"
         />
       </Box>

@@ -6,13 +6,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import routes from '../config/routes';
 import { loadingInProgress } from '../store/sw-auth.reducer';
 
-const styles = {
-  dialogPaper: {
-    minHeight: '80vh',
-    maxHeight: '80vh',
-  },
-};
-
 function MainDialog({ container, open, handleClose }) {
   const loading = useSelector(loadingInProgress);
   return (
@@ -22,6 +15,7 @@ function MainDialog({ container, open, handleClose }) {
           sx={{
             width: '99%',
             minHeight: '460px',
+            minWidth: '480px',
             display: loading ? 'flex' : 'none',
             alignContent: 'center',
             justifyContent: 'center',
