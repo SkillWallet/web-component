@@ -72,6 +72,28 @@ export const SwTheme = (container: Element) =>
           },
         },
       },
+      MuiSlider: {
+        styleOverrides: {
+          root: {
+            borderStyle: 'solid',
+            borderRadius: 0,
+            border: 2,
+            borderColor: '#000000',
+          },
+          rail: {
+            height: '26px',
+            borderRadius: 0,
+            color: '#FFFFFF',
+          },
+          track: {
+            height: '25px',
+            borderRadius: 0,
+          },
+          thumb: {
+            display: 'none',
+          },
+        },
+      },
     },
     breakpoints: {
       values: {

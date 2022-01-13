@@ -3,6 +3,7 @@ import LoginWith from '../pages/LoginWith';
 import LoginWithSkillWallet from '../pages/LoginWithSkillWallet';
 import NewUser from '../pages/NewUser';
 import UserDetails from '../pages/UserDetails';
+import UserRole from '../pages/UserRole';
 
 const routes: IRoute[] = [
   {
@@ -30,9 +31,9 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/newuser',
-    name: 'New User',
-    component: NewUser,
+    path: '/role',
+    name: 'User Role',
+    component: UserRole,
     exact: true,
   },
 ];

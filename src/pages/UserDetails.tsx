@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import IPage from '../interfaces/page';
 import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
+import { pushImage } from '../services/textile/textile.hub';
+import { setUserName, setUserProfilePicture } from '../store/sw-user-data.reducer';
 
 interface Values {
   file?: File;
@@ -17,15 +18,23 @@ interface Values {
 }
 
 const UserDetails: React.FunctionComponent<IPage> = (props) => {
-  const { register, handleSubmit, formState } = useForm({
+  const history = useHistory();
+  const {
+    register,
+    handleSubmit,
+    formState: { isValid },
+  } = useForm({
     mode: 'onChange',
   });
   const [inputIsValid, setInputIsValid] = useState(false);
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    // const imageUrl = await pushImage(data.picture[0], 'profile.png');
+    // dispatch(setUserProfilePicture(imageUrl));
+    // dispatch(setUserName(data.username));
+    history.push('/role');
   };
 
   return (
@@ -157,7 +166,6 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
             </Box>
             <SwButton
               sx={{
-                whiteSpace: 'nowrap',
                 borderColor: 'primary.main',
                 height: '75px',
                 maxWidth: '320px',
@@ -165,7 +173,7 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
               mode="dark"
               component={Button}
               type="submit"
-              disabled={!formState.isValid}
+              disabled={isValid}
               label="Next: Introduce yourself!"
             />
           </Box>
