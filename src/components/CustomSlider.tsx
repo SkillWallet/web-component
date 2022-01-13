@@ -26,7 +26,7 @@ export const CustomSlider = ({ name, control, setValue, rules }) => {
             sx={{ maxWidth: '166px', border: 2, borderRadius: 0, borderColor: '#000000', p: '10px' }}
             defaultValue={0}
             step={1}
-            min={0}
+            min={1}
             max={10}
             value={sliderValue}
             onChange={handleChange}

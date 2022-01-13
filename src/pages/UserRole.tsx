@@ -38,12 +38,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
     control,
     setValue,
     formState: { isValid },
-    getValues,
   } = useForm({ defaultValues });
-
-  useEffect(() => {
-    console.log(isValid);
-  }, [isValid]);
 
   const onSubmit = (data: any) => console.log(data);
 
@@ -98,7 +93,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            alignContent: 'center',
+            alignItems: 'center',
           }}
         >
           <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
@@ -166,12 +161,13 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
                   name="commitment"
                   control={control}
                   setValue={setValue}
-                  rules={{
-                    validate: () => {
-                      console.log(getValues('commitment'));
-                      return getValues('commitment') > 0 && getValues('commitment') < 11;
-                    },
-                  }}
+                  //   rules={{
+                  //     validate: () => {
+                  //       console.log(getValues('commitment'));
+                  //       return getValues('commitment') > 0 && getValues('commitment') < 11;
+                  //     },
+                  //   }}
+                  rules={{ min: 1, max: 10 }}
                 />
                 {/* <Slider
                 sx={{ maxWidth: '166px', border: 2, borderRadius: 0, borderColor: '#000000', p: '10px' }}

@@ -173,7 +173,7 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
               mode="dark"
               component={Button}
               type="submit"
-              disabled={isValid}
+              disabled={!isValid}
               label="Next: Introduce yourself!"
             />
           </Box>
