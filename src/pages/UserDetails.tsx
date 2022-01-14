@@ -11,6 +11,7 @@ import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
 import { setUserName, setUserProfilePicture } from '../store/sw-user-data.reducer';
+import { ReactComponent as Upload } from '../assets/upload.svg';
 
 interface Values {
   file?: File;
@@ -31,9 +32,9 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
   const community = useSelector(currentCommunity);
 
   const onSubmit = async (data) => {
-    // const imageUrl = await pushImage(data.picture[0], 'profile.png');
-    // dispatch(setUserProfilePicture(imageUrl));
-    // dispatch(setUserName(data.username));
+    const imageUrl = await pushImage(data.picture[0], 'profile.png');
+    dispatch(setUserProfilePicture(imageUrl));
+    dispatch(setUserName(data.username));
     history.push('/role');
   };
 
@@ -99,28 +100,22 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                 display: 'flex',
                 alignContent: 'center',
                 justifyContent: 'center',
-                border: 2,
-                borderColor: 'secondary',
+                backgroundColor: '#FFFFFF',
                 mb: '18px',
                 px: '16px',
               }}
             >
-              <Typography
-                sx={{
-                  flex: 1,
-                  my: 'auto',
-                }}
-                variant="h4"
-              >
+              <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
                 How do you want your community to call you?
               </Typography>
               <Input
                 sx={{
+                  color: '#000000',
                   my: 'auto',
                   height: '40px',
                   flex: 1,
                   border: 2,
-                  borderColor: 'secondary',
+                  borderColor: '#000000',
                 }}
                 type="text"
                 {...register('username', { required: true })}
@@ -137,32 +132,52 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                 alignContent: 'center',
                 justifyContent: 'center',
                 display: 'flex',
-                border: 2,
-                borderColor: 'secondary',
+                backgroundColor: '#FFFFFF',
                 mb: '24px',
                 px: '16px',
               }}
             >
-              <Typography
-                sx={{
-                  flex: 1,
-                  my: 'auto',
-                }}
-                variant="h4"
-              >
+              <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
                 A public image - that’s how others will see you.
               </Typography>
-              <Input
+              <Button
+                disableElevation
                 sx={{
+                  ':hover': {
+                    backgroundColor: 'transparent',
+                  },
+                  backgroundColor: 'transparent',
                   my: 'auto',
-                  height: '40px',
                   flex: 1,
-                  border: 2,
-                  borderColor: 'secondary',
+                  width: '70px',
+                  height: '70px',
                 }}
-                {...register('picture', { required: true })}
-                type="file"
-              />
+                variant="contained"
+                component="label"
+              >
+                <Box
+                  sx={{
+                    backgroundColor: 'transparent',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                >
+                  <Upload />
+                  <Typography sx={{ color: '#454A4D' }} variant="subtitle2">
+                    .png or .jpg
+                  </Typography>
+                </Box>
+                <Input
+                  sx={{
+                    display: 'none',
+                  }}
+                  {...register('picture', { required: true })}
+                  type="file"
+                />
+              </Button>
             </Box>
             <SwButton
               sx={{

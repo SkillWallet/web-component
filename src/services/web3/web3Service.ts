@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import skillWalletAbi from './skillWalletAbi.json';
 import partnersAgreementAbi from './partnersAgreementAbi.json';
+import communityAbi from './communityAbi.json';
+import { pushJSONDocument } from '../textile/textile.hub';
 
 export const getSkillwalletAddress = async () => {
   const res = await fetch('https://api.skillwallet.id/api/skillwallet/config', {
@@ -19,6 +21,14 @@ export const fetchKeyAndPAByCommunity = async (community) => {
   });
   const pa = await response.json();
   return pa;
+};
+
+export const getActivationNonce = async (tokenId) => {
+  const response = await fetch(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`, {
+    method: 'POST',
+  });
+  const nonce = await response.json();
+  return nonce.nonce;
 };
 
 export const isCoreTeamMember = async (partnersAgreementAddress, user) => {
@@ -83,6 +93,68 @@ export const getCommunity = async (partnerKey) => {
   // console.log('partnersA address: ', partnersAgreementAddress);
   // membershipAddress = await getMembershipAddress();
   return community;
+};
+
+export const joinCommunity = async (provider, communityAddress, username, role, level) => {
+  try {
+    console.log('trying to join community', communityAddress);
+
+    const signer = provider.getSigner();
+
+    const contract = new ethers.Contract(communityAddress, JSON.stringify(communityAbi), signer);
+
+    console.log(role, typeof role);
+
+    const metadataJson = {
+      name: `${username}'s SkillWallet`,
+      description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
+      image: window.sessionStorage.getItem('imageUrl'),
+      properties: {
+        username,
+        skills: [
+          {
+            // eslint-disable-next-line dot-notation
+            name: role['role'],
+            value: level,
+          },
+        ],
+      },
+    };
+    console.log(metadataJson);
+
+    const url = await pushJSONDocument(metadataJson);
+    console.log(url);
+
+    // eslint-disable-next-line dot-notation
+    const createTx = await contract.joinNewMember(url, role['roleId'], level);
+    // const createTx = await contract.joinNewMember(url, role['roleId']);
+
+    const communityTransactionResult = await createTx.wait();
+    console.log(communityTransactionResult);
+    const { events } = communityTransactionResult;
+    const memberJoinedEvent = events.find((e) => e.event === 'MemberAdded');
+
+    if (memberJoinedEvent) {
+      // return tokenID.
+      return memberJoinedEvent.args[1].toString();
+    }
+    throw new Error('Something went wrong');
+  } catch (err) {
+    // sw.dispatchEvent(event);
+    // const error = err.data.message;
+
+    const error = err;
+    console.log(error);
+    // if (error.includes("No free spots left")) {
+    //   alert("There are no available spots in this community.")
+    // } else if (error.includes("Already a member")) {
+    //   alert("You are already a member of this community.")
+    // } else if (error.includes("SkillWallet already registered")) {
+    //   alert("You already registered a SkillWallet for this wallet address.")
+    // } else {
+    //   alert("An error occured - please try again.")
+    // }
+  }
 };
 
 export const fetchSkillWallet = async (provider: any, address: string) => {

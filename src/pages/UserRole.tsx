@@ -7,10 +7,10 @@ import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
 import IPage from '../interfaces/page';
 import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
-import { isCoreTeamMember } from '../services/web3/web3Service';
+import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
-import { setUserName, setUserProfilePicture } from '../store/sw-user-data.reducer';
+import { setUserName, setUserProfilePicture, currentUsername, setTokenId } from '../store/sw-user-data.reducer';
 import { CustomSlider } from '../components/CustomSlider';
 
 const rolesIds = {
@@ -29,7 +29,10 @@ const defaultValues = {
 };
 
 const UserRole: React.FunctionComponent<IPage> = (props) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
+  const username = useSelector(currentUsername);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
 
@@ -40,7 +43,23 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
     formState: { isValid },
   } = useForm({ defaultValues });
 
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = async (data: any) => {
+    // this.isLoadingEvent.emit(true);
+    const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+    const tokenId = await joinCommunity(
+      web3Provider,
+      community.address,
+      window.sessionStorage.getItem('username'),
+      selectedRole,
+      data.commitment
+    );
+    console.log(tokenId);
+    await dispatch(setTokenId(tokenId));
+    history.push('/qr');
+    // this.isLoadingEvent.emit(false);
+    // window.sessionStorage.setItem('tokenId', tokenId);
+    // this.showNewScreen.emit('role');
+  };
 
   useEffect(() => {
     const fetchData = async () => {

@@ -24,7 +24,6 @@ const NewUser: React.FunctionComponent<IPage> = (props) => {
         const result = await ethereum.request({ method: 'eth_requestAccounts' });
         console.log(result);
         // figure out where to store this
-        const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
         setMetamaskSelected(true);
       }
     } catch (error) {

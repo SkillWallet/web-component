@@ -113,7 +113,7 @@ declare module 'ethers' {
 
     join: (skillWalletTokenId: number, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 
-    joinNewMember: (uri: string, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
+    // joinNewMember: (uri: string, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 
     leave: (memberAddress: string) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 

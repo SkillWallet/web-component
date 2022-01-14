@@ -15,6 +15,7 @@ import { isOpen, showDialog, setPartnerKey, setCommunity } from './store/sw-auth
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
 import { getCommunity } from './services/web3/web3Service';
+import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
 
 const extractAttributes = (nodeMap) => {
   if (!nodeMap.attributes) {
@@ -126,7 +127,9 @@ export class SWAuth extends HTMLElement {
             <Provider store={store}>
               <PersistGate persistor={persistor}>
                 <Router initialEntries={['/']}>
-                  <App attributes={attributes} container={rootContainer} />
+                  <EventsHandlerWrapper>
+                    <App attributes={attributes} container={rootContainer} />
+                  </EventsHandlerWrapper>
                 </Router>
               </PersistGate>
             </Provider>

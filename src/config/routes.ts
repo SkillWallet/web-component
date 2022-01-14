@@ -2,6 +2,7 @@ import IRoute from '../interfaces/route';
 import LoginWith from '../pages/LoginWith';
 import LoginWithSkillWallet from '../pages/LoginWithSkillWallet';
 import NewUser from '../pages/NewUser';
+import ScanQR from '../pages/ScanQR';
 import UserDetails from '../pages/UserDetails';
 import UserRole from '../pages/UserRole';
 
@@ -34,6 +35,12 @@ const routes: IRoute[] = [
     path: '/role',
     name: 'User Role',
     component: UserRole,
+    exact: true,
+  },
+  {
+    path: '/qr',
+    name: 'Scan QR',
+    component: ScanQR,
     exact: true,
   },
 ];
