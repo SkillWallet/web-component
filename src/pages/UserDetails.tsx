@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
-import { Box, Button, Input, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
 import IPage from '../interfaces/page';
-import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
@@ -14,7 +14,7 @@ import { setUserName, setUserProfilePicture } from '../store/sw-user-data.reduce
 import { ReactComponent as Upload } from '../assets/upload.svg';
 
 interface Values {
-  file?: File;
+  picture?: File;
   text: string;
 }
 
@@ -27,9 +27,19 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
   } = useForm({
     mode: 'onChange',
   });
-  const [inputIsValid, setInputIsValid] = useState(false);
+  const [image, setImage] = useState(undefined);
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
+  const isPartner = useSelector(partnerMode);
+
+  const parseImage = (event) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = e.target?.result;
+      setImage(img as any);
+    };
+    if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+  };
 
   const onSubmit = async (data) => {
     const imageUrl = await pushImage(data.picture[0], 'profile.png');
@@ -58,13 +68,20 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
           alignContent: 'center',
         }}
       >
-        <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-          Welcome to{' '}
-          <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-            {community.name}
+        {isPartner ? (
+          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+            Great! Now let's start - tell us about yourself
           </Typography>
-          !
-        </Typography>
+        ) : (
+          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+            Welcome to{' '}
+            <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+              {community.name}
+            </Typography>
+            !
+          </Typography>
+        )}
+
         <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
           Tell us about you
         </Typography>
@@ -165,17 +182,29 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                     height: '100%',
                   }}
                 >
-                  <Upload />
-                  <Typography sx={{ color: '#454A4D' }} variant="subtitle2">
-                    .png or .jpg
-                  </Typography>
+                  {image ? (
+                    <Avatar src={image} />
+                  ) : (
+                    <>
+                      <Upload />
+                      <Typography sx={{ color: '#454A4D' }} variant="subtitle2">
+                        .png or .jpg
+                      </Typography>
+                    </>
+                  )}
                 </Box>
                 <Input
                   sx={{
                     display: 'none',
                   }}
-                  {...register('picture', { required: true })}
+                  {...register('picture', {
+                    required: true,
+                    onChange: (e) => {
+                      parseImage(e);
+                    },
+                  })}
                   type="file"
+                  inputProps={{ accept: '.png, .jpg' }}
                 />
               </Button>
             </Box>

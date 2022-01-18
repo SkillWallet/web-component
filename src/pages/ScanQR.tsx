@@ -3,42 +3,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material';
-import { ethers } from 'ethers';
-import { useForm } from 'react-hook-form';
 import { QRCode } from 'react-qrcode-logo';
 import IPage from '../interfaces/page';
-import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
-import { getActivationNonce, isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
-import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
-import { pushImage } from '../services/textile/textile.hub';
+import { getActivationNonce } from '../services/web3/web3Service';
 import { currentTokenId } from '../store/sw-user-data.reducer';
-import { CustomSlider } from '../components/CustomSlider';
-// {"nonce":386799233,"action":0}
-const rolesIds = {
-  Founder: 1,
-  Contributor: 2,
-  Investor: 3,
-};
-
-interface Role {
-  roleId: number;
-  roleName: string;
-}
-
-const defaultValues = {
-  commitment: 0,
-};
 
 const ScanQR: React.FunctionComponent<IPage> = (props) => {
   const tokenId = useSelector(currentTokenId);
+  const [nocne, setNonce] = useState(undefined);
   useEffect(() => {
     const fetchData = async () => {
       console.log('fetching nonce');
       const nonce = await getActivationNonce(tokenId);
-      if (tokenId) {
-        console.log(tokenId);
-        console.log(nonce);
-      }
+      setNonce(nonce);
+      // if (nonce) {
+      //   console.log(tokenId);
+      //   console.log(nonce);
+      // }
     };
     fetchData();
   }, []);
@@ -79,7 +60,7 @@ const ScanQR: React.FunctionComponent<IPage> = (props) => {
             backgroundColor: '#FFFFFF',
           }}
         >
-          <QRCode value="386799233" />
+          <QRCode value={nocne} />
         </Box>
       </Box>
 

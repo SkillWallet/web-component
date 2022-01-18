@@ -5,13 +5,14 @@ import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import IPage from '../interfaces/page';
-import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 
 const NewUser: React.FunctionComponent<IPage> = (props) => {
   const [metamaskSelected, setMetamaskSelected] = useState(false);
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
+  const isPartner = useSelector(partnerMode);
 
   const handleInjectFromMetamaskClick = async () => {
     console.log('click');
@@ -51,13 +52,19 @@ const NewUser: React.FunctionComponent<IPage> = (props) => {
           alignContent: 'center',
         }}
       >
-        <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-          Welcome to{' '}
-          <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-            {community.name}
+        {isPartner ? (
+          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+            Hello, Partner!
           </Typography>
-          !
-        </Typography>
+        ) : (
+          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+            Welcome to{' '}
+            <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+              {community.name}
+            </Typography>
+            !
+          </Typography>
+        )}
         <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
           First, Import your Wallet, or create a brand new account.
         </Typography>

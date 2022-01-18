@@ -6,11 +6,11 @@ import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
 import IPage from '../interfaces/page';
-import { currentCommunity, setLoading } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
-import { setUserName, setUserProfilePicture, currentUsername, setTokenId } from '../store/sw-user-data.reducer';
+import { currentUsername, setTokenId } from '../store/sw-user-data.reducer';
 import { CustomSlider } from '../components/CustomSlider';
 
 const rolesIds = {
@@ -33,6 +33,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
+  const isPartner = useSelector(partnerMode);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
 
@@ -46,13 +47,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
   const onSubmit = async (data: any) => {
     // this.isLoadingEvent.emit(true);
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-    const tokenId = await joinCommunity(
-      web3Provider,
-      community.address,
-      window.sessionStorage.getItem('username'),
-      selectedRole,
-      data.commitment
-    );
+    const tokenId = await joinCommunity(web3Provider, community.address, username, selectedRole, data.commitment);
     console.log(tokenId);
     await dispatch(setTokenId(tokenId));
     history.push('/qr');
@@ -176,25 +171,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
                 <Typography align="center" variant="h5" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px' }}>
                   Tell your community how much time you commit to this Role!
                 </Typography>
-                <CustomSlider
-                  name="commitment"
-                  control={control}
-                  setValue={setValue}
-                  //   rules={{
-                  //     validate: () => {
-                  //       console.log(getValues('commitment'));
-                  //       return getValues('commitment') > 0 && getValues('commitment') < 11;
-                  //     },
-                  //   }}
-                  rules={{ min: 1, max: 10 }}
-                />
-                {/* <Slider
-                sx={{ maxWidth: '166px', border: 2, borderRadius: 0, borderColor: '#000000', p: '10px' }}
-                defaultValue={0}
-                step={1}
-                min={0}
-                max={10}
-              /> */}
+                <CustomSlider name="commitment" control={control} setValue={setValue} rules={{ min: 1, max: 10 }} />
               </Box>
             ) : (
               memberRoles &&
@@ -225,7 +202,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
             mode="dark"
             component={Button}
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid && !selectedRole}
             label="That's it - join this community!"
           />
         </Box>
