@@ -9,9 +9,18 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
 import { useEffect } from 'react';
+import { Avatar, Box } from '@mui/material';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog, setPartnerKey, setCommunity } from './store/sw-auth.reducer';
+import {
+  isOpen,
+  showDialog,
+  setPartnerKey,
+  setCommunity,
+  currentSkillWallet,
+  profileImageUrl,
+  currentUsername,
+} from './store/sw-auth.reducer';
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
 import { getCommunity } from './services/web3/web3Service';
@@ -42,6 +51,9 @@ const extractAttributes = (nodeMap) => {
 const App = withRouter(({ attributes, container }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
+  const username = useSelector(currentUsername);
+  const image = useSelector(profileImageUrl);
+  const skillWallet = useSelector(currentSkillWallet);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,13 +81,13 @@ const App = withRouter(({ attributes, container }: any) => {
       <SwButton
         sx={{
           height: '40px',
-          width: '100px',
+          width: '180px',
         }}
         mode="dark"
         onClick={handleClickOpen}
-      >
-        Connect
-      </SwButton>
+        label={username || 'Connect Wallet'}
+        startIcon={<Avatar sx={{ width: '36px', height: '36px' }} src={image} />}
+      />
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
   );

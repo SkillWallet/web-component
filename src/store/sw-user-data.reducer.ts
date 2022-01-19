@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createReducer, createSelector, createSlice } from '@reduxjs/toolkit';
 import { ActionPayload } from './action-payload';
 
 export interface UserData {
@@ -24,6 +24,7 @@ export const swUserDataSlice = createSlice({
       state.username = action.payload;
     },
     setTokenId(state, action: ActionPayload<string>) {
+      console.log('SETTING TOKEN ID', action.payload);
       state.tokenId = action.payload;
     },
   },

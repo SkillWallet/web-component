@@ -5,24 +5,23 @@ import { Link, useHistory } from 'react-router-dom';
 import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import IPage from '../interfaces/page';
-import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
-import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
-import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
+import { currentCommunity, setLoading, partnerMode, setUserName, setUserProfilePicture } from '../store/sw-auth.reducer';
 import { pushImage } from '../services/textile/textile.hub';
-import { setUserName, setUserProfilePicture } from '../store/sw-user-data.reducer';
 import { ReactComponent as Upload } from '../assets/upload.svg';
+import { CustomInput } from '../components/CustomInput';
 
 interface Values {
   picture?: File;
   text: string;
 }
 
-const UserDetails: React.FunctionComponent<IPage> = (props) => {
+const UserDetails: React.FunctionComponent = (props) => {
   const history = useHistory();
   const {
     register,
     handleSubmit,
+    control,
+    setValue,
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
@@ -42,10 +41,12 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
   };
 
   const onSubmit = async (data) => {
+    dispatch(setLoading(true));
     const imageUrl = await pushImage(data.picture[0], 'profile.png');
     dispatch(setUserProfilePicture(imageUrl));
     dispatch(setUserName(data.username));
     history.push('/role');
+    dispatch(setLoading(false));
   };
 
   return (
@@ -117,6 +118,7 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                 display: 'flex',
                 alignContent: 'center',
                 justifyContent: 'center',
+                alignItems: 'center',
                 backgroundColor: '#FFFFFF',
                 mb: '18px',
                 px: '16px',
@@ -125,7 +127,8 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
               <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
                 How do you want your community to call you?
               </Typography>
-              <Input
+              <CustomInput maxLength={12} name="username" control={control} setValue={setValue} rules={{ required: true }} />
+              {/* <Input
                 sx={{
                   color: '#000000',
                   my: 'auto',
@@ -134,9 +137,10 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                   border: 2,
                   borderColor: '#000000',
                 }}
+                inputProps={{ maxLength: 12 }}
                 type="text"
                 {...register('username', { required: true })}
-              />
+              /> */}
             </Box>
             <Box sx={{ width: '382px', mb: '18px' }}>
               <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
@@ -178,16 +182,18 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     width: '100%',
                     height: '100%',
+                    ml: '70px',
                   }}
                 >
                   {image ? (
-                    <Avatar src={image} />
+                    <Avatar sx={{ border: 2, borderColor: '#000000', borderRadius: '100px', width: '51px', height: '51px' }} src={image} />
                   ) : (
                     <>
                       <Upload />
-                      <Typography sx={{ color: '#454A4D' }} variant="subtitle2">
+                      <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
                         .png or .jpg
                       </Typography>
                     </>
@@ -218,7 +224,7 @@ const UserDetails: React.FunctionComponent<IPage> = (props) => {
               component={Button}
               type="submit"
               disabled={!isValid}
-              label="Next: Introduce yourself!"
+              label="Next: Pick your Role"
             />
           </Box>
         </form>

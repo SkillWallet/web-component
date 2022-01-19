@@ -1,28 +1,61 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SwButton } from 'sw-web-shared';
-import { Link, useHistory } from 'react-router-dom';
-import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material';
+import { SwButton, asyncPoll } from 'sw-web-shared';
+import { Box, Typography } from '@mui/material';
 import { QRCode } from 'react-qrcode-logo';
-import IPage from '../interfaces/page';
-import { getActivationNonce } from '../services/web3/web3Service';
-import { currentTokenId } from '../store/sw-user-data.reducer';
+import { ethers } from 'ethers';
+import { getActivationNonce, isQrCodeActive } from '../services/web3/web3Service';
+import { setLoading, currentTokenId } from '../store/sw-auth.reducer';
 
-const ScanQR: React.FunctionComponent<IPage> = (props) => {
+const ScanQR: React.FunctionComponent = (props) => {
+  const dispatch = useDispatch();
   const tokenId = useSelector(currentTokenId);
-  const [nocne, setNonce] = useState(undefined);
+  console.log('Token Id', tokenId);
+  const [nonce, setNonce] = useState(undefined);
+
+  useEffect(() => {
+    console.log('Token Id', tokenId);
+  }, [tokenId]);
+
+  const pollQRCodeActivated = async () => {
+    const { ethereum } = window;
+    if (ethereum.selectedAddress) {
+      console.log('ADDRESS?');
+      const web3Provider = new ethers.providers.Web3Provider(ethereum);
+      const fn = () => isQrCodeActive(web3Provider, ethereum.selectedAddress as string, tokenId);
+      const condition = (active: boolean) => !active;
+      console.log(tokenId);
+      const isActive = await asyncPoll<boolean>(fn, condition, 8000, 50);
+
+      console.log(isActive);
+      return isActive;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
+      dispatch(setLoading(true));
       console.log('fetching nonce');
-      const nonce = await getActivationNonce(tokenId);
-      setNonce(nonce);
+      console.log(tokenId);
+      const newNonce = await getActivationNonce(tokenId);
+      console.log(newNonce);
+      setNonce(newNonce);
       // if (nonce) {
       //   console.log(tokenId);
       //   console.log(nonce);
       // }
+      dispatch(setLoading(false));
+      const isActive = await pollQRCodeActivated();
+      console.log(isActive);
     };
-    fetchData();
-  }, []);
+    console.log(tokenId);
+    if (tokenId) fetchData();
+    // const pollQRScan = async () => {
+    //   const isActive = await pollQRCodeActivated(tokenId);
+    //   console.log(isActive);
+    // };
+    // pollQRScan();
+  }, [tokenId]);
 
   return (
     <Box
@@ -60,7 +93,7 @@ const ScanQR: React.FunctionComponent<IPage> = (props) => {
             backgroundColor: '#FFFFFF',
           }}
         >
-          <QRCode value={nocne} />
+          {nonce && <QRCode value={`${nonce}`} />}
         </Box>
       </Box>
 

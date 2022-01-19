@@ -5,12 +5,10 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import IPage from '../interfaces/page';
-import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode, currentUsername, setTokenId } from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
-import { currentUsername, setTokenId } from '../store/sw-user-data.reducer';
 import { CustomSlider } from '../components/CustomSlider';
 
 const rolesIds = {
@@ -28,12 +26,11 @@ const defaultValues = {
   commitment: 0,
 };
 
-const UserRole: React.FunctionComponent<IPage> = (props) => {
+const UserRole: React.FunctionComponent = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
-  const isPartner = useSelector(partnerMode);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
 
@@ -45,25 +42,22 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
   } = useForm({ defaultValues });
 
   const onSubmit = async (data: any) => {
-    // this.isLoadingEvent.emit(true);
+    dispatch(setLoading(true));
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log(username);
     const tokenId = await joinCommunity(web3Provider, community.address, username, selectedRole, data.commitment);
     console.log(tokenId);
-    await dispatch(setTokenId(tokenId));
+    dispatch(setTokenId(tokenId));
     history.push('/qr');
-    // this.isLoadingEvent.emit(false);
-    // window.sessionStorage.setItem('tokenId', tokenId);
-    // this.showNewScreen.emit('role');
+    dispatch(setLoading(false));
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log(selectedRole);
+      dispatch(setLoading(true));
       const isCoreMember = await isCoreTeamMember(community.partnersAgreementAddress, window.ethereum.selectedAddress);
       const roles = community?.roles?.roles || [];
-      console.log(roles);
       const newUserRolesBaseId = 4;
-      console.log('isCoreMember: -----', isCoreMember);
       const filteredRoles = roles
         .filter((r) => r.isCoreTeamMember === isCoreMember)
         .map((curr, index) => {
@@ -75,11 +69,10 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
           } else {
             roleId = newUserRolesBaseId + index;
           }
-          console.log({ roleId, roleName });
           return { roleId, roleName };
         });
-      console.log(filteredRoles);
       setMemberRoles(filteredRoles);
+      dispatch(setLoading(false));
     };
     fetchData();
   }, []);
@@ -202,7 +195,7 @@ const UserRole: React.FunctionComponent<IPage> = (props) => {
             mode="dark"
             component={Button}
             type="submit"
-            disabled={!isValid && !selectedRole}
+            disabled={!isValid || !selectedRole}
             label="That's it - join this community!"
           />
         </Box>

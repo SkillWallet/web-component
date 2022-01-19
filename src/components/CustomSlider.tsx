@@ -6,8 +6,6 @@ export const CustomSlider = ({ name, control, setValue, rules }) => {
   const [sliderValue, setSliderValue] = React.useState(0);
 
   useEffect(() => {
-    console.log('setting value');
-    console.log(sliderValue);
     if (sliderValue) setValue(name, sliderValue, { shouldValidate: true });
   }, [name, setValue, sliderValue]);
 

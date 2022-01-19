@@ -4,11 +4,12 @@ import { SwButton } from 'sw-web-shared';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import IPage from '../interfaces/page';
-import { setLoading } from '../store/sw-auth.reducer';
+import { setLoading, setSkillWallet } from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
+import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
+import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 
-const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
+const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
 
   const handleMetamaskClick = async () => {
@@ -16,16 +17,12 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
     const { ethereum } = window;
     try {
       if (ethereum.request) {
-        console.log('change network');
         await changeNetwork();
-        console.log('eth request');
         await ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(ethers.providers);
         const web3Provider = new ethers.providers.Web3Provider(ethereum);
         if (ethereum.selectedAddress) {
           const community = await fetchSkillWallet(web3Provider, ethereum.selectedAddress);
-          console.log('sw found...', window.sessionStorage.getItem('skillWallet'));
-          console.log(community);
+          dispatch(setSkillWallet(window.sessionStorage.getItem('skillWallet')));
         }
         dispatch(setLoading(false));
       } else {
@@ -59,8 +56,6 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
           display: 'flex',
           justifyContent: 'center',
           gap: '30px',
-          // mt: '55px',
-          // mb: '95px',
         }}
       >
         <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
@@ -98,6 +93,7 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
             height: '75px',
             maxWidth: '320px',
           }}
+          disabled
           startIcon={
             <Box
               sx={{ width: '36px', height: '36px' }}
@@ -117,6 +113,7 @@ const LoginWithSkillWallet: React.FunctionComponent<IPage> = (props) => {
             height: '75px',
             maxWidth: '320px',
           }}
+          disabled
           mode="dark"
           component={Link}
           to="/qr"

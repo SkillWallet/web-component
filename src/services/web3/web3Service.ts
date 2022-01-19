@@ -1,34 +1,73 @@
 import { ethers } from 'ethers';
+import { asyncPoll } from 'sw-web-shared';
+import axios from 'axios';
 import skillWalletAbi from './skillWalletAbi.json';
 import partnersAgreementAbi from './partnersAgreementAbi.json';
 import communityAbi from './communityAbi.json';
 import { pushJSONDocument } from '../textile/textile.hub';
 
-export const getSkillwalletAddress = async () => {
-  const res = await fetch('https://api.skillwallet.id/api/skillwallet/config', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const swAddress = await res.json();
-  return swAddress;
+export const getSkillWalletAddress = async () => {
+  return axios
+    .get(`${process.env.REACT_APP_PUBLIC_SKILL_WALLET_API_URL}/api/skillwallet/config`)
+    .then((response) => response.data.skillWalletAddress);
 };
 
-export const fetchKeyAndPAByCommunity = async (community) => {
-  const response = await fetch(`https://api.distributed.town/api/community/${community}/key`, {
-    method: 'GET',
-  });
-  const pa = await response.json();
-  return pa;
+// export const getSkillwalletAddress = async () => {
+//   // return axios.get('https://api.skillwallet.id/api/skillwallet/config', {
+//   //   headers: {
+//   //     'Content-Type': 'application/json',
+//   //   },
+//   // });
+//   const res = await fetch('https://api.skillwallet.id/api/skillwallet/config', {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   });
+//   const swAddress = await res.json();
+//   return swAddress;
+// };
+
+export const getPAKeyByCommunity = async (community) => {
+  return axios.get(`https://api.distributed.town/api/community/${community}/key`).then((response) => response.data);
 };
+
+// export const getPAKeyByCommunity = async (community) => {
+//   const response = await fetch(`https://api.distributed.town/api/community/${community}/key`, {
+//     method: 'GET',
+//   });
+//   const pa = await response.json();
+//   return pa;
+// };
 
 export const getActivationNonce = async (tokenId) => {
-  const response = await fetch(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`, {
-    method: 'POST',
-  });
-  const nonce = await response.json();
-  return nonce.nonce;
+  return axios.post(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data);
+};
+
+// export const getActivationNonce = async (tokenId) => {
+//   const response = await fetch(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`, {
+//     method: 'POST',
+//   });
+//   const nonce = await response.json();
+//   return nonce.nonce;
+// };
+
+export const isQrCodeActive = async (provider: any, selectedAddress: string, tokenId): Promise<boolean> => {
+  try {
+    const swAddress = await getSkillWalletAddress();
+    console.log(swAddress);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(swAddress.skillWalletAddress, skillWalletAbi, signer);
+    console.log(tokenId);
+    const status = await contract.isSkillWalletActivated(tokenId);
+    console.log(status);
+
+    return status.status;
+  } catch (error) {
+    console.log(error);
+    console.log('QR Code not active, error!!');
+    return false;
+  }
 };
 
 export const isCoreTeamMember = async (partnersAgreementAddress, user) => {
@@ -161,7 +200,7 @@ export const fetchSkillWallet = async (provider: any, address: string) => {
   try {
     console.log(address);
 
-    const skillWalletAddress = await getSkillwalletAddress();
+    const skillWalletAddress = await getSkillWalletAddress();
     console.log(skillWalletAddress);
     const signer = provider.getSigner();
     console.log(signer);
@@ -179,7 +218,7 @@ export const fetchSkillWallet = async (provider: any, address: string) => {
       const community = await contract.getActiveCommunity(tokenId);
       console.log(community);
 
-      const partnersAgreementKey = await fetchKeyAndPAByCommunity(community);
+      const partnersAgreementKey = await getPAKeyByCommunity(community);
       console.log(partnersAgreementKey);
       const res = await fetch(jsonUri);
       console.log(res);

@@ -2,9 +2,10 @@ import React from 'react';
 import { SwButton } from 'sw-web-shared';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import IPage from '../interfaces/page';
+import { ReactComponent as PlusIcon } from '../assets/create-unsel.svg';
+import { ReactComponent as SwIcon } from '../assets/sw-logo-icon.svg';
 
-const LoginWith: React.FunctionComponent<IPage> = (props) => {
+const LoginWith: React.FunctionComponent = (props) => {
   return (
     <Box
       sx={{
@@ -21,8 +22,6 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
           display: 'flex',
           justifyContent: 'center',
           gap: '30px',
-          // mt: '55px',
-          // mb: '95px',
         }}
       >
         <Box sx={{ width: '60px', height: '53px' }} component="img" src="https://dito-assets.s3.eu-west-1.amazonaws.com/wallet-white.svg" />
@@ -47,13 +46,7 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
             height: '75px',
             maxWidth: '320px',
           }}
-          startIcon={
-            <Box
-              sx={{ width: '36px', height: '36px' }}
-              component="img"
-              src="https://dito-assets.s3.eu-west-1.amazonaws.com/sw-logo-revised.svg"
-            />
-          }
+          startIcon={<SwIcon />}
           mode="dark"
           component={Link}
           to="/skillwallet"
@@ -66,13 +59,7 @@ const LoginWith: React.FunctionComponent<IPage> = (props) => {
             height: '75px',
             maxWidth: '320px',
           }}
-          startIcon={
-            <Box
-              sx={{ width: '36px', height: '36px' }}
-              component="img"
-              src="https://dito-assets.s3.eu-west-1.amazonaws.com/plus-button-white.svg"
-            />
-          }
+          startIcon={<PlusIcon />}
           mode="dark"
           component={Link}
           to="/newuser"

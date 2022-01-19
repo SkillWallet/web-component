@@ -4,11 +4,10 @@ import { SwButton } from 'sw-web-shared';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import IPage from '../interfaces/page';
 import { currentCommunity, setLoading, partnerMode } from '../store/sw-auth.reducer';
-import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
+import { changeNetwork } from '../services/web3/web3Service';
 
-const NewUser: React.FunctionComponent<IPage> = (props) => {
+const NewUser: React.FunctionComponent = (props) => {
   const [metamaskSelected, setMetamaskSelected] = useState(false);
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);

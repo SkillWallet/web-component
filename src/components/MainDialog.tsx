@@ -17,7 +17,7 @@ function MainDialog({ container, open, handleClose }) {
             minHeight: '460px',
             minWidth: '480px',
             display: loading ? 'flex' : 'none',
-            alignContent: 'center',
+            alignItems: 'center',
             justifyContent: 'center',
           }}
         >

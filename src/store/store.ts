@@ -6,7 +6,6 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { combineReducers } from 'redux';
 import { PersistConfig, persistReducer } from 'redux-persist';
 import swAuthSliceReducer from './sw-auth.reducer';
-import swUserDataReducer from './sw-user-data.reducer';
 
 const persistConfig: PersistConfig<any> = {
   key: 'sw-auth',
@@ -16,7 +15,6 @@ const persistConfig: PersistConfig<any> = {
 
 const reducers = combineReducers({
   swAuth: swAuthSliceReducer,
-  swUserData: swAuthSliceReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, reducers);
