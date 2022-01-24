@@ -1,36 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import { setLoading, setSkillWallet } from '../store/sw-auth.reducer';
+import {
+  setLoading,
+  setSkillWallet,
+  resetState,
+  setLoggedIn,
+  setUserName,
+  setUserProfilePicture,
+  showDialog,
+} from '../store/sw-auth.reducer';
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
+import ErrorBox from '../components/ErrorBox';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  const [errorData, setErrorData] = useState(undefined);
+
+  const handleError = () => {
+    dispatch(resetState());
+    history.push('/');
+  };
 
   const handleMetamaskClick = async () => {
     dispatch(setLoading(true));
     const { ethereum } = window;
     try {
-      if (ethereum.request) {
-        await changeNetwork();
-        await ethereum.request({ method: 'eth_requestAccounts' });
-        const web3Provider = new ethers.providers.Web3Provider(ethereum);
-        if (ethereum.selectedAddress) {
-          const community = await fetchSkillWallet(web3Provider, ethereum.selectedAddress);
-          dispatch(setSkillWallet(window.sessionStorage.getItem('skillWallet')));
+      await changeNetwork();
+      await ethereum.request({ method: 'eth_requestAccounts' });
+      if (ethereum.selectedAddress) {
+        const skillWallet = await fetchSkillWallet(ethereum.selectedAddress);
+        if (skillWallet) {
+          dispatch(setSkillWallet(skillWallet));
+          dispatch(setUserName(skillWallet.nickname));
+          dispatch(setUserProfilePicture(skillWallet.imageUrl));
+          dispatch(setLoggedIn(true));
+          dispatch(showDialog(false));
+          console.log(skillWallet);
+          history.push('/');
+        } else {
+          setErrorData({ message: 'Failed to retreave SkillWallet' });
         }
-        dispatch(setLoading(false));
-      } else {
-        dispatch(setLoading(false));
-        // Onboarding?
       }
+      dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
+      setErrorData({ message: 'Failed to retreave SkillWallet' });
       // this.onSkillwalletError.emit();
       // this.isLoadingEvent.emit(false);
       // alert(error);
@@ -51,75 +72,67 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '30px',
-        }}
-      >
-        <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
-          Welcome back! 🙌
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '30px',
-        }}
-      >
-        <SwButton
-          sx={{
-            whiteSpace: 'nowrap',
-            borderColor: 'primary.main',
-            height: '75px',
-            maxWidth: '320px',
-          }}
-          startIcon={
-            <Box sx={{ width: '36px', height: '36px' }} component="img" src="https://dito-assets.s3.eu-west-1.amazonaws.com/metamask.svg" />
-          }
-          mode="dark"
-          onClick={handleMetamaskClick}
-          label="Login with Metamask"
-        />
-        <SwButton
-          sx={{
-            whiteSpace: 'nowrap',
-            borderColor: 'primary.main',
-            height: '75px',
-            maxWidth: '320px',
-          }}
-          disabled
-          startIcon={
-            <Box
-              sx={{ width: '36px', height: '36px' }}
-              component="img"
-              src="https://dito-assets.s3.eu-west-1.amazonaws.com/portis_icon.svg"
+      {errorData ? (
+        <ErrorBox errorMessage={errorData.message} action={handleError} />
+      ) : (
+        <>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: '30px',
+            }}
+          >
+            <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
+              Welcome back! 🙌
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '30px',
+            }}
+          >
+            <SwButton
+              sx={{
+                borderColor: 'primary.main',
+              }}
+              btnType="large"
+              startIcon={<MetaMaskIcon />}
+              mode="dark"
+              onClick={handleMetamaskClick}
+              label="Login with Metamask"
             />
-          }
-          mode="dark"
-          component={Link}
-          to="/"
-          label="User your Password"
-        />
-        <SwButton
-          sx={{
-            whiteSpace: 'nowrap',
-            borderColor: 'primary.main',
-            height: '75px',
-            maxWidth: '320px',
-          }}
-          disabled
-          mode="dark"
-          component={Link}
-          to="/qr"
-          label="Scan QR Code"
-        />
-      </Box>
+            <SwButton
+              sx={{
+                borderColor: 'primary.main',
+              }}
+              disabled
+              btnType="large"
+              startIcon={<PortisIcon />}
+              mode="dark"
+              component={Link}
+              to="/"
+              label="User your Password"
+            />
+            <SwButton
+              sx={{
+                borderColor: 'primary.main',
+              }}
+              btnType="large"
+              disabled
+              mode="dark"
+              component={Link}
+              to="/qr"
+              label="Scan QR Code"
+            />
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

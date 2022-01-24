@@ -41,11 +41,9 @@ const LoginWith: React.FunctionComponent = (props) => {
       >
         <SwButton
           sx={{
-            whiteSpace: 'nowrap',
             borderColor: 'primary.main',
-            height: '75px',
-            maxWidth: '320px',
           }}
+          btnType="large"
           startIcon={<SwIcon />}
           mode="dark"
           component={Link}
@@ -54,11 +52,9 @@ const LoginWith: React.FunctionComponent = (props) => {
         />
         <SwButton
           sx={{
-            whiteSpace: 'nowrap',
             borderColor: 'primary.main',
-            height: '75px',
-            maxWidth: '320px',
           }}
+          btnType="large"
           startIcon={<PlusIcon />}
           mode="dark"
           component={Link}

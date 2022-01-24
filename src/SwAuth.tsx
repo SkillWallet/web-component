@@ -1,4 +1,4 @@
-import { withRouter, MemoryRouter as Router } from 'react-router-dom';
+import { withRouter, MemoryRouter as Router, useHistory } from 'react-router-dom';
 import { SwButton } from 'sw-web-shared';
 import { CacheProvider, ThemeProvider } from '@emotion/react';
 import { create } from 'jss';
@@ -6,10 +6,9 @@ import { StylesProvider, jssPreset } from '@mui/styles';
 import createCache from '@emotion/cache';
 import ReactDOM from 'react-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { persistStore } from 'redux-persist';
 import { useEffect } from 'react';
 import { Avatar, Box } from '@mui/material';
+import dotenv from 'dotenv';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
 import {
@@ -20,11 +19,16 @@ import {
   currentSkillWallet,
   profileImageUrl,
   currentUsername,
+  currentlyLoggedIn,
+  resetState,
+  setLoggedIn,
 } from './store/sw-auth.reducer';
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
-import { getCommunity } from './services/web3/web3Service';
+import { changeNetwork, getCommunity } from './services/web3/web3Service';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
+
+// dotenv.config();
 
 const extractAttributes = (nodeMap) => {
   if (!nodeMap.attributes) {
@@ -49,44 +53,56 @@ const extractAttributes = (nodeMap) => {
 };
 
 const App = withRouter(({ attributes, container }: any) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
   const username = useSelector(currentUsername);
   const image = useSelector(profileImageUrl);
+  const loggedIn = useSelector(currentlyLoggedIn);
   const skillWallet = useSelector(currentSkillWallet);
 
   useEffect(() => {
     const fetchData = async () => {
       const { partnerKey } = attributes;
       if (partnerKey) {
-        console.log('use efecs');
         dispatch(setPartnerKey(partnerKey));
-        const community = await getCommunity(partnerKey);
-        dispatch(setCommunity(community));
+        // await changeNetwork();
+        // console.log('getting community');
+        // const community = await getCommunity(partnerKey);
+        // console.log(community);
+        // dispatch(setCommunity(community));
       }
     };
     fetchData();
   }, [attributes, dispatch]);
 
-  const handleClickOpen = () => {
-    dispatch(showDialog(true));
+  const handleButtonClick = () => {
+    if (loggedIn) {
+      dispatch(resetState());
+      dispatch(setLoggedIn(false));
+    } else {
+      dispatch(showDialog(true));
+    }
   };
 
   const handleClose = () => {
     dispatch(showDialog(false));
+    dispatch(resetState());
+    history.push('/');
   };
 
   return (
     <>
       <SwButton
         sx={{
-          height: '40px',
+          height: '57px',
           width: '180px',
         }}
         mode="dark"
-        onClick={handleClickOpen}
-        label={username || 'Connect Wallet'}
-        startIcon={<Avatar sx={{ width: '36px', height: '36px' }} src={image} />}
+        btnType="medium"
+        onClick={handleButtonClick}
+        label={loggedIn ? username : 'Connect Wallet'}
+        startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
       />
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
@@ -128,8 +144,6 @@ export class SWAuth extends HTMLElement {
       container: emotionRoot,
     });
 
-    const persistor = persistStore(store);
-
     const attributes = extractAttributes(this);
 
     ReactDOM.render(
@@ -137,13 +151,11 @@ export class SWAuth extends HTMLElement {
         <CacheProvider value={cache}>
           <ThemeProvider theme={SwTheme(rootContainer)}>
             <Provider store={store}>
-              <PersistGate persistor={persistor}>
-                <Router initialEntries={['/']}>
-                  <EventsHandlerWrapper>
-                    <App attributes={attributes} container={rootContainer} />
-                  </EventsHandlerWrapper>
-                </Router>
-              </PersistGate>
+              <Router initialEntries={['/']}>
+                <EventsHandlerWrapper>
+                  <App attributes={attributes} container={rootContainer} />
+                </EventsHandlerWrapper>
+              </Router>
             </Provider>
           </ThemeProvider>
         </CacheProvider>

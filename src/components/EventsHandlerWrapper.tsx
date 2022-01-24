@@ -22,6 +22,7 @@ export const EventsHandlerWrapper = ({ children }) => {
         dispatch(setPartnerAddress(partnersaddress));
         dispatch(setPartnerKey(partnerKey));
         console.log('PK: ', partnerKey);
+        // maybe redundant
         const comm = await getCommunity(partnerKey);
         dispatch(setCommunity(comm));
         dispatch(setPartnerMode(true));

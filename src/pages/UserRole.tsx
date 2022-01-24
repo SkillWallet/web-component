@@ -5,11 +5,20 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, setLoading, partnerMode, currentUsername, setTokenId } from '../store/sw-auth.reducer';
+import {
+  currentCommunity,
+  setLoading,
+  partnerMode,
+  currentUsername,
+  setTokenId,
+  profileImageUrl,
+  resetState,
+} from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
 import { pushImage } from '../services/textile/textile.hub';
 import { CustomSlider } from '../components/CustomSlider';
+import ErrorBox from '../components/ErrorBox';
 
 const rolesIds = {
   Founder: 1,
@@ -31,8 +40,10 @@ const UserRole: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
+  const profilePictureUrl = useSelector(profileImageUrl);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
+  const [errorData, setErrorData] = useState(undefined);
 
   const {
     handleSubmit,
@@ -43,36 +54,47 @@ const UserRole: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
-    const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     console.log(username);
-    const tokenId = await joinCommunity(web3Provider, community.address, username, selectedRole, data.commitment);
-    console.log(tokenId);
-    dispatch(setTokenId(tokenId));
-    history.push('/qr');
-    dispatch(setLoading(false));
+    await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
+      .then((result) => {
+        console.log(result);
+        dispatch(setTokenId(result));
+        history.push('/qr');
+        dispatch(setLoading(false));
+      })
+      .catch((e) => {
+        setErrorData({ message: 'Something went wrong' });
+        dispatch(setLoading(false));
+      });
   };
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      const isCoreMember = await isCoreTeamMember(community.partnersAgreementAddress, window.ethereum.selectedAddress);
-      const roles = community?.roles?.roles || [];
-      const newUserRolesBaseId = 4;
-      const filteredRoles = roles
-        .filter((r) => r.isCoreTeamMember === isCoreMember)
-        .map((curr, index) => {
-          console.log(curr);
-          const { roleName } = curr;
-          let roleId;
-          if (roleId <= 3) {
-            roleId = curr.roleId;
-          } else {
-            roleId = newUserRolesBaseId + index;
-          }
-          return { roleId, roleName };
+      await isCoreTeamMember(community.partnersAgreementAddress, window.ethereum.selectedAddress)
+        .then((result) => {
+          const roles = community?.roles?.roles || [];
+          const newUserRolesBaseId = 4;
+          const filteredRoles = roles
+            .filter((r) => r.isCoreTeamMember === result)
+            .map((curr, index) => {
+              console.log(curr);
+              const { roleName } = curr;
+              let roleId;
+              if (roleId <= 3) {
+                roleId = curr.roleId;
+              } else {
+                roleId = newUserRolesBaseId + index;
+              }
+              return { roleId, roleName };
+            });
+          setMemberRoles(filteredRoles);
+          dispatch(setLoading(false));
+        })
+        .catch((e) => {
+          setErrorData({ message: 'Something went wrong' });
+          dispatch(setLoading(false));
         });
-      setMemberRoles(filteredRoles);
-      dispatch(setLoading(false));
     };
     fetchData();
   }, []);
@@ -80,6 +102,11 @@ const UserRole: React.FunctionComponent = (props) => {
   const handleRoleSelected = (role) => {
     console.log(role);
     setSelectedRole(role);
+  };
+
+  const handleError = () => {
+    dispatch(resetState());
+    history.push('/');
   };
 
   return (
@@ -94,112 +121,136 @@ const UserRole: React.FunctionComponent = (props) => {
         py: '16px',
       }}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-            Your Role in{' '}
-            <Typography variant="h2" component="span" sx={{ fontWeight: '600', textDecorationLine: 'underline' }}>
-              {community.name}
-            </Typography>
-            !
-          </Typography>
-          <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
-            Pick what you're best at, & be rewareded for it!
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
+      {errorData ? (
+        <ErrorBox errorMessage={errorData.message} action={handleError} />
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Box
             sx={{
-              py: '24px',
-              mb: '40px',
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
               justifyContent: 'center',
-              gridGap: '20px',
-              minWidth: '383px',
-              border: 2,
-              borderColor: 'secondary',
-              backgroundColor: '#FFFFFF',
+              alignItems: 'center',
             }}
           >
-            {selectedRole ? (
-              <Box
-                sx={{
-                  mb: '40px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  maxWidth: '212px',
-                  border: 2,
-                  borderColor: '#000000',
-                  backgroundColor: '#FFFFFF',
-                }}
-              >
-                <Typography align="center" sx={{ width: '100%', color: 'secondary', backgroundColor: '#000000' }} variant="h2">
-                  {(selectedRole as Role).roleName}
-                </Typography>
-                <Typography align="center" variant="h4" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                  Your{' '}
-                  <Typography variant="h4" component="span" sx={{ color: '#000000', fontWeight: '600', textDecorationLine: 'underline' }}>
-                    Commitment Level
-                  </Typography>
-                </Typography>
-                <Typography align="center" variant="h5" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px' }}>
-                  Tell your community how much time you commit to this Role!
-                </Typography>
-                <CustomSlider name="commitment" control={control} setValue={setValue} rules={{ min: 1, max: 10 }} />
-              </Box>
-            ) : (
-              memberRoles &&
-              memberRoles.map((role: Role, index) => {
-                return (
-                  <SwButton
-                    key={index}
-                    sx={{
-                      maxWidth: '212px',
-                      maxHeight: '44px',
-                    }}
-                    mode="dark"
-                    btnType="large"
-                    label={role.roleName}
-                    onClick={() => handleRoleSelected(role)}
-                  />
-                );
-              })
-            )}
+            <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+              Your Role in{' '}
+              <Typography variant="h2" component="span" sx={{ fontWeight: '600', textDecorationLine: 'underline' }}>
+                {community.name}
+              </Typography>
+              !
+            </Typography>
+            <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
+              Pick what you're best at, & be rewareded for it!
+            </Typography>
           </Box>
-          <SwButton
+          <Box
             sx={{
-              whiteSpace: 'nowrap',
-              borderColor: 'primary.main',
-              height: '75px',
-              maxWidth: '383px',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
             }}
-            mode="dark"
-            component={Button}
-            type="submit"
-            disabled={!isValid || !selectedRole}
-            label="That's it - join this community!"
-          />
-        </Box>
-      </form>
+          >
+            <Box
+              sx={{
+                py: '24px',
+                mb: '40px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gridGap: '20px',
+                minWidth: '380px',
+                maxHeight: '210px',
+                border: 2,
+                borderColor: 'secondary',
+                backgroundColor: '#FFFFFF',
+              }}
+            >
+              {selectedRole ? (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    maxWidth: '212px',
+                    border: 2,
+                    borderColor: '#000000',
+                    backgroundColor: '#FFFFFF',
+                    pb: '10px',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      minHeight: '44px',
+                      width: '100%',
+                      color: 'secondary',
+                      backgroundColor: '#000000',
+                    }}
+                  >
+                    <Typography
+                      align="center"
+                      sx={{
+                        alignContent: 'center',
+                        color: 'secondary',
+                        fontWeight: '400',
+                      }}
+                      variant="h1"
+                    >
+                      {(selectedRole as Role).roleName}
+                    </Typography>
+                  </Box>
+
+                  <Typography align="center" variant="h4" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px', my: '12px' }}>
+                    Your{' '}
+                    <Typography variant="h4" component="span" sx={{ color: '#000000', fontWeight: '600', textDecorationLine: 'underline' }}>
+                      Commitment Level
+                    </Typography>
+                  </Typography>
+                  <Typography align="center" variant="h5" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px', mb: '12px' }}>
+                    Tell your community how much time you commit to this Role!
+                  </Typography>
+                  <CustomSlider name="commitment" control={control} setValue={setValue} rules={{ min: 1, max: 10 }} />
+                </Box>
+              ) : (
+                memberRoles &&
+                memberRoles.map((role: Role, index) => {
+                  return (
+                    <SwButton
+                      key={index}
+                      sx={{
+                        maxWidth: '212px',
+                        maxHeight: '44px',
+                      }}
+                      mode="dark"
+                      btnType="large"
+                      label={role.roleName}
+                      onClick={() => handleRoleSelected(role)}
+                    />
+                  );
+                })
+              )}
+            </Box>
+            <SwButton
+              sx={{
+                borderColor: 'primary.main',
+              }}
+              btnType="large"
+              mode="dark"
+              component={Button}
+              type="submit"
+              disabled={!isValid || !selectedRole}
+              label="That's it - join this community!"
+            />
+          </Box>
+        </form>
+      )}
     </Box>
   );
 };

@@ -5,10 +5,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, setLoading, partnerMode, setUserName, setUserProfilePicture } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode, setUserName, setUserProfilePicture, resetState } from '../store/sw-auth.reducer';
 import { pushImage } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import { CustomInput } from '../components/CustomInput';
+import ErrorBox from '../components/ErrorBox';
 
 interface Values {
   picture?: File;
@@ -27,6 +28,7 @@ const UserDetails: React.FunctionComponent = (props) => {
     mode: 'onChange',
   });
   const [image, setImage] = useState(undefined);
+  const [errorData, setErrorData] = useState(undefined);
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
   const isPartner = useSelector(partnerMode);
@@ -42,11 +44,22 @@ const UserDetails: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data) => {
     dispatch(setLoading(true));
-    const imageUrl = await pushImage(data.picture[0], 'profile.png');
-    dispatch(setUserProfilePicture(imageUrl));
-    dispatch(setUserName(data.username));
-    history.push('/role');
-    dispatch(setLoading(false));
+    await pushImage(data.picture[0], 'profile.png')
+      .then((result) => {
+        dispatch(setUserProfilePicture(result));
+        dispatch(setUserName(data.username));
+        history.push('/role');
+        dispatch(setLoading(false));
+      })
+      .catch((e) => {
+        setErrorData({ message: 'Failed to retrieve MetaMask account' });
+        dispatch(setLoading(false));
+      });
+  };
+
+  const handleError = () => {
+    dispatch(resetState());
+    history.push('/');
   };
 
   return (
@@ -61,174 +74,170 @@ const UserDetails: React.FunctionComponent = (props) => {
         py: '16px',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}
-      >
-        {isPartner ? (
-          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-            Great! Now let's start - tell us about yourself
-          </Typography>
-        ) : (
-          <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-            Welcome to{' '}
-            <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-              {community.name}
-            </Typography>
-            !
-          </Typography>
-        )}
-
-        <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
-          Tell us about you
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <form onSubmit={handleSubmit(onSubmit)}>
+      {errorData ? (
+        <ErrorBox errorMessage={errorData.message} action={handleError} />
+      ) : (
+        <>
           <Box
             sx={{
-              maxWidth: '382px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+          >
+            {isPartner ? (
+              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                Great! Now let's start - tell us about yourself
+              </Typography>
+            ) : (
+              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                Welcome to{' '}
+                <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                  {community.name}
+                </Typography>
+                !
+              </Typography>
+            )}
+
+            <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
+              Tell us about you
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: '100%',
               display: 'flex',
               justifyContent: 'center',
               flexDirection: 'column',
               alignItems: 'center',
             }}
           >
-            <Box sx={{ width: '382px', mb: '18px' }}>
-              <Typography variant="h4" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                Nickname
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                position: 'relative',
-                height: '68px',
-                display: 'flex',
-                alignContent: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#FFFFFF',
-                mb: '18px',
-                px: '16px',
-              }}
-            >
-              <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                How do you want your community to call you?
-              </Typography>
-              <CustomInput maxLength={12} name="username" control={control} setValue={setValue} rules={{ required: true }} />
-              {/* <Input
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Box
                 sx={{
-                  color: '#000000',
-                  my: 'auto',
-                  height: '40px',
-                  flex: 1,
-                  border: 2,
-                  borderColor: '#000000',
+                  maxWidth: '382px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                 }}
-                inputProps={{ maxLength: 12 }}
-                type="text"
-                {...register('username', { required: true })}
-              /> */}
-            </Box>
-            <Box sx={{ width: '382px', mb: '18px' }}>
-              <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                Avatar
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                height: '96px',
-                alignContent: 'center',
-                justifyContent: 'center',
-                display: 'flex',
-                backgroundColor: '#FFFFFF',
-                mb: '24px',
-                px: '16px',
-              }}
-            >
-              <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                A public image - that’s how others will see you.
-              </Typography>
-              <Button
-                disableElevation
-                sx={{
-                  ':hover': {
-                    backgroundColor: 'transparent',
-                  },
-                  backgroundColor: 'transparent',
-                  my: 'auto',
-                  flex: 1,
-                  width: '70px',
-                  height: '70px',
-                }}
-                variant="contained"
-                component="label"
               >
+                <Box sx={{ width: '382px', mb: '18px' }}>
+                  <Typography variant="h4" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                    Nickname
+                  </Typography>
+                </Box>
                 <Box
                   sx={{
-                    backgroundColor: 'transparent',
+                    position: 'relative',
+                    height: '68px',
                     display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    alignContent: 'center',
                     justifyContent: 'center',
-                    width: '100%',
-                    height: '100%',
-                    ml: '70px',
+                    alignItems: 'center',
+                    backgroundColor: '#FFFFFF',
+                    mb: '18px',
+                    px: '16px',
                   }}
                 >
-                  {image ? (
-                    <Avatar sx={{ border: 2, borderColor: '#000000', borderRadius: '100px', width: '51px', height: '51px' }} src={image} />
-                  ) : (
-                    <>
-                      <Upload />
-                      <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
-                        .png or .jpg
-                      </Typography>
-                    </>
-                  )}
+                  <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
+                    How do you want your community to call you?
+                  </Typography>
+                  <CustomInput maxLength={12} name="username" control={control} setValue={setValue} rules={{ required: true }} />
                 </Box>
-                <Input
+                <Box sx={{ width: '382px', mb: '18px' }}>
+                  <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                    Avatar
+                  </Typography>
+                </Box>
+                <Box
                   sx={{
-                    display: 'none',
+                    height: '96px',
+                    alignContent: 'center',
+                    justifyContent: 'center',
+                    display: 'flex',
+                    backgroundColor: '#FFFFFF',
+                    mb: '24px',
+                    px: '16px',
                   }}
-                  {...register('picture', {
-                    required: true,
-                    onChange: (e) => {
-                      parseImage(e);
-                    },
-                  })}
-                  type="file"
-                  inputProps={{ accept: '.png, .jpg' }}
+                >
+                  <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
+                    A public image - that’s how others will see you.
+                  </Typography>
+                  <Button
+                    disableElevation
+                    sx={{
+                      ':hover': {
+                        backgroundColor: 'transparent',
+                      },
+                      backgroundColor: 'transparent',
+                      my: 'auto',
+                      flex: 1,
+                      width: '70px',
+                      height: '70px',
+                    }}
+                    variant="contained"
+                    component="label"
+                  >
+                    <Box
+                      sx={{
+                        backgroundColor: 'transparent',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: '100%',
+                        ml: '70px',
+                      }}
+                    >
+                      {image ? (
+                        <Avatar
+                          sx={{ border: 2, borderColor: '#000000', borderRadius: '100px', width: '51px', height: '51px' }}
+                          src={image}
+                        />
+                      ) : (
+                        <>
+                          <Upload />
+                          <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
+                            .png or .jpg
+                          </Typography>
+                        </>
+                      )}
+                    </Box>
+                    <Input
+                      sx={{
+                        display: 'none',
+                      }}
+                      {...register('picture', {
+                        required: true,
+                        onChange: (e) => {
+                          parseImage(e);
+                        },
+                      })}
+                      type="file"
+                      inputProps={{ accept: '.png, .jpg' }}
+                    />
+                  </Button>
+                </Box>
+                <SwButton
+                  sx={{
+                    borderColor: 'primary.main',
+                    height: '75px',
+                    maxWidth: '320px',
+                  }}
+                  mode="dark"
+                  component={Button}
+                  type="submit"
+                  disabled={!isValid}
+                  label="Next: Pick your Role"
                 />
-              </Button>
-            </Box>
-            <SwButton
-              sx={{
-                borderColor: 'primary.main',
-                height: '75px',
-                maxWidth: '320px',
-              }}
-              mode="dark"
-              component={Button}
-              type="submit"
-              disabled={!isValid}
-              label="Next: Pick your Role"
-            />
+              </Box>
+            </form>
           </Box>
-        </form>
-      </Box>
+        </>
+      )}
     </Box>
   );
 };

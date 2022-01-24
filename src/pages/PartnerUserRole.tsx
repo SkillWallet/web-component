@@ -35,14 +35,15 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const [selectedRole, setSelectedRole] = useState(undefined);
 
   const handleJoinClicked = async () => {
-    // this.isLoadingEvent.emit(true);
+    dispatch(setLoading(true));
     const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
     const tokenId = await joinCommunity(web3Provider, community.address, username, selectedRole, 10);
     // IMPORTANT
     // const active = await activatePA(this.partnersAddress);
     console.log(tokenId);
-    await dispatch(setTokenId(tokenId));
+    dispatch(setTokenId(tokenId));
     history.push('/qr');
+    dispatch(setLoading(false));
   };
 
   const handleRoleSelected = (role) => {

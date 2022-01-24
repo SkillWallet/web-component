@@ -1,15 +1,13 @@
 import { ethers } from 'ethers';
 import { asyncPoll } from 'sw-web-shared';
 import axios from 'axios';
-import skillWalletAbi from './skillWalletAbi.json';
-import partnersAgreementAbi from './partnersAgreementAbi.json';
-import communityAbi from './communityAbi.json';
+import { SkillWalletAbi, PartnersAgreementABI, DitoCommunityAbi } from '@skill-wallet/sw-abi-types';
+import env from 'react-dotenv';
 import { pushJSONDocument } from '../textile/textile.hub';
+import { Web3ContractProvider } from './web3.provider';
 
 export const getSkillWalletAddress = async () => {
-  return axios
-    .get(`${process.env.REACT_APP_PUBLIC_SKILL_WALLET_API_URL}/api/skillwallet/config`)
-    .then((response) => response.data.skillWalletAddress);
+  return axios.get(`https://dev-api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
 };
 
 // export const getSkillwalletAddress = async () => {
@@ -29,7 +27,7 @@ export const getSkillWalletAddress = async () => {
 // };
 
 export const getPAKeyByCommunity = async (community) => {
-  return axios.get(`https://api.distributed.town/api/community/${community}/key`).then((response) => response.data);
+  return axios.get(`https://dev-api.distributed.town/api/community/${community}/key`).then((response) => response.data);
 };
 
 // export const getPAKeyByCommunity = async (community) => {
@@ -41,7 +39,7 @@ export const getPAKeyByCommunity = async (community) => {
 // };
 
 export const getActivationNonce = async (tokenId) => {
-  return axios.post(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data);
+  return axios.post(`https://dev-api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
 };
 
 // export const getActivationNonce = async (tokenId) => {
@@ -52,31 +50,56 @@ export const getActivationNonce = async (tokenId) => {
 //   return nonce.nonce;
 // };
 
-export const isQrCodeActive = async (provider: any, selectedAddress: string, tokenId): Promise<boolean> => {
+export const isQrCodeActive = async (tokenId): Promise<boolean> => {
+  // try {
+  //   const swAddress = await getSkillWalletAddress();
+  //   console.log(swAddress);
+  //   const signer = provider.getSigner();
+  //   const contract = new ethers.Contract(swAddress.skillWalletAddress, selectedAddress, signer);
+  //   console.log(tokenId);
+  //   const status = await contract.isSkillWalletActivated(tokenId);
+  //   console.log(status);
+
+  //   return status.status;
+  // } catch (error) {
+  //   console.log(error);
+  //   console.log('QR Code not active, error!!');
+  //   return false;
+  // }
   try {
-    const swAddress = await getSkillWalletAddress();
-    console.log(swAddress);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(swAddress.skillWalletAddress, skillWalletAbi, signer);
-    console.log(tokenId);
+    const skillwalletAddress = await getSkillWalletAddress();
+    const contract = await Web3ContractProvider(skillwalletAddress, SkillWalletAbi);
     const status = await contract.isSkillWalletActivated(tokenId);
     console.log(status);
 
-    return status.status;
+    return status;
   } catch (error) {
-    console.log(error);
     console.log('QR Code not active, error!!');
     return false;
   }
 };
 
+// export const isQrCodeActive = async (): Promise<boolean> => {
+//   try {
+//     const provider = new ethers.providers.Web3Provider(window.ethereum);
+//     const signer = provider.getSigner();
+//     const skillwalletAddress = await getSkillWalletAddress(null);
+//     const contract = new ethers.Contract(skillwalletAddress, SkillWalletAbi, signer);
+//     const tokenId = await contract.getSkillWalletIdByOwner(window.ethereum.selectedAddress);
+//     const status = await contract.isSkillWalletActivated(tokenId);
+
+//     return status;
+//   } catch (error) {
+//     console.log('QR Code not active, error!!');
+//     return false;
+//   }
+// };
+
 export const isCoreTeamMember = async (partnersAgreementAddress, user) => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  const contract = await Web3ContractProvider(partnersAgreementAddress, PartnersAgreementABI);
+  // new ethers.Contract(partnersAgreementAddress, PartnersAgreementABI, signer);
 
-  const partnersAgreementContract = new ethers.Contract(partnersAgreementAddress, JSON.stringify(partnersAgreementAbi), signer);
-
-  const result = await partnersAgreementContract.isCoreTeamMember(user);
+  const result = await contract.isCoreTeamMember(user);
   console.log('isCoreTeamMember', result);
 
   return result;
@@ -122,32 +145,26 @@ export const changeNetwork = async () => {
 };
 
 export const getCommunity = async (partnerKey) => {
-  await changeNetwork();
-  const res = await fetch(`https://api.distributed.town/api/community/key/${partnerKey}`, {
-    method: 'GET',
-  });
-  const community = await res.json();
+  return axios.get(`https://dev-api.distributed.town/api/community/key/${partnerKey}`).then((response) => response.data);
   // this probably shouldn't be here
   // partnersAgreementAddress = community.partnersAgreementAddress;
   // console.log('partnersA address: ', partnersAgreementAddress);
   // membershipAddress = await getMembershipAddress();
-  return community;
+  // return community;
 };
 
-export const joinCommunity = async (provider, communityAddress, username, role, level) => {
+export const joinCommunity = async (communityAddress, username, imageUrl, role, level) => {
   try {
     console.log('trying to join community', communityAddress);
 
-    const signer = provider.getSigner();
-
-    const contract = new ethers.Contract(communityAddress, JSON.stringify(communityAbi), signer);
+    const contract = await Web3ContractProvider(communityAddress, DitoCommunityAbi);
 
     console.log(role, typeof role);
 
     const metadataJson = {
       name: `${username}'s SkillWallet`,
       description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
-      image: window.sessionStorage.getItem('imageUrl'),
+      image: imageUrl,
       properties: {
         username,
         skills: [
@@ -196,15 +213,13 @@ export const joinCommunity = async (provider, communityAddress, username, role, 
   }
 };
 
-export const fetchSkillWallet = async (provider: any, address: string) => {
+export const fetchSkillWallet = async (address: string) => {
   try {
     console.log(address);
 
     const skillWalletAddress = await getSkillWalletAddress();
     console.log(skillWalletAddress);
-    const signer = provider.getSigner();
-    console.log(signer);
-    const contract = new ethers.Contract(skillWalletAddress.skillWalletAddress, skillWalletAbi, signer);
+    const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
 
     console.log(contract);
     const tokenId = await contract.getSkillWalletIdByOwner(address);
@@ -238,15 +253,16 @@ export const fetchSkillWallet = async (provider: any, address: string) => {
       };
 
       if (skillWallet && skillWallet.nickname) {
-        console.log('setting local storage with SW');
-        window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
-      } else if (!skillWallet) {
-        alert('Unable to find a Skill Wallet and nickname with your ID');
+        return skillWallet;
+        // window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
       }
-
-      return community;
+      if (!skillWallet) {
+        console.log('Unable to find a Skill Wallet and nickname with your ID');
+      }
+      return undefined;
     }
   } catch (error) {
+    console.log(error);
     // Some error handling
     // sw.dispatchEvent(event);
     // if (error.data && error.data.message.includes('invalid')) {

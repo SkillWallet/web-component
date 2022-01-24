@@ -21,6 +21,7 @@ export interface SwAuthState {
   // SLICE
   username?: string;
   profileImageUrl?: string;
+  isLoggedIn: boolean;
   tokenId?: string;
 }
 
@@ -37,6 +38,7 @@ const initialState: SwAuthState = {
   // SLICE
   username: undefined,
   profileImageUrl: undefined,
+  isLoggedIn: false,
   tokenId: undefined,
 };
 
@@ -78,13 +80,24 @@ export const swAuthSlice = createSlice({
       state.username = action.payload;
     },
     setTokenId(state, action: ActionPayload<string>) {
-      console.log('SETTING TOKEN ID', action.payload);
       state.tokenId = action.payload;
+    },
+    setLoggedIn(state, action: ActionPayload<boolean>) {
+      state.isLoggedIn = action.payload;
+    },
+    resetState(state, action: ActionPayload<void>) {
+      state = {
+        ...initialState,
+        partnerKey: state.partnerKey,
+        partnerMode: state.partnerMode,
+        partnerAddress: state.partnerAddress,
+      };
     },
   },
 });
 
 export const {
+  resetState,
   resetUIState,
   setSkillWallet,
   showDialog,
@@ -98,6 +111,7 @@ export const {
   setUserProfilePicture,
   setUserName,
   setTokenId,
+  setLoggedIn,
 } = swAuthSlice.actions;
 
 const show = (state) => state.swAuth.showDialog;
@@ -121,5 +135,7 @@ const picture = (state) => state.swAuth.profileImageUrl;
 export const profileImageUrl = createSelector(picture, (pic) => pic);
 const tokenId = (state) => state.swAuth.tokenId;
 export const currentTokenId = createSelector(tokenId, (token) => token);
+const userLoggedIn = (state) => state.swAuth.isLoggedIn;
+export const currentlyLoggedIn = createSelector(userLoggedIn, (loggedIn) => loggedIn);
 
 export default swAuthSlice.reducer;
