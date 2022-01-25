@@ -1,4 +1,4 @@
-import { withRouter, MemoryRouter as Router } from 'react-router-dom';
+import { withRouter, MemoryRouter as Router, useHistory } from 'react-router-dom';
 import { SwButton } from 'sw-web-shared';
 import { CacheProvider, ThemeProvider } from '@emotion/react';
 import { create } from 'jss';
@@ -6,37 +6,104 @@ import { StylesProvider, jssPreset } from '@mui/styles';
 import createCache from '@emotion/cache';
 import ReactDOM from 'react-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { persistStore } from 'redux-persist';
+import { useEffect } from 'react';
+import { Avatar, Box } from '@mui/material';
+import dotenv from 'dotenv';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog } from './store/sw-auth.reducer';
+import {
+  isOpen,
+  showDialog,
+  setPartnerKey,
+  setCommunity,
+  currentSkillWallet,
+  profileImageUrl,
+  currentUsername,
+  currentlyLoggedIn,
+  resetState,
+  setLoggedIn,
+} from './store/sw-auth.reducer';
 import store from './store/store';
+import IAttributes from './interfaces/attributes';
+import { changeNetwork, getCommunity } from './services/web3/web3Service';
+import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
 
-const App = withRouter(({ container }: any) => {
+// dotenv.config();
+
+const extractAttributes = (nodeMap) => {
+  if (!nodeMap.attributes) {
+    return {};
+  }
+
+  const obj = {};
+  let attribute;
+  const attributesAsNodeMap = [...nodeMap.attributes];
+  console.log(attributesAsNodeMap);
+  const attributes = attributesAsNodeMap.map((attr) => {
+    return { [attr.name]: attr.value };
+  });
+
+  for (attribute of attributes) {
+    const key = Object.keys(attribute)[0];
+    const camelCasedKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    obj[camelCasedKey] = attribute[key];
+  }
+
+  return obj;
+};
+
+const App = withRouter(({ attributes, container }: any) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
+  const username = useSelector(currentUsername);
+  const image = useSelector(profileImageUrl);
+  const loggedIn = useSelector(currentlyLoggedIn);
+  const skillWallet = useSelector(currentSkillWallet);
 
-  const handleClickOpen = () => {
-    dispatch(showDialog(true));
+  useEffect(() => {
+    const fetchData = async () => {
+      const { partnerKey } = attributes;
+      if (partnerKey) {
+        dispatch(setPartnerKey(partnerKey));
+        // await changeNetwork();
+        // console.log('getting community');
+        // const community = await getCommunity(partnerKey);
+        // console.log(community);
+        // dispatch(setCommunity(community));
+      }
+    };
+    fetchData();
+  }, [attributes, dispatch]);
+
+  const handleButtonClick = () => {
+    if (loggedIn) {
+      dispatch(resetState());
+      dispatch(setLoggedIn(false));
+    } else {
+      dispatch(showDialog(true));
+    }
   };
 
   const handleClose = () => {
     dispatch(showDialog(false));
+    dispatch(resetState());
+    history.push('/');
   };
 
   return (
     <>
       <SwButton
         sx={{
-          height: '40px',
-          width: '100px',
+          height: '57px',
+          width: '180px',
         }}
         mode="dark"
-        onClick={handleClickOpen}
-      >
-        Login
-      </SwButton>
+        btnType="medium"
+        onClick={handleButtonClick}
+        label={loggedIn ? username : 'Connect Wallet'}
+        startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
+      />
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
   );
@@ -77,18 +144,18 @@ export class SWAuth extends HTMLElement {
       container: emotionRoot,
     });
 
-    const persistor = persistStore(store);
+    const attributes = extractAttributes(this);
 
     ReactDOM.render(
       <StylesProvider jss={jss}>
         <CacheProvider value={cache}>
           <ThemeProvider theme={SwTheme(rootContainer)}>
             <Provider store={store}>
-              <PersistGate persistor={persistor}>
-                <Router initialEntries={['/']}>
-                  <App container={rootContainer} />
-                </Router>
-              </PersistGate>
+              <Router initialEntries={['/']}>
+                <EventsHandlerWrapper>
+                  <App attributes={attributes} container={rootContainer} />
+                </EventsHandlerWrapper>
+              </Router>
             </Provider>
           </ThemeProvider>
         </CacheProvider>

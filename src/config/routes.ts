@@ -1,6 +1,10 @@
 import IRoute from '../interfaces/route';
 import LoginWith from '../pages/LoginWith';
-import SecondPage from '../pages/SecondPage';
+import LoginWithSkillWallet from '../pages/LoginWithSkillWallet';
+import NewUser from '../pages/NewUser';
+import ScanQR from '../pages/ScanQR';
+import UserDetails from '../pages/UserDetails';
+import UserRole from '../pages/UserRole';
 
 const routes: IRoute[] = [
   {
@@ -10,9 +14,33 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/second',
-    name: 'Second',
-    component: SecondPage,
+    path: '/skillwallet',
+    name: 'Skill Wallet',
+    component: LoginWithSkillWallet,
+    exact: true,
+  },
+  {
+    path: '/newuser',
+    name: 'New User',
+    component: NewUser,
+    exact: true,
+  },
+  {
+    path: '/userdetails',
+    name: 'User Details',
+    component: UserDetails,
+    exact: true,
+  },
+  {
+    path: '/role',
+    name: 'User Role',
+    component: UserRole,
+    exact: true,
+  },
+  {
+    path: '/qr',
+    name: 'Scan QR',
+    component: ScanQR,
     exact: true,
   },
 ];

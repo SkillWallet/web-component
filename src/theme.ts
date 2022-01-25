@@ -1,6 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 import { Fade } from '@mui/material';
 import React from 'react';
+import { PlayLessonOutlined } from '@mui/icons-material';
 
 const palette = {
   type: 'dark',
@@ -18,7 +19,7 @@ const palette = {
     main: '#000000',
   },
   secondary: {
-    main: '#8F37AA',
+    main: '#FFFFFF',
   },
   info: {
     main: '#FFFFFF',
@@ -35,6 +36,12 @@ export const SwTheme = (container: Element) =>
             color: ${palette.text.disabled};
           }
         `,
+      },
+      MuiButtonBase: {
+        defaultProps: {
+          // The props to apply
+          disableRipple: true, // No more ripple, on the whole application 💣!
+        },
       },
       MuiTooltip: {
         defaultProps: {
@@ -60,13 +67,63 @@ export const SwTheme = (container: Element) =>
           container,
         },
       },
-      MuiDialogContent: {
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            minWidth: '480px',
+            borderStyle: 'solid',
+            borderWidth: '1px',
+            borderColor: palette.secondary.main,
+            backgroundColor: palette.primary.main,
+          },
+        },
+      },
+      MuiSlider: {
         styleOverrides: {
           root: {
             borderStyle: 'solid',
-            borderWidth: '2px',
-            borderColor: palette.primary.main,
+            borderRadius: 0,
+            border: 2,
+            borderColor: '#000000',
           },
+          rail: {
+            height: '26px',
+            borderRadius: 0,
+            color: '#FFFFFF',
+          },
+          track: {
+            height: '25px',
+            borderRadius: 0,
+          },
+          thumb: {
+            display: 'none',
+          },
+        },
+      },
+
+      // MuiInput: {
+      //   styleOverrides: {
+      //     underline: {
+      //       // Remove the ripple effect on input
+      //       ':after': {
+      //         borderBottom: '2px solid var(--border)',
+      //       },
+      //       ':before': {
+      //         borderBottom: '2px solid var(--border)',
+      //         transition: 'none',
+      //       },
+      //       ':hover': { borderBottom: `2px solid var(--border)` },
+      //     },
+      //   },
+      // },
+      MuiInputBase: {
+        styleOverrides: {
+          // underline: {
+          //   // Remove the ripple effect on input
+          //   ':after': {
+          //     borderBottom: 'initial',
+          //   },
+          // },
         },
       },
     },

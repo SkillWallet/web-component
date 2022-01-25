@@ -12,6 +12,15 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <sw-auth id="root"></sw-auth>
+  
+    <sw-auth partner-key="1298dfcb8c2721590967dbb3ed0347990e8e6894"  id="root"></sw-auth>
   </body>
+  <script>
+    setInterval(() => {     // 1298dfcb8c2721590967dbb3ed0347990e8e6894   
+      // 07bf1f947af8facd6c7a954b154998e895cd8682 
+      const event = document.createEvent('Event');
+      event.initEvent('mayday', true, true);
+      window.dispatchEvent(event);
+    }, 1000)
+  </script>
 </html>

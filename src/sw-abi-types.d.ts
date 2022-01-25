@@ -32,7 +32,7 @@ declare module 'ethers' {
 
     isRequestIdValid: (requestId: string) => Promise<boolean>;
 
-    isSkillWalletActivated: (skillWalletId: number) => Promise<{ status: boolean }>;
+    isSkillWalletActivated: (skillWalletId: number) => Promise<boolean>;
 
     isSkillWalletClaimable: (skillWalletOwner: string) => Promise<{ status: boolean }>;
 
@@ -113,7 +113,7 @@ declare module 'ethers' {
 
     join: (skillWalletTokenId: number, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 
-    joinNewMember: (uri: string, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
+    // joinNewMember: (uri: string, credits: number) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 
     leave: (memberAddress: string) => Promise<{ wait: () => Promise<SWContractEvents> }>;
 
