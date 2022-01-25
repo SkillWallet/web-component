@@ -52,7 +52,7 @@ const UserDetails: React.FunctionComponent = (props) => {
         dispatch(setLoading(false));
       })
       .catch((e) => {
-        setErrorData({ message: 'Failed to retrieve MetaMask account' });
+        setErrorData({ message: 'Something went wrong.' });
         dispatch(setLoading(false));
       });
   };
