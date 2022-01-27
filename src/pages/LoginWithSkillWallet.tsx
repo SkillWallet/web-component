@@ -35,18 +35,31 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
       await changeNetwork();
       await ethereum.request({ method: 'eth_requestAccounts' });
       if (ethereum.selectedAddress) {
-        const skillWallet = await fetchSkillWallet(ethereum.selectedAddress);
-        if (skillWallet) {
-          dispatch(setSkillWallet(skillWallet));
-          dispatch(setUserName(skillWallet.nickname));
-          dispatch(setUserProfilePicture(skillWallet.imageUrl));
-          dispatch(setLoggedIn(true));
-          dispatch(showDialog(false));
-          console.log(skillWallet);
-          history.push('/');
-        } else {
-          setErrorData({ message: 'Failed to retreave SkillWallet' });
-        }
+        await fetchSkillWallet(ethereum.selectedAddress)
+          .then((result) => {
+            dispatch(setSkillWallet(result));
+            dispatch(setUserName(result.nickname));
+            dispatch(setUserProfilePicture(result.imageUrl));
+            dispatch(setLoggedIn(true));
+            dispatch(showDialog(false));
+            window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
+            console.log(result);
+            history.push('/');
+            const event = new CustomEvent('onSkillwalletLogin', {
+              composed: true,
+              cancelable: true,
+              bubbles: true,
+              detail: true,
+            });
+            console.log('sending login event');
+            window.dispatchEvent(event);
+          })
+          .catch(() => {
+            setErrorData({ message: 'Failed to retreave SkillWallet' });
+          })
+          .finally(() => {
+            dispatch(setLoading(false));
+          });
       }
       dispatch(setLoading(false));
     } catch (error) {
@@ -56,9 +69,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
       // this.isLoadingEvent.emit(false);
       // alert(error);
     }
-    setTimeout(() => {
-      dispatch(setLoading(false));
-    }, 4000);
   };
 
   return (

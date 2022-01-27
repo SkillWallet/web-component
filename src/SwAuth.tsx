@@ -22,6 +22,7 @@ import {
   currentlyLoggedIn,
   resetState,
   setLoggedIn,
+  showButton,
 } from './store/sw-auth.reducer';
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
@@ -57,6 +58,7 @@ const App = withRouter(({ attributes, container }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
   const username = useSelector(currentUsername);
+  const displayButton = useSelector(showButton);
   const image = useSelector(profileImageUrl);
   const loggedIn = useSelector(currentlyLoggedIn);
   const skillWallet = useSelector(currentSkillWallet);
@@ -65,7 +67,16 @@ const App = withRouter(({ attributes, container }: any) => {
     const fetchData = async () => {
       const { partnerKey } = attributes;
       if (partnerKey) {
+        console.log('PK', partnerKey);
         dispatch(setPartnerKey(partnerKey));
+
+        const event = new CustomEvent('initSkillwalletAuth', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+        });
+        console.log('dispatchin init event');
+        window.dispatchEvent(event);
         // await changeNetwork();
         // console.log('getting community');
         // const community = await getCommunity(partnerKey);
@@ -80,6 +91,13 @@ const App = withRouter(({ attributes, container }: any) => {
     if (loggedIn) {
       dispatch(resetState());
       dispatch(setLoggedIn(false));
+      const event = new CustomEvent('onSkillwalletLogin', {
+        composed: true,
+        cancelable: true,
+        bubbles: true,
+        detail: false,
+      });
+      window.dispatchEvent(event);
     } else {
       dispatch(showDialog(true));
     }
@@ -97,6 +115,7 @@ const App = withRouter(({ attributes, container }: any) => {
         sx={{
           height: '57px',
           width: '180px',
+          display: displayButton ? '' : 'none',
         }}
         mode="dark"
         btnType="medium"
@@ -164,5 +183,6 @@ export class SWAuth extends HTMLElement {
     );
   }
 }
+console.log('ALIVE????');
 
 customElements.define('sw-auth', SWAuth);

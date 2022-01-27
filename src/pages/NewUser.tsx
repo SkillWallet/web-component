@@ -34,6 +34,7 @@ const NewUser: React.FunctionComponent = (props) => {
       dispatch(setLoading(true));
       await getCommunity(partnerKey)
         .then((result) => {
+          console.log('community', result);
           dispatch(setCommunity(result));
           dispatch(setLoading(false));
         })

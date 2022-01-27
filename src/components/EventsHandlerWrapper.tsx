@@ -1,7 +1,16 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getCommunity } from '../services/web3/web3Service';
-import { setCommunity, setPartnerKey, setCommunityAddress, setPartnerAddress, setPartnerMode } from '../store/sw-auth.reducer';
+import {
+  setCommunity,
+  setPartnerKey,
+  setCommunityAddress,
+  setPartnerAddress,
+  setPartnerMode,
+  showDialog,
+  showButton,
+  setDisplayButton,
+} from '../store/sw-auth.reducer';
 
 export const EventsHandlerWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -24,11 +33,31 @@ export const EventsHandlerWrapper = ({ children }) => {
         console.log('PK: ', partnerKey);
         // maybe redundant
         const comm = await getCommunity(partnerKey);
+        console.log('Community', comm);
         dispatch(setCommunity(comm));
         dispatch(setPartnerMode(true));
+        dispatch(showDialog(true));
       },
       false
     );
+    window.addEventListener(
+      'showSwButton',
+      async (e) => {
+        dispatch(setDisplayButton(true));
+      },
+      false
+    );
+    window.addEventListener(
+      'hideSwButton',
+      async (e) => {
+        dispatch(setDisplayButton(false));
+      },
+      false
+    );
+
+    return function cleanup() {
+      console.log('memory leak');
+    };
   }, [dispatch]);
 
   return children;
