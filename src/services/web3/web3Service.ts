@@ -5,6 +5,7 @@ import { SkillWalletAbi, PartnersAgreementABI, DitoCommunityAbi } from '@skill-w
 import env from 'react-dotenv';
 import { pushJSONDocument } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
+import communityAbi from './community-abi.json';
 
 export const getSkillWalletAddress = async () => {
   return axios.get(`https://dev-api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
@@ -95,8 +96,8 @@ export const isQrCodeActive = async (tokenId): Promise<boolean> => {
 //   }
 // };
 
-export const isCoreTeamMember = async (partnersAgreementAddress, user) => {
-  const contract = await Web3ContractProvider(partnersAgreementAddress, PartnersAgreementABI);
+export const isCoreTeamMember = async (communityAddress, user) => {
+  const contract = await Web3ContractProvider(communityAddress, communityAbi);
   // new ethers.Contract(partnersAgreementAddress, PartnersAgreementABI, signer);
 
   const result = await contract.isCoreTeamMember(user);
@@ -157,7 +158,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   try {
     console.log('trying to join community', communityAddress);
 
-    const contract = await Web3ContractProvider(communityAddress, DitoCommunityAbi);
+    const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
     console.log(role, typeof role);
 
@@ -182,7 +183,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     console.log(url);
 
     // eslint-disable-next-line dot-notation
-    const createTx = await contract.joinNewMember(url, role['roleId'], level);
+    const createTx = await contract.joinNewMember(url, role['roleId']);
     // const createTx = await contract.joinNewMember(url, role['roleId']);
 
     const communityTransactionResult = await createTx.wait();
@@ -214,64 +215,59 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 };
 
 export const fetchSkillWallet = async (address: string) => {
-  try {
-    console.log(address);
+  console.log(address);
 
-    const skillWalletAddress = await getSkillWalletAddress();
-    console.log(skillWalletAddress);
-    const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
+  const skillWalletAddress = await getSkillWalletAddress();
+  console.log(skillWalletAddress);
+  const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
 
-    console.log(contract);
-    const tokenId = await contract.getSkillWalletIdByOwner(address);
-    console.log(tokenId);
+  console.log(contract);
+  const tokenId = await contract.getSkillWalletIdByOwner(address);
+  console.log(tokenId);
 
-    const isActive = await contract.isSkillWalletActivated(tokenId);
-    console.log(isActive);
-    if (isActive) {
-      const jsonUri = await contract.tokenURI(tokenId);
-      console.log(jsonUri);
-      const community = await contract.getActiveCommunity(tokenId);
-      console.log(community);
+  const isActive = await contract.isSkillWalletActivated(tokenId);
+  console.log(isActive);
+  if (isActive) {
+    const jsonUri = await contract.tokenURI(tokenId);
+    console.log(jsonUri);
+    const community = await contract.getActiveCommunity(tokenId);
+    console.log(community);
 
-      const partnersAgreementKey = await getPAKeyByCommunity(community);
-      console.log(partnersAgreementKey);
-      const res = await fetch(jsonUri);
-      console.log(res);
-      const jsonMetadata = await res.json();
-      const isCoreTeam = await isCoreTeamMember(partnersAgreementKey.partnersAgreementAddress, address);
-      console.log(isCoreTeam);
-      console.log('is core team member?', isCoreTeam);
+    const partnersAgreementKey = await getPAKeyByCommunity(community);
+    console.log(partnersAgreementKey);
+    const res = await fetch(jsonUri);
+    console.log(res);
+    const jsonMetadata = await res.json();
+    const isCoreTeam = await isCoreTeamMember(partnersAgreementKey.communityAddress, address);
+    console.log(isCoreTeam);
+    console.log('is core team member?', isCoreTeam);
 
-      const skillWallet: any = {
-        imageUrl: jsonMetadata.image,
-        nickname: jsonMetadata.properties.username,
-        skills: jsonMetadata.properties.skills,
-        community,
-        diToCredits: 0,
-        tokenId: tokenId.toString(),
-        isCoreTeamMember: isCoreTeam,
-      };
+    const skillWallet: any = {
+      imageUrl: jsonMetadata.image,
+      nickname: jsonMetadata.properties.username,
+      skills: jsonMetadata.properties.skills,
+      community,
+      diToCredits: 0,
+      tokenId: tokenId.toString(),
+      isCoreTeamMember: isCoreTeam,
+    };
 
-      if (skillWallet && skillWallet.nickname) {
-        return skillWallet;
-        // window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
-      }
-      if (!skillWallet) {
-        console.log('Unable to find a Skill Wallet and nickname with your ID');
-      }
-      return undefined;
+    if (skillWallet && skillWallet.nickname) {
+      return skillWallet;
+      // window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
     }
-  } catch (error) {
-    console.log(error);
-    // Some error handling
-    // sw.dispatchEvent(event);
-    // if (error.data && error.data.message.includes('invalid')) {
-    //   alert('The SkillWallet owner is invalid.');
-    //   console.log(error);
-    // } else {
-    //   alert('An error occured - please try again.');
-    //   console.log(error);
-    // }
-    return false;
+    if (!skillWallet) {
+      // Some error handling
+      // sw.dispatchEvent(event);
+      // if (error.data && error.data.message.includes('invalid')) {
+      //   alert('The SkillWallet owner is invalid.');
+      //   console.log(error);
+      // } else {
+      //   alert('An error occured - please try again.');
+      //   console.log(error);
+      // }
+      throw new Error('Unable to find a Skill Wallet and nickname with your ID');
+    }
+    return undefined;
   }
 };

@@ -2,10 +2,13 @@ import React from 'react';
 import { SwButton } from 'sw-web-shared';
 import { Link } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import { useSelector } from 'react-redux';
 import { ReactComponent as PlusIcon } from '../assets/create-unsel.svg';
 import { ReactComponent as SwIcon } from '../assets/sw-logo-icon.svg';
+import { partnerMode } from '../store/sw-auth.reducer';
 
 const LoginWith: React.FunctionComponent = (props) => {
+  const isPartner = useSelector(partnerMode);
   return (
     <Box
       sx={{
@@ -47,8 +50,9 @@ const LoginWith: React.FunctionComponent = (props) => {
           startIcon={<SwIcon />}
           mode="dark"
           component={Link}
+          disabled={isPartner}
           to="/skillwallet"
-          label="Skill Wallet"
+          label={isPartner ? 'Existing Partner' : 'SkillWallet'}
         />
         <SwButton
           sx={{
@@ -59,7 +63,7 @@ const LoginWith: React.FunctionComponent = (props) => {
           mode="dark"
           component={Link}
           to="/newuser"
-          label="New User"
+          label={isPartner ? 'New Partner' : 'New User'}
         />
       </Box>
     </Box>

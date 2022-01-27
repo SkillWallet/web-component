@@ -9,6 +9,7 @@ export interface Community {
 }
 export interface SwAuthState {
   showDialog: boolean;
+  displayButton: boolean;
   partnerKey?: string;
   partnerAddress?: string;
   communityAddress?: string;
@@ -27,6 +28,7 @@ export interface SwAuthState {
 
 const initialState: SwAuthState = {
   showDialog: false,
+  displayButton: true,
   partnerKey: undefined,
   partnerAddress: undefined,
   communityAddress: undefined,
@@ -52,6 +54,9 @@ export const swAuthSlice = createSlice({
     },
     setPartnerKey: (state, action: ActionPayload<string>) => {
       state.partnerKey = action.payload;
+    },
+    setDisplayButton: (state, action: ActionPayload<boolean>) => {
+      state.displayButton = action.payload;
     },
     setPartnerAddress: (state, action: ActionPayload<string>) => {
       state.partnerAddress = action.payload;
@@ -98,6 +103,7 @@ export const swAuthSlice = createSlice({
 
 export const {
   resetState,
+  setDisplayButton,
   resetUIState,
   setSkillWallet,
   showDialog,
@@ -116,6 +122,8 @@ export const {
 
 const show = (state) => state.swAuth.showDialog;
 export const isOpen = createSelector(show, (isShown) => isShown);
+const displayButton = (state) => state.swAuth.displayButton;
+export const showButton = createSelector(displayButton, (display) => display);
 const key = (state) => state.swAuth.partnerKey;
 export const currentPartnerKey = createSelector(key, (currentKey) => currentKey);
 const loading = (state) => state.swAuth.loading;

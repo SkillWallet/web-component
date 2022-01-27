@@ -20,12 +20,6 @@ import { pushImage } from '../services/textile/textile.hub';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
 
-const rolesIds = {
-  Founder: 1,
-  Contributor: 2,
-  Investor: 3,
-};
-
 interface Role {
   roleId: number;
   roleName: string;
@@ -71,7 +65,7 @@ const UserRole: React.FunctionComponent = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      await isCoreTeamMember(community.partnersAgreementAddress, window.ethereum.selectedAddress)
+      await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
           const roles = community?.roles?.roles || [];
           const newUserRolesBaseId = 4;
