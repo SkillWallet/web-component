@@ -174,12 +174,12 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
     console.log(role, typeof role);
-
+    const timeStamp = dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy');
     const config = {
       avatar: imageUrl,
       tokenId: '1',
       title: username,
-      timestamp: dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy'),
+      timestamp: timeStamp,
     };
     const { toFile } = await SkillWalletIDBadgeGenerator(config);
 
@@ -198,6 +198,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
       description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
       image: badgeUrl,
       properties: {
+        timestamp: timeStamp,
         avatar: imageUrl,
         username,
         roles: [
