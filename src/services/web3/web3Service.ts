@@ -1,9 +1,9 @@
 import { ethers } from 'ethers';
-import { asyncPoll } from 'sw-web-shared';
+import { asyncPoll, SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi, PartnersAgreementABI, DitoCommunityAbi } from '@skill-wallet/sw-abi-types';
-import env from 'react-dotenv';
-import { pushJSONDocument } from '../textile/textile.hub';
+import dateFormat from 'dateformat';
+import { pushImage, pushJSONDocument } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import communityAbi from './community-abi.json';
 
@@ -106,6 +106,19 @@ export const isCoreTeamMember = async (communityAddress, user) => {
   return result;
 };
 
+export const activatePA = async (partnersAddress) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  const contract = new ethers.Contract(partnersAddress, JSON.stringify(PartnersAgreementABI), signer);
+  console.log('cntrct: ', contract);
+
+  const createTx = await contract.activatePA();
+  console.log('Tx: ', createTx);
+
+  return createTx.wait();
+};
+
 export const changeNetwork = async () => {
   const { ethereum } = window;
   if (ethereum && ethereum.request) {
@@ -162,16 +175,35 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
     console.log(role, typeof role);
 
+    const config = {
+      avatar: imageUrl,
+      tokenId: '1',
+      title: username,
+      timestamp: dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy'),
+    };
+    const { toFile } = await SkillWalletIDBadgeGenerator(config);
+
+    const file = await toFile();
+    console.log(file);
+
+    const badgeUrl = await pushImage(file, `${username}-profile.png`);
+
+    console.log(badgeUrl);
+
+    // eslint-disable-next-line dot-notation
+    console.log('Role name', role.roleName);
+
     const metadataJson = {
       name: `${username}'s SkillWallet`,
       description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
-      image: imageUrl,
+      image: badgeUrl,
       properties: {
+        avatar: imageUrl,
         username,
-        skills: [
+        roles: [
           {
             // eslint-disable-next-line dot-notation
-            name: role['role'],
+            name: role.roleName,
             value: level,
           },
         ],

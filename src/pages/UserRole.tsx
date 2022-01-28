@@ -65,6 +65,7 @@ const UserRole: React.FunctionComponent = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
+      console.log('console');
       await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
           const roles = community?.roles?.roles || [];
@@ -86,6 +87,7 @@ const UserRole: React.FunctionComponent = (props) => {
           dispatch(setLoading(false));
         })
         .catch((e) => {
+          console.log(e);
           setErrorData({ message: 'Something went wrong' });
           dispatch(setLoading(false));
         });
@@ -222,6 +224,7 @@ const UserRole: React.FunctionComponent = (props) => {
                         maxWidth: '212px',
                         maxHeight: '44px',
                       }}
+                      className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
                       mode="dark"
                       btnType="large"
                       label={role.roleName}

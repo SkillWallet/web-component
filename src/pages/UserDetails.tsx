@@ -48,7 +48,11 @@ const UserDetails: React.FunctionComponent = (props) => {
       .then((result) => {
         dispatch(setUserProfilePicture(result));
         dispatch(setUserName(data.username));
-        history.push('/role');
+        if (isPartner) {
+          history.push('/partnerRole');
+        } else {
+          history.push('/role');
+        }
         dispatch(setLoading(false));
       })
       .catch((e) => {

@@ -1,8 +1,8 @@
 {
   "name": "@skill-wallet/auth",
-  "version": "1.0.0",
-  "main": "build/index.js", 
-"types": "dist/index.d.ts",
+  "version": "1.0.8",
+  "main": "build/index.js",
+  "types": "dist/index.d.ts",
   "files": [
     "build"
   ],
@@ -16,6 +16,7 @@
     "@reduxjs/toolkit": "~1.7.0",
     "@textile/hub": "~6.3.2",
     "axios": "^0.24.0",
+    "dateformat": "^5.0.2",
     "ethers": "~5.5.2",
     "jss": "^10.9.0",
     "react": "~17.0.2",
