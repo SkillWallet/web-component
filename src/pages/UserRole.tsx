@@ -224,6 +224,7 @@ const UserRole: React.FunctionComponent = (props) => {
                         maxWidth: '212px',
                         maxHeight: '44px',
                       }}
+                      className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
                       mode="dark"
                       btnType="large"
                       label={role.roleName}

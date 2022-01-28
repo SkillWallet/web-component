@@ -26,9 +26,9 @@ export const EventsHandlerWrapper = ({ children }) => {
       'activateSkillwalletCommunity',
       async (e) => {
         console.log(e);
-        const { communityAddress, partnersaddress, partnerKey } = (e as any).detail;
-        dispatch(setCommunityAddress(communityAddress));
-        dispatch(setPartnerAddress(partnersaddress));
+        const { communityAddr, partnersAddr, partnerKey } = (e as any).detail;
+        dispatch(setCommunityAddress(communityAddr));
+        dispatch(setPartnerAddress(partnersAddr));
         dispatch(setPartnerKey(partnerKey));
         console.log('PK: ', partnerKey);
         // maybe redundant

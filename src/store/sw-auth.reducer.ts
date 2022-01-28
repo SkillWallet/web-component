@@ -145,7 +145,7 @@ const tokenId = (state) => state.swAuth.tokenId;
 export const currentTokenId = createSelector(tokenId, (token) => token);
 const userLoggedIn = (state) => state.swAuth.isLoggedIn;
 export const currentlyLoggedIn = createSelector(userLoggedIn, (loggedIn) => loggedIn);
-const partnerAddres = (state) => state.swAuth.partnerAddres;
-export const currentPartnerAddress = createSelector(partnerAddres, (addres) => addres);
+const partnerAddress = (state) => state.swAuth.partnerAddress;
+export const currentPartnerAddress = createSelector(partnerAddress, (addres) => addres);
 
 export default swAuthSlice.reducer;

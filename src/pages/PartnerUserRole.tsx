@@ -13,6 +13,7 @@ import {
   setPartnerAddress,
   currentPartnerAddress,
   resetState,
+  profileImageUrl,
 } from '../store/sw-auth.reducer';
 import { activatePA, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
@@ -43,20 +44,22 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const [errorData, setErrorData] = useState(undefined);
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
+  const imageUrl = useSelector(profileImageUrl);
   const partnerAddress = useSelector(currentPartnerAddress);
   const [selectedRole, setSelectedRole] = useState(undefined);
 
   const handleJoinClicked = async () => {
     dispatch(setLoading(true));
-    const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
-    await joinCommunity(web3Provider, community.address, username, selectedRole, 10)
+    await joinCommunity(community.address, username, imageUrl, selectedRole, 10)
       .then(async (result) => {
         console.log(result);
         dispatch(setTokenId(result));
+        console.log(partnerAddress);
         await activatePA(partnerAddress);
         history.push('/qr');
       })
       .catch((e) => {
+        console.log(e);
         setErrorData({ errorMessage: 'Something went wrong' });
       })
       .finally(() => {
@@ -135,6 +138,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
                         maxWidth: '212px',
                         maxHeight: '44px',
                       }}
+                      className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
                       mode="dark"
                       btnType="large"
                       label={role.roleName}

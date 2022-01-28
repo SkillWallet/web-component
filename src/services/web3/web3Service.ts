@@ -114,6 +114,7 @@ export const activatePA = async (partnersAddress) => {
   console.log('cntrct: ', contract);
 
   const createTx = await contract.activatePA();
+  console.log('Tx: ', createTx);
 
   return createTx.wait();
 };
@@ -189,6 +190,9 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
     console.log(badgeUrl);
 
+    // eslint-disable-next-line dot-notation
+    console.log('Role name', role.roleName);
+
     const metadataJson = {
       name: `${username}'s SkillWallet`,
       description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
@@ -196,10 +200,10 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
       properties: {
         avatar: imageUrl,
         username,
-        skills: [
+        roles: [
           {
             // eslint-disable-next-line dot-notation
-            name: role['role'],
+            name: role.roleName,
             value: level,
           },
         ],
