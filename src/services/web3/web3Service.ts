@@ -174,12 +174,12 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
     console.log(role, typeof role);
-
+    const timeStamp = dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy');
     const config = {
       avatar: imageUrl,
       tokenId: '1',
       title: username,
-      timestamp: dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy'),
+      timestamp: timeStamp,
     };
     const { toFile } = await SkillWalletIDBadgeGenerator(config);
 
@@ -194,10 +194,18 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     console.log('Role name', role.roleName);
 
     const metadataJson = {
-      name: `${username}'s SkillWallet`,
-      description: 'Universal, self-sovereign IDs tied to skills & contributions rather than personal data.',
+      name: `${username}`,
+      description: `This is ${username}'s SkillWallet.      
+      SkillWallets are a new standard for self-sovereign Identities that do not depend from the provider, therefore, they are universal.       
+      They are individual NFT IDs. This one is ${username}'s.      
+      A SkillWallet cannot be bought - it can only be acquired by joining a decentralized, permissionless Community that lives on the Blockchain.       
+      Each SkillWallet is unique, and based on someone's Skills, rather than exploiting their personal data.      
+      Also, it's non-transferable, so everyone's experience and skills are truly theirs - and keeps track of each contribution they make in the communities they're part of, rewarding them for their participation.
+      SkillWallet is the first Identity you can truly own.      
+      This is  ${username}'s, and there are no others like this.`,
       image: badgeUrl,
       properties: {
+        timestamp: timeStamp,
         avatar: imageUrl,
         username,
         roles: [
@@ -275,7 +283,7 @@ export const fetchSkillWallet = async (address: string) => {
     console.log('is core team member?', isCoreTeam);
 
     const skillWallet: any = {
-      imageUrl: jsonMetadata.image,
+      imageUrl: jsonMetadata.properties.avatar,
       nickname: jsonMetadata.properties.username,
       skills: jsonMetadata.properties.skills,
       community,
