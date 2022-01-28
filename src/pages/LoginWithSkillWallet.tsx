@@ -32,7 +32,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     const { ethereum } = window;
     try {
-      await changeNetwork();
+      // await changeNetwork();
       await ethereum.request({ method: 'eth_requestAccounts' });
       if (ethereum.selectedAddress) {
         await fetchSkillWallet(ethereum.selectedAddress)

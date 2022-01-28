@@ -275,7 +275,7 @@ export const fetchSkillWallet = async (address: string) => {
     console.log('is core team member?', isCoreTeam);
 
     const skillWallet: any = {
-      imageUrl: jsonMetadata.image,
+      imageUrl: jsonMetadata.properties.avatar,
       nickname: jsonMetadata.properties.username,
       skills: jsonMetadata.properties.skills,
       community,

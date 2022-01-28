@@ -47,7 +47,7 @@ const NewUser: React.FunctionComponent = (props) => {
   }, []);
 
   const handleInjectFromMetamaskClick = async () => {
-    await changeNetwork();
+    // await changeNetwork();
     console.log('changed network');
     const { ethereum } = window;
     try {
