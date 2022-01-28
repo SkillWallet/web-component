@@ -174,12 +174,12 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
     console.log(role, typeof role);
-    const timeStamp = dateFormat(new Date(), '#hh:MM:ss-dd:mm:yyyy');
+    const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
     const config = {
       avatar: imageUrl,
       tokenId: '1',
       title: username,
-      timestamp: timeStamp,
+      timestamp: `#${1} | ${timeStamp}`,
     };
     const { toFile } = await SkillWalletIDBadgeGenerator(config);
 
