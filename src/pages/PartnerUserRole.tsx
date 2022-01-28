@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
@@ -15,7 +15,7 @@ import {
   resetState,
   profileImageUrl,
 } from '../store/sw-auth.reducer';
-import { activatePA, joinCommunity } from '../services/web3/web3Service';
+import { activatePA, isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
 
 interface Role {
@@ -46,7 +46,40 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const username = useSelector(currentUsername);
   const imageUrl = useSelector(profileImageUrl);
   const partnerAddress = useSelector(currentPartnerAddress);
+  const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(setLoading(true));
+      await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
+        .then((result) => {
+          const roles = community?.roles?.roles || [];
+          const newUserRolesBaseId = 4;
+          const filteredRoles = roles
+            .filter((r) => r.isCoreTeamMember === result)
+            .map((curr, index) => {
+              const { roleName } = curr;
+              let roleId;
+              if (roleId <= 3) {
+                roleId = curr.roleId;
+              } else {
+                roleId = newUserRolesBaseId + index;
+              }
+              return { roleId, roleName };
+            });
+          setMemberRoles(filteredRoles);
+        })
+        .catch((e) => {
+          console.log(e);
+          setErrorData({ message: 'Something went wrong' });
+        })
+        .finally(() => {
+          dispatch(setLoading(false));
+        });
+    };
+    fetchData();
+  }, []);
 
   const handleJoinClicked = async () => {
     dispatch(setLoading(true));
@@ -129,8 +162,8 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
                 backgroundColor: '#FFFFFF',
               }}
             >
-              {partnerRoles &&
-                partnerRoles.map((role: Role, index) => {
+              {memberRoles &&
+                memberRoles.map((role: Role, index) => {
                   return (
                     <SwButton
                       key={index}
