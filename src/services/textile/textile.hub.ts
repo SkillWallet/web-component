@@ -3,8 +3,8 @@ import { Buckets, KeyInfo } from '@textile/hub';
 import env from 'react-dotenv';
 // use env
 const keyInfo: KeyInfo = {
-  key: 'bqbeg4w4u6ewltnejxwmvu6ngwu',
-  secret: 'bh24lv4dxie5dabwnl75y3onzphkvlqhyf56dlba',
+  key: 'bfmfmmc2pvndplaubletkmk6fdu',
+  secret: 'bvqemoy76oknavprk6xjmz62b5egqsufqvd2pgoy',
 };
 
 const jsonToArray = (json) => {

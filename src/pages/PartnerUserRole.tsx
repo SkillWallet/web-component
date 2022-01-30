@@ -15,7 +15,7 @@ import {
   resetState,
   profileImageUrl,
 } from '../store/sw-auth.reducer';
-import { activatePA, isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
+import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
 
 interface Role {
@@ -88,7 +88,6 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
         console.log(result);
         dispatch(setTokenId(result));
         console.log(partnerAddress);
-        await activatePA(partnerAddress);
         history.push('/qr');
       })
       .catch((e) => {
