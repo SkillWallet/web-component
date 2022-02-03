@@ -1,6 +1,6 @@
 {
   "name": "@skill-wallet/auth",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "main": "build/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -15,12 +15,6 @@
     "start": "react-app-rewired start",
     "test": "react-app-rewired test"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -31,6 +25,12 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
     ]
   },
   "devDependencies": {
@@ -54,14 +54,14 @@
     "axios": "^0.24.0",
     "customize-cra": "~1.0.0",
     "dateformat": "^5.0.2",
-    "eslint": "~7.32.0",
-    "eslint-config-airbnb": "~19.0.2",
+    "eslint": "~8.5.0",
+    "eslint-config-airbnb": "~19.0.4",
     "eslint-config-prettier": "~8.3.0",
     "eslint-import-resolver-typescript": "~2.5.0",
     "eslint-plugin-import": "~2.25.3",
     "eslint-plugin-jsx-a11y": "~6.5.1",
     "eslint-plugin-prettier": "~4.0.0",
-    "eslint-plugin-react": "~7.27.1",
+    "eslint-plugin-react": "~7.28.0",
     "eslint-plugin-react-hooks": "~4.3.0",
     "eslint-webpack-plugin": "~3.1.1",
     "ethers": "~5.5.2",
@@ -77,13 +77,13 @@
     "react-qrcode-logo": "^2.5.0",
     "react-redux": "~7.2.6",
     "react-router-dom": "~5.2.0",
-    "react-scripts": "~4.0.3",
+    "react-scripts": "^5.0.0",
     "redux": "~4.1.2",
     "redux-logger": "~3.0.6",
     "redux-persist": "~6.0.0",
     "reselect": "^4.1.5",
     "sw-web-shared": "github:DistributedTown/sw-web-shared#master",
     "typescript": "~4.5.3",
-    "webpack": "^4.46.0"
+    "webpack": "^5.0.0"
   }
 }

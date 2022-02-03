@@ -98,7 +98,7 @@
         ],
         "react/no-array-index-key": "off",
         "react-hooks/rules-of-hooks": "error",
-        "react-hooks/exhaustive-deps": "warn",
+        "react-hooks/exhaustive-deps": "off",
         "no-console": "off",
         "import/prefer-default-export": "off",
         "no-nested-ternary": "off",

@@ -22,11 +22,4 @@ module.exports = {
     })(configuration);
     return modifiedConfig;
   },
-  devServer: (configFunction) => {
-    return (proxy, allowedHost) => {
-      const config = configFunction(proxy, allowedHost);
-      config.contentBase = './src';
-      return config;
-    };
-  },
 };
