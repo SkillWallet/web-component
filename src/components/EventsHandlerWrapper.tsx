@@ -40,20 +40,6 @@ export const EventsHandlerWrapper = ({ children }) => {
       },
       false
     );
-    window.addEventListener(
-      'showSwButton',
-      async (e) => {
-        dispatch(setDisplayButton(true));
-      },
-      false
-    );
-    window.addEventListener(
-      'hideSwButton',
-      async (e) => {
-        dispatch(setDisplayButton(false));
-      },
-      false
-    );
 
     return function cleanup() {
       console.log('memory leak');
