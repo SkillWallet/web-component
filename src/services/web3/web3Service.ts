@@ -88,7 +88,7 @@ export const getCommunity = async (partnerKey) => {
   // return community;
 };
 
-export const joinCommunity = async (communityAddress, username, image, role, level) => {
+export const joinCommunity = async (communityAddress, username, imageUrl, role, level) => {
   try {
     console.log('trying to join community', communityAddress);
 
