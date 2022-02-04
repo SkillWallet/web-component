@@ -9,7 +9,6 @@ import ReactDOM from 'react-dom';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Avatar, Box } from '@mui/material';
-import dotenv from 'dotenv';
 import { SwTheme } from './theme';
 import MainDialog from './components/MainDialog';
 import {
@@ -26,8 +25,8 @@ import {
 } from './store/sw-auth.reducer';
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
-import { changeNetwork, getCommunity } from './services/web3/web3Service';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
+import { setUseDev } from './services/web3/env';
 
 const extractAttributes = (nodeMap) => {
   if (!nodeMap.attributes) {
@@ -71,27 +70,22 @@ const App = withRouter(({ attributes, container, setAttrCallback }: any) => {
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const { partnerKey } = attributes;
-      if (partnerKey) {
-        console.log('PK', partnerKey);
-        dispatch(setPartnerKey(partnerKey));
+    const { partnerKey, useDev } = attributes;
+    if (useDev) {
+      setUseDev(useDev === 'true');
+    }
+    if (partnerKey) {
+      console.log('PK', partnerKey);
+      dispatch(setPartnerKey(partnerKey));
 
-        const event = new CustomEvent('initSkillwalletAuth', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-        });
-        console.log('dispatchin init event');
-        window.dispatchEvent(event);
-        // await changeNetwork();
-        // console.log('getting community');
-        // const community = await getCommunity(partnerKey);
-        // console.log(community);
-        // dispatch(setCommunity(community));
-      }
-    };
-    fetchData();
+      const event = new CustomEvent('initSkillwalletAuth', {
+        composed: true,
+        cancelable: true,
+        bubbles: true,
+      });
+      console.log('dispatchin init event');
+      window.dispatchEvent(event);
+    }
   }, []);
 
   const handleButtonClick = () => {

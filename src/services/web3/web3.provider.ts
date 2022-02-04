@@ -1,4 +1,5 @@
 import { ContractInterface, ethers } from 'ethers';
+import { env } from './env';
 
 export const changeNetwork = async () => {
   try {
@@ -10,22 +11,7 @@ export const changeNetwork = async () => {
     // This error code indicates that the chain has not been added to MetaMask.
     if (switchError.code === 4902) {
       try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: '0x13881', // A 0x-prefixed hexadecimal string
-              chainName: 'Mumbai',
-              nativeCurrency: {
-                name: 'Matic',
-                symbol: 'MATIC',
-                decimals: 18,
-              },
-              rpcUrls: ['https://matic-mumbai.chainstacklabs.com', 'https://rpc-mumbai.matic.today'],
-              blockExplorerUrls: ['https://explorer-mumbai.maticvigil.com/'],
-            },
-          ],
-        });
+        await window.ethereum.request(env.CHANGE_NETWORK_METADATA);
       } catch (addError) {
         // handle "add" error
       }
@@ -35,7 +21,7 @@ export const changeNetwork = async () => {
 };
 
 export const Web3ContractProvider = async (addressOrName: string, contractInterface: ContractInterface) => {
-  // await changeNetwork();
+  await changeNetwork();
 
   if (!window.ethereum.selectedAddress) {
     await window.ethereum.enable();
