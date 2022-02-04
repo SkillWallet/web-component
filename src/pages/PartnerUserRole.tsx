@@ -44,7 +44,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const [errorData, setErrorData] = useState(undefined);
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
-  const imageUrl = useSelector(profileImageUrl);
+  const image = useSelector(profileImageUrl);
   const partnerAddress = useSelector(currentPartnerAddress);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);

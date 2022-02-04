@@ -2,7 +2,7 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
-import { pushImage, pushJSONDocument } from '../textile/textile.hub';
+import { storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import communityAbi from './community-abi.json';
 
@@ -88,7 +88,7 @@ export const getCommunity = async (partnerKey) => {
   // return community;
 };
 
-export const joinCommunity = async (communityAddress, username, imageUrl, role, level) => {
+export const joinCommunity = async (communityAddress, username, image, role, level) => {
   try {
     console.log('trying to join community', communityAddress);
 
@@ -107,10 +107,6 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     const file = await toFile();
     console.log(file);
 
-    const badgeUrl = await pushImage(file, `${username}-profile.png`);
-
-    console.log(badgeUrl);
-
     // eslint-disable-next-line dot-notation
     console.log('Role name', role.roleName);
 
@@ -124,7 +120,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
       Also, it's non-transferable, so everyone's experience and skills are truly theirs - and keeps track of each contribution they make in the communities they're part of, rewarding them for their participation.
       SkillWallet is the first Identity you can truly own.      
       This is  ${username}'s, and there are no others like this.`,
-      image: badgeUrl,
+      image: file,
       properties: {
         timestamp: timeStamp,
         avatar: imageUrl,
@@ -140,7 +136,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     };
     console.log(metadataJson);
 
-    const url = await pushJSONDocument(metadataJson);
+    const url = await storeMetadata(metadataJson);
     console.log(url);
 
     // eslint-disable-next-line dot-notation

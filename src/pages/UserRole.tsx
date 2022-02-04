@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
-import { Link, useHistory } from 'react-router-dom';
-import { Box, Button, Input, Slider, TextField, Typography } from '@mui/material';
-import { ethers } from 'ethers';
+import { useHistory } from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import {
   currentCommunity,
   setLoading,
-  partnerMode,
   currentUsername,
   setTokenId,
   profileImageUrl,
   resetState,
 } from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
-import RemainingCharsTextInput from '../components/RemainingCharsTextInput';
-import { pushImage } from '../services/textile/textile.hub';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
 
@@ -49,7 +45,7 @@ const UserRole: React.FunctionComponent = (props) => {
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
     console.log(username);
-    await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
+    await joinCommunity(community.address, username, image, selectedRole, data.commitment)
       .then((result) => {
         console.log(result);
         dispatch(setTokenId(result));

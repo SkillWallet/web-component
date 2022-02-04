@@ -44,21 +44,13 @@ const UserDetails: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data) => {
     dispatch(setLoading(true));
-    await pushImage(data.picture[0], 'profile.png')
-      .then((result) => {
-        dispatch(setUserProfilePicture(result));
-        dispatch(setUserName(data.username));
-        if (isPartner) {
-          history.push('/partnerRole');
-        } else {
-          history.push('/role');
-        }
-        dispatch(setLoading(false));
-      })
-      .catch((e) => {
-        setErrorData({ message: 'Something went wrong.' });
-        dispatch(setLoading(false));
-      });
+    dispatch(setUserName(data.username));
+    if (isPartner) {
+      history.push('/partnerRole');
+    } else {
+      history.push('/role');
+    }
+    dispatch(setLoading(false));
   };
 
   const handleError = () => {
