@@ -8,6 +8,14 @@ export function ipfsCIDToHttpUrl(url: string, isJson: boolean) {
     `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`
 }
 
+export async function uploadFile(file) {
+  const cid = await client.storeBlob(file);
+  console.log({ cid })
+  const status = await client.status(cid)
+  console.log(status)
+  return cid;
+}
+
 export async function storeMetadata(json) {
   const metadata = await client.store(json);
   return metadata.ipnft;

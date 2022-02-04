@@ -6,7 +6,7 @@ import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
 import { currentCommunity, setLoading, partnerMode, setUserName, setUserProfilePicture, resetState } from '../store/sw-auth.reducer';
-import { pushImage } from '../services/textile/textile.hub';
+import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import { CustomInput } from '../components/CustomInput';
 import ErrorBox from '../components/ErrorBox';
@@ -44,7 +44,7 @@ const UserDetails: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data) => {
     dispatch(setLoading(true));
-    await pushImage(data.picture[0], 'profile.png')
+    await uploadFile(data.picture[0])
       .then((result) => {
         dispatch(setUserProfilePicture(result));
         dispatch(setUserName(data.username));

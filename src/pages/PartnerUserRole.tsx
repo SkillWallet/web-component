@@ -44,7 +44,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const [errorData, setErrorData] = useState(undefined);
   const community = useSelector(currentCommunity);
   const username = useSelector(currentUsername);
-  const image = useSelector(profileImageUrl);
+  const imageUrl = useSelector(profileImageUrl);
   const partnerAddress = useSelector(currentPartnerAddress);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
@@ -83,11 +83,9 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
 
   const handleJoinClicked = async () => {
     dispatch(setLoading(true));
-    await joinCommunity(community.address, username, profilePictureUrl, selectedRole, 10)
+    await joinCommunity(community.address, username, imageUrl, selectedRole, 10)
       .then(async (result) => {
-        console.log(result);
         dispatch(setTokenId(result));
-        console.log(partnerAddress);
         history.push('/qr');
       })
       .catch((e) => {
