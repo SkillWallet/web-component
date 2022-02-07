@@ -22,11 +22,14 @@ import {
   currentlyLoggedIn,
   resetState,
   setLoggedIn,
+  setUserProfilePicture,
+  setUserName,
 } from './store/sw-auth.reducer';
 import store from './store/store';
 import IAttributes from './interfaces/attributes';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
 import { setUseDev } from './services/web3/env';
+// import { setUserName, setUserProfilePicture } from './store/sw-user-data.reducer';
 
 const extractAttributes = (nodeMap) => {
   if (!nodeMap.attributes) {
@@ -86,10 +89,33 @@ const App = withRouter(({ attributes, container, setAttrCallback }: any) => {
       console.log('dispatchin init event');
       window.dispatchEvent(event);
     }
+    const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+    if (sw) {
+      const currentTime = new Date().getTime();
+      // 8 Hours
+      const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
+      if (currentTime < sessionLength) {
+        dispatch(setUserName(sw.nickname));
+        dispatch(setUserProfilePicture(sw.imageUrl));
+        dispatch(setLoggedIn(true));
+      } else {
+        window.sessionStorage.removeItem('skillWallet');
+        dispatch(resetState());
+        dispatch(setLoggedIn(false));
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: false,
+        });
+        window.dispatchEvent(event);
+      }
+    }
   }, []);
 
   const handleButtonClick = () => {
     if (loggedIn) {
+      window.sessionStorage.removeItem('skillWallet');
       dispatch(resetState());
       dispatch(setLoggedIn(false));
       const event = new CustomEvent('onSkillwalletLogin', {
@@ -125,7 +151,6 @@ const App = withRouter(({ attributes, container, setAttrCallback }: any) => {
           startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
         />
       )}
-
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
   );

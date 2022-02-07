@@ -215,9 +215,10 @@ const UserRole: React.FunctionComponent = (props) => {
                       className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
                       mode="dark"
                       btnType="large"
-                      label={role.roleName}
                       onClick={() => handleRoleSelected(role)}
-                    />
+                    >
+                      <Typography variant="h3">{role.roleName}</Typography>
+                    </SwButton>
                   );
                 })
               )}
