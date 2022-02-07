@@ -7,8 +7,11 @@ const client = new NFTStorage({
 
 export function ipfsCIDToHttpUrl(url: string, isJson: boolean) {
   if (!url.includes('textile'))
-    return isJson ? `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}/metadata.json` : `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
-  else return url;
+    return isJson
+      ? `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}/metadata.json`
+      : `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
+
+  return url;
 }
 
 export async function uploadFile(file) {
