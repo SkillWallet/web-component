@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { ethers } from 'ethers';
 import {
   setLoading,
   setSkillWallet,
@@ -13,7 +12,7 @@ import {
   setUserProfilePicture,
   showDialog,
 } from '../store/sw-auth.reducer';
-import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
+import { fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 
@@ -33,8 +32,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     const { ethereum } = window;
     try {
-      // await changeNetwork();
-      await ethereum.request({ method: 'eth_requestAccounts' });
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
       if (ethereum.selectedAddress) {
         await fetchSkillWallet(ethereum.selectedAddress)
           .then((result) => {

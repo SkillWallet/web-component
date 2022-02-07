@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { ethers } from 'ethers';
 import {
   currentCommunity,
   setLoading,
@@ -15,7 +14,7 @@ import {
   currentPartnerKey,
   resetState,
 } from '../store/sw-auth.reducer';
-import { changeNetwork, getCommunity } from '../services/web3/web3Service';
+import { getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 import ErrorBox from '../components/ErrorBox';
@@ -47,8 +46,6 @@ const NewUser: React.FunctionComponent = (props) => {
   }, []);
 
   const handleInjectFromMetamaskClick = async () => {
-    // await changeNetwork();
-    console.log('changed network');
     const { ethereum } = window;
     try {
       if (ethereum.request) {

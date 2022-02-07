@@ -4,18 +4,19 @@ import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
+import { env } from './env';
 import communityAbi from './community-abi.json';
 
 export const getSkillWalletAddress = async () => {
-  return axios.get(`https://dev-api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
+  return axios.get(`${env.SKILL_WALLET_API}/skillwallet/config`).then((response) => response.data.skillWalletAddress);
 };
 
 export const getPAKeyByCommunity = async (community) => {
-  return axios.get(`https://dev-api.distributed.town/api/community/${community}/key`).then((response) => response.data);
+  return axios.get(`${env.DITO_API}/community/${community}/key`).then((response) => response.data);
 };
 
 export const getActivationNonce = async (tokenId) => {
-  return axios.post(`https://dev-api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
+  return axios.post(`${env.SKILL_WALLET_API}/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
 };
 
 export const isQrCodeActive = async (tokenId): Promise<boolean> => {
@@ -40,47 +41,8 @@ export const isCoreTeamMember = async (communityAddress, user) => {
   return result;
 };
 
-export const changeNetwork = async () => {
-  const { ethereum } = window;
-  if (ethereum && ethereum.request) {
-    try {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x13881' }],
-      });
-    } catch (error: any) {
-      // event is a default error event in old code
-      // sw.dispatchEvent(event);
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (error.code === 4902) {
-        try {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0x13881', // A 0x-prefixed hexadecimal string
-                chainName: 'Mumbai',
-                nativeCurrency: {
-                  name: 'Matic',
-                  symbol: 'MATIC',
-                  decimals: 18,
-                },
-                rpcUrls: ['https://matic-mumbai.chainstacklabs.com', 'https://rpc-mumbai.matic.today'],
-                blockExplorerUrls: ['https://explorer-mumbai.maticvigil.com/'],
-              },
-            ],
-          });
-        } catch (addError) {
-          // handle "add" error
-        }
-      }
-    }
-    // handle other "switch" errors
-  }
-};
-
 export const getCommunity = async (partnerKey) => {
-  return axios.get(`https://dev-api.distributed.town/api/community/key/${partnerKey}`).then((response) => response.data);
+  return axios.get(`${env.DITO_API}/community/key/${partnerKey}`).then((response) => response.data);
   // this probably shouldn't be here
   // partnersAgreementAddress = community.partnersAgreementAddress;
   // console.log('partnersA address: ', partnersAgreementAddress);
