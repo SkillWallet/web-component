@@ -85,9 +85,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     await joinCommunity(community.address, username, imageUrl, selectedRole, 10)
       .then(async (result) => {
-        console.log(result);
         dispatch(setTokenId(result));
-        console.log(partnerAddress);
         history.push('/qr');
       })
       .catch((e) => {

@@ -1,7 +1,7 @@
-import { createReducer, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { ActionPayload } from './action-payload';
 
-export interface UserData {
+interface UserData {
   username?: string;
   profileImageUrl?: string;
   tokenId?: string;
@@ -13,7 +13,7 @@ const initialState: UserData = {
   tokenId: undefined,
 };
 
-export const swUserDataSlice = createSlice({
+const swUserDataSlice = createSlice({
   name: 'swUserData',
   initialState,
   reducers: {
@@ -30,11 +30,11 @@ export const swUserDataSlice = createSlice({
   },
 });
 
-export const { setUserProfilePicture, setUserName, setTokenId } = swUserDataSlice.actions;
+const { setUserProfilePicture, setUserName, setTokenId } = swUserDataSlice.actions;
 
 const username = (state) => state.username;
-export const currentUsername = createSelector(username, (user) => user);
+const currentUsername = createSelector(username, (user) => user);
 const tokenId = (state) => state.tokenId;
-export const currentTokenId = createSelector(tokenId, (token) => token);
+const currentTokenId = createSelector(tokenId, (token) => token);
 
-export default swUserDataSlice.reducer;
+// export default swUserDataSlice.reducer;

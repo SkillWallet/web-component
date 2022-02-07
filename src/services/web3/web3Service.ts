@@ -2,20 +2,21 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
-import { pushImage, pushJSONDocument } from '../textile/textile.hub';
+import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
+import { env } from './env';
 import communityAbi from './community-abi.json';
 
 export const getSkillWalletAddress = async () => {
-  return axios.get(`https://api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
+  return axios.get(`${env.SKILL_WALLET_API}/skillwallet/config`).then((response) => response.data.skillWalletAddress);
 };
 
 export const getPAKeyByCommunity = async (community) => {
-  return axios.get(`https://api.distributed.town/api/community/${community}/key`).then((response) => response.data);
+  return axios.get(`${env.DITO_API}/community/${community}/key`).then((response) => response.data);
 };
 
 export const getActivationNonce = async (tokenId) => {
-  return axios.post(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
+  return axios.post(`${env.SKILL_WALLET_API}/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
 };
 
 export const isQrCodeActive = async (tokenId): Promise<boolean> => {
@@ -40,47 +41,8 @@ export const isCoreTeamMember = async (communityAddress, user) => {
   return result;
 };
 
-export const changeNetwork = async () => {
-  const { ethereum } = window;
-  if (ethereum && ethereum.request) {
-    try {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x13881' }],
-      });
-    } catch (error: any) {
-      // event is a default error event in old code
-      // sw.dispatchEvent(event);
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (error.code === 4902) {
-        try {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0x13881', // A 0x-prefixed hexadecimal string
-                chainName: 'Mumbai',
-                nativeCurrency: {
-                  name: 'Matic',
-                  symbol: 'MATIC',
-                  decimals: 18,
-                },
-                rpcUrls: ['https://matic-mumbai.chainstacklabs.com', 'https://rpc-mumbai.matic.today'],
-                blockExplorerUrls: ['https://explorer-mumbai.maticvigil.com/'],
-              },
-            ],
-          });
-        } catch (addError) {
-          // handle "add" error
-        }
-      }
-    }
-    // handle other "switch" errors
-  }
-};
-
 export const getCommunity = async (partnerKey) => {
-  return axios.get(`https://api.distributed.town/api/community/key/${partnerKey}`).then((response) => response.data);
+  return axios.get(`${env.DITO_API}/community/key/${partnerKey}`).then((response) => response.data);
   // this probably shouldn't be here
   // partnersAgreementAddress = community.partnersAgreementAddress;
   // console.log('partnersA address: ', partnersAgreementAddress);
@@ -97,7 +59,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     console.log(role, typeof role);
     const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
     const config = {
-      avatar: imageUrl,
+      avatar: ipfsCIDToHttpUrl(imageUrl, false),
       tokenId: '1',
       title: username,
       timestamp: `#${1} | ${timeStamp}`,
@@ -106,10 +68,6 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
     const file = await toFile();
     console.log(file);
-
-    const badgeUrl = await pushImage(file, `${username}-profile.png`);
-
-    console.log(badgeUrl);
 
     // eslint-disable-next-line dot-notation
     console.log('Role name', role.roleName);
@@ -124,7 +82,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
       Also, it's non-transferable, so everyone's experience and skills are truly theirs - and keeps track of each contribution they make in the communities they're part of, rewarding them for their participation.
       SkillWallet is the first Identity you can truly own.      
       This is  ${username}'s, and there are no others like this.`,
-      image: badgeUrl,
+      image: file,
       properties: {
         timestamp: timeStamp,
         avatar: imageUrl,
@@ -138,10 +96,8 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
         ],
       },
     };
-    console.log(metadataJson);
 
-    const url = await pushJSONDocument(metadataJson);
-    console.log(url);
+    const url = await storeMetadata(metadataJson);
 
     // eslint-disable-next-line dot-notation
     const createTx = await contract.joinNewMember(url, role['roleId']);
@@ -189,8 +145,8 @@ export const fetchSkillWallet = async (address: string) => {
   const isActive = await contract.isSkillWalletActivated(tokenId);
   console.log(isActive);
   if (isActive) {
-    const jsonUri = await contract.tokenURI(tokenId);
-    console.log(jsonUri);
+    const uriCid = await contract.tokenURI(tokenId);
+    const jsonUri = ipfsCIDToHttpUrl(uriCid, true);
     const community = await contract.getActiveCommunity(tokenId);
     console.log(community);
 
@@ -204,30 +160,21 @@ export const fetchSkillWallet = async (address: string) => {
     console.log('is core team member?', isCoreTeam);
 
     const skillWallet: any = {
-      imageUrl: jsonMetadata.properties.avatar,
+      imageUrl: ipfsCIDToHttpUrl(jsonMetadata.properties.avatar, false),
       nickname: jsonMetadata.properties.username,
       skills: jsonMetadata.properties.skills,
       community,
       diToCredits: 0,
       tokenId: tokenId.toString(),
       isCoreTeamMember: isCoreTeam,
+      timestamp: new Date().getTime(),
     };
 
     if (skillWallet && skillWallet.nickname) {
       return skillWallet;
-      // window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
     }
     if (!skillWallet) {
-      // Some error handling
-      // sw.dispatchEvent(event);
-      // if (error.data && error.data.message.includes('invalid')) {
-      //   alert('The SkillWallet owner is invalid.');
-      //   console.log(error);
-      // } else {
-      //   alert('An error occured - please try again.');
-      //   console.log(error);
-      // }
-      throw new Error('Unable to find a Skill Wallet and nickname with your ID');
+      throw new Error('Unable to find a Skill Wallet with your ID');
     }
     return undefined;
   }
