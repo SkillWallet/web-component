@@ -2,20 +2,20 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
-import { storeMetadata } from '../textile/textile.hub';
+import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import communityAbi from './community-abi.json';
 
 export const getSkillWalletAddress = async () => {
-  return axios.get(`https://api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
+  return axios.get(`https://dev-api.skillwallet.id/api/skillwallet/config`).then((response) => response.data.skillWalletAddress);
 };
 
 export const getPAKeyByCommunity = async (community) => {
-  return axios.get(`https://api.distributed.town/api/community/${community}/key`).then((response) => response.data);
+  return axios.get(`https://dev-api.distributed.town/api/community/${community}/key`).then((response) => response.data);
 };
 
 export const getActivationNonce = async (tokenId) => {
-  return axios.post(`https://api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
+  return axios.post(`https://dev-api.skillwallet.id/api/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
 };
 
 export const isQrCodeActive = async (tokenId): Promise<boolean> => {
@@ -80,7 +80,7 @@ export const changeNetwork = async () => {
 };
 
 export const getCommunity = async (partnerKey) => {
-  return axios.get(`https://api.distributed.town/api/community/key/${partnerKey}`).then((response) => response.data);
+  return axios.get(`https://dev-api.distributed.town/api/community/key/${partnerKey}`).then((response) => response.data);
   // this probably shouldn't be here
   // partnersAgreementAddress = community.partnersAgreementAddress;
   // console.log('partnersA address: ', partnersAgreementAddress);
@@ -97,7 +97,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     console.log(role, typeof role);
     const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
     const config = {
-      avatar: imageUrl,
+      avatar: ipfsCIDToHttpUrl(imageUrl, false),
       tokenId: '1',
       title: username,
       timestamp: `#${1} | ${timeStamp}`,
@@ -134,7 +134,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
         ],
       },
     };
-    console.log(metadataJson);
+    console.log('metadataJson', metadataJson);
 
     const url = await storeMetadata(metadataJson);
     console.log(url);
@@ -185,8 +185,9 @@ export const fetchSkillWallet = async (address: string) => {
   const isActive = await contract.isSkillWalletActivated(tokenId);
   console.log(isActive);
   if (isActive) {
-    const jsonUri = await contract.tokenURI(tokenId);
-    console.log(jsonUri);
+    const uriCid = await contract.tokenURI(tokenId);
+    const jsonUri = ipfsCIDToHttpUrl(uriCid, true);
+    console.log('jsonUri', jsonUri);
     const community = await contract.getActiveCommunity(tokenId);
     console.log(community);
 
@@ -200,7 +201,7 @@ export const fetchSkillWallet = async (address: string) => {
     console.log('is core team member?', isCoreTeam);
 
     const skillWallet: any = {
-      imageUrl: jsonMetadata.properties.avatar,
+      imageUrl: ipfsCIDToHttpUrl(jsonMetadata.properties.avatar, false),
       nickname: jsonMetadata.properties.username,
       skills: jsonMetadata.properties.skills,
       community,
@@ -211,19 +212,9 @@ export const fetchSkillWallet = async (address: string) => {
 
     if (skillWallet && skillWallet.nickname) {
       return skillWallet;
-      // window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
     }
     if (!skillWallet) {
-      // Some error handling
-      // sw.dispatchEvent(event);
-      // if (error.data && error.data.message.includes('invalid')) {
-      //   alert('The SkillWallet owner is invalid.');
-      //   console.log(error);
-      // } else {
-      //   alert('An error occured - please try again.');
-      //   console.log(error);
-      // }
-      throw new Error('Unable to find a Skill Wallet and nickname with your ID');
+      throw new Error('Unable to find a Skill Wallet with your ID');
     }
     return undefined;
   }

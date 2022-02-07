@@ -4,14 +4,7 @@ import { SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import {
-  currentCommunity,
-  setLoading,
-  currentUsername,
-  setTokenId,
-  profileImageUrl,
-  resetState,
-} from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, currentUsername, setTokenId, profileImageUrl, resetState } from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
@@ -45,6 +38,7 @@ const UserRole: React.FunctionComponent = (props) => {
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
     console.log(username);
+    console.log(profilePictureUrl);
     await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
       .then((result) => {
         console.log(result);
@@ -61,7 +55,7 @@ const UserRole: React.FunctionComponent = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      console.log('console');
+      console.log(community.address, window.ethereum.selectedAddress);
       await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
           const roles = community?.roles?.roles || [];

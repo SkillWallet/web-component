@@ -16,6 +16,7 @@ import {
 import { changeNetwork, fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
+
 import ErrorBox from '../components/ErrorBox';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
