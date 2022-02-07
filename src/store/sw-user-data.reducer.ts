@@ -1,4 +1,4 @@
-import { createReducer, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 import { ActionPayload } from './action-payload';
 
 export interface UserData {

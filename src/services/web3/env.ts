@@ -23,8 +23,8 @@ export let env = {
 export const setUseDev = (isDev) => {
   if (isDev) {
     env = {
-      SKILL_WALLET_API: `https://dev.api.skillwallet.id/api`,
-      DITO_API: `https://dev.api.distributed.town/api`,
+      SKILL_WALLET_API: `https://dev-api.skillwallet.id/api`,
+      DITO_API: `https://dev-api.distributed.town/api`,
       CHANGE_NETWORK_METADATA: {
         method: 'wallet_addEthereumChain',
         params: [
