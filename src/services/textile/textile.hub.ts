@@ -15,8 +15,6 @@ export async function uploadFile(file) {
 }
 
 export async function storeMetadata(json) {
-  console.log('here');
   const metadata = await client.store(json);
-  console.log(metadata);
   return metadata.ipnft;
 }

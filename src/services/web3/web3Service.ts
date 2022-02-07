@@ -134,10 +134,8 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
         ],
       },
     };
-    console.log('metadataJson', metadataJson);
 
     const url = await storeMetadata(metadataJson);
-    console.log(url);
 
     // eslint-disable-next-line dot-notation
     const createTx = await contract.joinNewMember(url, role['roleId']);
@@ -187,7 +185,6 @@ export const fetchSkillWallet = async (address: string) => {
   if (isActive) {
     const uriCid = await contract.tokenURI(tokenId);
     const jsonUri = ipfsCIDToHttpUrl(uriCid, true);
-    console.log('jsonUri', jsonUri);
     const community = await contract.getActiveCommunity(tokenId);
     console.log(community);
 

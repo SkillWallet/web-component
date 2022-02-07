@@ -37,8 +37,6 @@ const UserRole: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data: any) => {
     dispatch(setLoading(true));
-    console.log(username);
-    console.log(profilePictureUrl);
     await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
       .then((result) => {
         console.log(result);
