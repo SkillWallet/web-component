@@ -167,6 +167,7 @@ export const fetchSkillWallet = async (address: string) => {
       diToCredits: 0,
       tokenId: tokenId.toString(),
       isCoreTeamMember: isCoreTeam,
+      timestamp: new Date().getTime(),
     };
 
     if (skillWallet && skillWallet.nickname) {

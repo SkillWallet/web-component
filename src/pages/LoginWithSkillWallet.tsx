@@ -54,7 +54,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
             window.dispatchEvent(event);
           })
           .catch(() => {
-            setErrorData({ message: 'Failed to retreave SkillWallet' });
+            setErrorData({ message: 'Failed to retrieve SkillWallet' });
           })
           .finally(() => {
             dispatch(setLoading(false));
@@ -63,7 +63,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
       dispatch(setLoading(false));
     } catch (error) {
       dispatch(setLoading(false));
-      setErrorData({ message: 'Failed to retreave SkillWallet' });
+      setErrorData({ message: 'Failed to retrieve SkillWallet' });
       // this.onSkillwalletError.emit();
       // this.isLoadingEvent.emit(false);
       // alert(error);
