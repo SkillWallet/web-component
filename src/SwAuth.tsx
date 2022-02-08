@@ -98,6 +98,13 @@ const App = withRouter(({ attributes, container, setAttrCallback }: any) => {
         dispatch(setUserName(sw.nickname));
         dispatch(setUserProfilePicture(sw.imageUrl));
         dispatch(setLoggedIn(true));
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: true,
+        });
+        window.dispatchEvent(event);
       } else {
         window.sessionStorage.removeItem('skillWallet');
         dispatch(resetState());
