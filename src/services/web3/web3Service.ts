@@ -51,30 +51,29 @@ export const getCommunity = async (partnerKey) => {
 };
 
 export const joinCommunity = async (communityAddress, username, imageUrl, role, level) => {
-  try {
-    console.log('trying to join community', communityAddress);
+  console.log('trying to join community', communityAddress);
 
-    const contract = await Web3ContractProvider(communityAddress, communityAbi);
+  const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
-    console.log(role, typeof role);
-    const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
-    const config = {
-      avatar: ipfsCIDToHttpUrl(imageUrl, false),
-      tokenId: '1',
-      title: username,
-      timestamp: `#${1} | ${timeStamp}`,
-    };
-    const { toFile } = await SkillWalletIDBadgeGenerator(config);
+  console.log(role, typeof role);
+  const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
+  const config = {
+    avatar: ipfsCIDToHttpUrl(imageUrl, false),
+    tokenId: '1',
+    title: username,
+    timestamp: `#${1} | ${timeStamp}`,
+  };
+  const { toFile } = await SkillWalletIDBadgeGenerator(config);
 
-    const file = await toFile();
-    console.log(file);
+  const file = await toFile();
+  console.log(file);
 
-    // eslint-disable-next-line dot-notation
-    console.log('Role name', role.roleName);
+  // eslint-disable-next-line dot-notation
+  console.log('Role name', role.roleName);
 
-    const metadataJson = {
-      name: `${username}`,
-      description: `This is ${username}'s SkillWallet.      
+  const metadataJson = {
+    name: `${username}`,
+    description: `This is ${username}'s SkillWallet.      
       SkillWallets are a new standard for self-sovereign Identities that do not depend from the provider, therefore, they are universal.       
       They are individual NFT IDs. This one is ${username}'s.      
       A SkillWallet cannot be bought - it can only be acquired by joining a decentralized, permissionless Community that lives on the Blockchain.       
@@ -82,53 +81,37 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
       Also, it's non-transferable, so everyone's experience and skills are truly theirs - and keeps track of each contribution they make in the communities they're part of, rewarding them for their participation.
       SkillWallet is the first Identity you can truly own.      
       This is  ${username}'s, and there are no others like this.`,
-      image: file,
-      properties: {
-        timestamp: timeStamp,
-        avatar: imageUrl,
-        username,
-        roles: [
-          {
-            // eslint-disable-next-line dot-notation
-            name: role.roleName,
-            value: level,
-          },
-        ],
-      },
-    };
+    image: file,
+    properties: {
+      timestamp: timeStamp,
+      avatar: imageUrl,
+      username,
+      roles: [
+        {
+          // eslint-disable-next-line dot-notation
+          name: role.roleName,
+          value: level,
+        },
+      ],
+    },
+  };
 
-    const url = await storeMetadata(metadataJson);
+  const url = await storeMetadata(metadataJson);
 
-    // eslint-disable-next-line dot-notation
-    const createTx = await contract.joinNewMember(url, role['roleId']);
-    // const createTx = await contract.joinNewMember(url, role['roleId']);
+  // eslint-disable-next-line dot-notation
+  const createTx = await contract.joinNewMember(url, role['roleId']);
+  // const createTx = await contract.joinNewMember(url, role['roleId']);
 
-    const communityTransactionResult = await createTx.wait();
-    console.log(communityTransactionResult);
-    const { events } = communityTransactionResult;
-    const memberJoinedEvent = events.find((e) => e.event === 'MemberAdded');
+  const communityTransactionResult = await createTx.wait();
+  console.log(communityTransactionResult);
+  const { events } = communityTransactionResult;
+  const memberJoinedEvent = events.find((e) => e.event === 'MemberAdded');
 
-    if (memberJoinedEvent) {
-      // return tokenID.
-      return memberJoinedEvent.args[1].toString();
-    }
-    throw new Error('Something went wrong');
-  } catch (err) {
-    // sw.dispatchEvent(event);
-    // const error = err.data.message;
-
-    const error = err;
-    console.log(error);
-    // if (error.includes("No free spots left")) {
-    //   alert("There are no available spots in this community.")
-    // } else if (error.includes("Already a member")) {
-    //   alert("You are already a member of this community.")
-    // } else if (error.includes("SkillWallet already registered")) {
-    //   alert("You already registered a SkillWallet for this wallet address.")
-    // } else {
-    //   alert("An error occured - please try again.")
-    // }
+  if (memberJoinedEvent) {
+    // return tokenID.
+    return memberJoinedEvent.args[1].toString();
   }
+  throw new Error('Something went wrong');
 };
 
 export const fetchSkillWallet = async (address: string) => {
