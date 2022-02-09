@@ -1,7 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 import { Fade } from '@mui/material';
 import React from 'react';
-import { PlayLessonOutlined } from '@mui/icons-material';
 
 const palette = {
   type: 'dark',
@@ -27,7 +26,7 @@ const palette = {
   },
 };
 
-export const SwTheme = (container: Element) =>
+export const SwTheme = () =>
   createTheme({
     components: {
       MuiCssBaseline: {
@@ -60,11 +59,6 @@ export const SwTheme = (container: Element) =>
       MuiUseMediaQuery: {
         defaultProps: {
           noSsr: true,
-        },
-      },
-      MuiDialog: {
-        defaultProps: {
-          container,
         },
       },
       MuiPaper: {
@@ -143,37 +137,37 @@ export const SwTheme = (container: Element) =>
     typography: {
       fontSize: 16,
       button: {
-        fontSize: '1.25rem', // 20px
+        fontSize: '20px', // 1.25rem
       },
       body1: {
-        fontSize: '0.875rem', // 14px
+        fontSize: '14px', // 0.875rem
       },
       body2: {
-        fontSize: '0.75rem', // 12px
+        fontSize: '12px', // 0.75rem
       },
       subtitle1: {
-        fontSize: '1rem', // 16px
+        fontSize: '16px', // 1rem
       },
       subtitle2: {
-        fontSize: '0.875rem', // 14px
+        fontSize: '14px', // 0.875rem
       },
       h1: {
-        fontSize: '1.875rem', // 30px
+        fontSize: '30px', // 1.875rem
       },
       h2: {
-        fontSize: '1.25rem', // 20px
+        fontSize: '20px', // 1.25rem
       },
       h3: {
-        fontSize: '1.125rem', // 18px
+        fontSize: '18px', // 1.125rem
       },
       h4: {
-        fontSize: '0.875rem', // 14px
+        fontSize: '14px', // 0.875rem
       },
       h5: {
-        fontSize: '0.75rem', // 12px
+        fontSize: '12px', // 0.75rem
       },
       h6: {
-        fontSize: '0.625rem', // 10px
+        fontSize: '10px', // 0.625rem
       },
       xl: {
         fontSize: '50px',
