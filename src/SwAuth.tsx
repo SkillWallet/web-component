@@ -15,8 +15,11 @@ import {
   currentlyLoggedIn,
   resetState,
   setLoggedIn,
+  setUserProfilePicture,
+  setUserName,
 } from './store/sw-auth.reducer';
 import { setUseDev } from './services/web3/env';
+// import { setUserName, setUserProfilePicture } from './store/sw-user-data.reducer';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const history = useHistory();
@@ -78,10 +81,40 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
       console.log('dispatchin init event');
       window.dispatchEvent(event);
     }
+    const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+    if (sw) {
+      const currentTime = new Date().getTime();
+      // 8 Hours
+      const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
+      if (currentTime < sessionLength) {
+        dispatch(setUserName(sw.nickname));
+        dispatch(setUserProfilePicture(sw.imageUrl));
+        dispatch(setLoggedIn(true));
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: true,
+        });
+        window.dispatchEvent(event);
+      } else {
+        window.sessionStorage.removeItem('skillWallet');
+        dispatch(resetState());
+        dispatch(setLoggedIn(false));
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: false,
+        });
+        window.dispatchEvent(event);
+      }
+    }
   }, []);
 
   const handleButtonClick = () => {
     if (loggedIn) {
+      window.sessionStorage.removeItem('skillWallet');
       dispatch(resetState());
       dispatch(setLoggedIn(false));
       const event = new CustomEvent('onSkillwalletLogin', {

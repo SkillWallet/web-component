@@ -13,6 +13,7 @@ import { createShadowElement, extractAttributes, isElement } from './utils/utils
 
 function InitSwAuth(authConfig: SwAuthConfig = null) {
   const TAG_NAME = 'sw-auth';
+  // we don't to initialized again when saving changes on hot-reloading
   if (customElements.get(TAG_NAME)) {
     return;
   }
@@ -100,7 +101,3 @@ function InitSwAuth(authConfig: SwAuthConfig = null) {
 }
 
 export default InitSwAuth;
-
-// setTimeout(() => {
-//   InitSwAuth();
-// }, 100);
