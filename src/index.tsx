@@ -1,42 +1,21 @@
-/* eslint-disable class-methods-use-this */
 import { MemoryRouter as Router } from 'react-router-dom';
 import { CacheProvider, ThemeProvider } from '@emotion/react';
 import { create } from 'jss';
 import { StylesProvider, jssPreset } from '@mui/styles';
-import createCache from '@emotion/cache';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { SwTheme } from './theme';
 import store from './store/store';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
-import SwAuth from './SwAuth';
+import SwAuthModal, { SwAuthButton } from './SwAuth';
 import { SwAuthConfig } from './types/sw-auth-config';
+import { createShadowElement, extractAttributes, isElement } from './utils/utils';
 
-const extractAttributes = (nodeMap) => {
-  if (!nodeMap.attributes) {
-    return {};
+function InitSwAuth(authConfig: SwAuthConfig = null) {
+  const TAG_NAME = 'sw-auth';
+  if (customElements.get(TAG_NAME)) {
+    return;
   }
-
-  const obj = {};
-  let attribute;
-  const attributesAsNodeMap = [...nodeMap.attributes];
-  console.log(attributesAsNodeMap);
-  const attributes = attributesAsNodeMap.map((attr) => {
-    return { [attr.name]: attr.value };
-  });
-
-  for (attribute of attributes) {
-    const key = Object.keys(attribute)[0];
-    const camelCasedKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-    obj[camelCasedKey] = attribute[key];
-  }
-
-  return obj;
-};
-
-const TAG_NAME = 'sw-auth';
-
-export const InitSwAuth = (config: SwAuthConfig = null) => {
   customElements.define(
     TAG_NAME,
     class extends HTMLElement {
@@ -58,67 +37,70 @@ export const InitSwAuth = (config: SwAuthConfig = null) => {
       };
 
       connectedCallback() {
-        const shadowRoot = this.attachShadow({ mode: 'open' });
-        const emotionRoot = document.createElement('style');
-
-        const fontLink = document.createElement('link');
-        fontLink.href = 'https://fonts.googleapis.com/css?family=Josefin+Sans';
-        fontLink.rel = 'stylesheet';
-        fontLink.type = 'text/css';
-
-        // root
-        const mountPoint = document.createElement('div');
-        mountPoint.classList.add('sw-auth');
-
-        // popups/popovers
-        const rootContainer = config.container || document.createElement('div');
-        rootContainer.classList.add('sw-auth-container');
-
-        const reactRoot = shadowRoot.appendChild(mountPoint);
-
-        shadowRoot.insertBefore(fontLink, mountPoint);
-        shadowRoot.insertBefore(emotionRoot, mountPoint);
-        shadowRoot.appendChild(rootContainer);
-
-        const jss = create({
-          ...jssPreset(),
-          insertionPoint: reactRoot,
-        });
-
-        const cache = createCache({
-          key: 'css',
-          prepend: true,
-          container: emotionRoot,
-        });
-
+        const jss = create(jssPreset());
         const attributes = extractAttributes(this);
 
+        let content: JSX.Element = null;
+        let mountPoint: HTMLElement = null;
+
+        if (authConfig?.container) {
+          if (!isElement(authConfig.container)) {
+            throw new Error('Container is not of type HTMLElement');
+          }
+          Object.assign(authConfig.container.style, {
+            position: 'absolute',
+            left: '0',
+            right: '0',
+            top: '0',
+            bottom: '0',
+            overflow: 'hidden',
+            ...(authConfig.containerStyles || {}),
+          });
+          const mConfig = createShadowElement({ container: authConfig.container, className: 'sw-auth-modal' });
+          const bConfig = createShadowElement({ container: this, className: 'sw-auth-button' });
+          mountPoint = mConfig.mountPoint;
+          content = (
+            <>
+              <CacheProvider value={bConfig.cache}>
+                <SwAuthButton container={bConfig.root} attributes={attributes} setAttrCallback={this.setAttributeChangeCallback} />
+              </CacheProvider>
+              <CacheProvider value={mConfig.cache}>
+                <SwAuthModal rootContainer={authConfig.container} container={mConfig.root} />
+              </CacheProvider>
+            </>
+          );
+        } else {
+          const config = createShadowElement({ container: this, className: 'sw-auth' });
+          mountPoint = config.mountPoint;
+          content = (
+            <>
+              <CacheProvider value={config.cache}>
+                <SwAuthButton container={config.root} attributes={attributes} setAttrCallback={this.setAttributeChangeCallback} />
+                <SwAuthModal container={config.root} />
+              </CacheProvider>
+            </>
+          );
+        }
+
         ReactDOM.render(
-          <StylesProvider jss={jss}>
-            <CacheProvider value={cache}>
-              <ThemeProvider theme={SwTheme(rootContainer)}>
-                <Provider store={store}>
-                  <Router initialEntries={['/']}>
-                    <EventsHandlerWrapper>
-                      <SwAuth attributes={attributes} container={rootContainer} setAttrCallback={this.setAttributeChangeCallback} />
-                    </EventsHandlerWrapper>
-                  </Router>
-                </Provider>
-              </ThemeProvider>
-            </CacheProvider>
-          </StylesProvider>,
+          <ThemeProvider theme={SwTheme()}>
+            <Provider store={store}>
+              <Router initialEntries={['/']}>
+                <EventsHandlerWrapper>
+                  <StylesProvider jss={jss}>{content}</StylesProvider>
+                </EventsHandlerWrapper>
+              </Router>
+            </Provider>
+          </ThemeProvider>,
           mountPoint
         );
       }
     }
   );
-};
+}
 
-setTimeout(() => {
-  // for testing purposes
-  const container = document.body.querySelector('.custom-auth-container');
+export default InitSwAuth;
 
-  InitSwAuth({
-    container,
-  });
-});
+// setTimeout(() => {
+//   InitSwAuth();
+// }, 100);

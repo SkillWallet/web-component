@@ -4,6 +4,7 @@ import { SwButton } from 'sw-web-shared';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
+import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
 import {
   isOpen,
@@ -17,10 +18,33 @@ import {
 } from './store/sw-auth.reducer';
 import { setUseDev } from './services/web3/env';
 
-const SwAuth = withRouter(({ attributes, container, setAttrCallback }: any) => {
+const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
+
+  const handleClose = () => {
+    dispatch(showDialog(false));
+    dispatch(resetState());
+    history.push('/');
+  };
+
+  useEffect(() => {
+    // increase zIndex for the custom container so that the button is under modal
+    if (rootContainer) {
+      (rootContainer as HTMLElement).style.zIndex = open ? '999999' : '0';
+    }
+  }, [open, rootContainer]);
+
+  return (
+    <>
+      <MainDialog open={open} handleClose={handleClose} container={container} />
+    </>
+  );
+});
+
+export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) => {
+  const dispatch = useDispatch();
   const username = useSelector(currentUsername);
   const image = useSelector(profileImageUrl);
   const loggedIn = useSelector(currentlyLoggedIn);
@@ -72,31 +96,25 @@ const SwAuth = withRouter(({ attributes, container, setAttrCallback }: any) => {
     }
   };
 
-  const handleClose = () => {
-    dispatch(showDialog(false));
-    dispatch(resetState());
-    history.push('/');
-  };
-
   return (
     <>
-      {!hideButton && (
-        <SwButton
-          sx={{
-            height: '57px',
-            width: '180px',
-          }}
-          mode="dark"
-          btnType="medium"
-          onClick={handleButtonClick}
-          label={loggedIn ? username : 'Connect Wallet'}
-          startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
-        />
-      )}
-
-      <MainDialog open={open} handleClose={handleClose} container={container} />
+      <Portal container={container}>
+        {!hideButton && (
+          <SwButton
+            sx={{
+              height: '57px',
+              width: '180px',
+            }}
+            mode="dark"
+            btnType="medium"
+            onClick={handleButtonClick}
+            label={loggedIn ? username : 'Connect Wallet'}
+            startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
+          />
+        )}
+      </Portal>
     </>
   );
-});
+};
 
-export default SwAuth;
+export default SwAuthModal;
