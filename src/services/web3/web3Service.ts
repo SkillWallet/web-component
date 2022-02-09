@@ -59,7 +59,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
   const config = {
     avatar: ipfsCIDToHttpUrl(imageUrl, false),
-    tokenId: '1',
+    tokenId: '2',
     title: username,
     timestamp: `#${1} | ${timeStamp}`,
   };
