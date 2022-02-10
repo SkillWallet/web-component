@@ -1,21 +1,23 @@
-
 # SkillWallet Web Component installation
 
- ##### React App
+##### React App
 
 1. Install the library
- `npm i @skill-wallet/auth --save`
+   `npm i @skill-wallet/auth --save`
 
-2. Import in the App.js/tsx
- `import '@skill-wallet/auth'`
+2. Import the initialization function in the App.js/tsx (or index.js/tsx)
+   `import { InitSwAuth } from '@skill-wallet/auth';`
 
-3. Add the custom HTML tag and populate the partner-key property
+3. Call the InitSwAuth function at the start of your project
+   `InitSwAuth();`
+
+4. Add the custom HTML tag and populate the partner-key property
+
 ###### Example
-
 
 ```
 import './App.css';
-import '@skill-wallet/auth';
+import { InitSwAuth } from '@skill-wallet/auth;
 
 function App() {
   return (
@@ -25,6 +27,6 @@ function App() {
   );
 }
 
+InitSwAuth();
 export default App;
-
 ```

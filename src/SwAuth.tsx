@@ -52,20 +52,23 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const image = useSelector(profileImageUrl);
   const loggedIn = useSelector(currentlyLoggedIn);
 
-  const [hideButton, setHideButton] = useState(false);
+  const [buttonHidden, setButtonHidden] = useState(false);
 
   useEffect(() => {
     // Remember they are strings
     // Set attribute change callback
     setAttrCallback((name, oldVal, newVal) => {
       if (name === 'hide-button') {
-        setHideButton(newVal === 'true');
+        setButtonHidden(newVal === 'true');
       }
     });
   }, []);
 
   useEffect(() => {
-    const { partnerKey, useDev } = attributes;
+    const { partnerKey, useDev, hideButton } = attributes;
+    if (hideButton) {
+      setButtonHidden(hideButton === 'true');
+    }
     if (useDev) {
       setUseDev(useDev === 'true');
     }
@@ -132,7 +135,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   return (
     <>
       <Portal container={container}>
-        {!hideButton && (
+        {!buttonHidden && (
           <SwButton
             sx={{
               height: '57px',
