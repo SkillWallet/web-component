@@ -13,8 +13,9 @@ import {
   setCommunity,
   currentPartnerKey,
   resetState,
+  setTokenId,
 } from '../store/sw-auth.reducer';
-import { getCommunity } from '../services/web3/web3Service';
+import { checkForActiveSkillWallet, checkForInactiveSkillWallet, fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 import ErrorBox from '../components/ErrorBox';
@@ -49,10 +50,24 @@ const NewUser: React.FunctionComponent = (props) => {
     const { ethereum } = window;
     try {
       if (ethereum.request) {
-        const result = await ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(result);
-        // figure out where to store this
-        setMetamaskSelected(true);
+        await ethereum.request({ method: 'eth_requestAccounts' });
+        if (ethereum.selectedAddress) {
+          dispatch(setLoading(true));
+          const res = await checkForInactiveSkillWallet(ethereum.selectedAddress);
+          if (res && res.inactiveSkillWalletExists) {
+            dispatch(setTokenId(res.tokenId.toString()));
+            history.push('/qr');
+          } else {
+            const activeSWExists = await checkForActiveSkillWallet(ethereum.selectedAddress);
+            dispatch(setLoading(false));
+            if (activeSWExists) {
+              setErrorData({ message: 'There is already a SkillWallet owned by this address.' });
+            } else {
+              // figure out where to store this
+              setMetamaskSelected(true);
+            }
+          }
+        }
       }
     } catch (error) {
       setErrorData({ message: 'Failed to retrieve MetaMask account' });

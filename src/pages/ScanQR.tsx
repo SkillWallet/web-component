@@ -6,7 +6,16 @@ import { QRCode } from 'react-qrcode-logo';
 import { ethers } from 'ethers';
 import { useHistory } from 'react-router-dom';
 import { fetchSkillWallet, getActivationNonce, isQrCodeActive } from '../services/web3/web3Service';
-import { setLoading, currentTokenId, currentCommunity, setLoggedIn, showDialog, resetState } from '../store/sw-auth.reducer';
+import {
+  setLoading,
+  currentTokenId,
+  currentCommunity,
+  setLoggedIn,
+  showDialog,
+  resetState,
+  setUserName,
+  setUserProfilePicture,
+} from '../store/sw-auth.reducer';
 import ErrorBox from '../components/ErrorBox';
 
 const ScanQR: React.FunctionComponent = (props) => {
@@ -50,6 +59,8 @@ const ScanQR: React.FunctionComponent = (props) => {
             const skillWallet = await fetchSkillWallet(window.ethereum.selectedAddress);
             window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
             dispatch(setLoggedIn(true));
+            dispatch(setUserName(skillWallet.nickname));
+            dispatch(setUserProfilePicture(skillWallet.imageUrl));
             dispatch(showDialog(false));
             history.push('/');
             const event = new CustomEvent('onSkillwalletLogin', {

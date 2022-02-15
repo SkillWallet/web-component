@@ -6,6 +6,7 @@ import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import { env } from './env';
 import communityAbi from './community-abi.json';
+import { SkillWalletExistsButInactiveError } from '../../types/error-types';
 
 export const getSkillWalletAddress = async () => {
   return axios.get(`${env.SKILL_WALLET_API}/skillwallet/config`).then((response) => response.data.skillWalletAddress);
@@ -160,5 +161,45 @@ export const fetchSkillWallet = async (address: string) => {
       throw new Error('Unable to find a Skill Wallet with your ID');
     }
     return undefined;
+    // eslint-disable-next-line no-else-return
+  }
+};
+
+export const checkForInactiveSkillWallet = async (address: string) => {
+  try {
+    console.log(address);
+
+    const skillWalletAddress = await getSkillWalletAddress();
+    console.log(skillWalletAddress);
+    const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
+
+    console.log(contract);
+    const tokenId = await contract.getSkillWalletIdByOwner(address);
+    console.log(tokenId);
+
+    const isActive = await contract.isSkillWalletActivated(tokenId);
+    console.log(isActive);
+    return { inactiveSkillWalletExists: !isActive, tokenId };
+  } catch (e) {
+    console.log('Error retreaving inactive SW');
+  }
+};
+
+export const checkForActiveSkillWallet = async (address: string) => {
+  try {
+    console.log(address);
+
+    const skillWalletAddress = await getSkillWalletAddress();
+    console.log(skillWalletAddress);
+    const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
+
+    console.log(contract);
+    const tokenId = await contract.getSkillWalletIdByOwner(address);
+    console.log(tokenId);
+
+    const activeSWExists = await contract.isSkillWalletActivated(tokenId);
+    return activeSWExists;
+  } catch (e) {
+    console.log('Error retreaving active SW');
   }
 };
