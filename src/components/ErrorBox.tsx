@@ -1,10 +1,8 @@
-import { Label } from '@mui/icons-material';
-import { Input, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
 import { SwButton } from 'sw-web-shared';
 
-const ErrorBox = ({ errorMessage, action }) => {
+const ErrorBox = ({ errorMessage, action, actionLabel }) => {
   return (
     <Box
       sx={{
@@ -16,15 +14,18 @@ const ErrorBox = ({ errorMessage, action }) => {
         alignItems: 'center',
       }}
     >
-      <Typography variant="h2">{errorMessage}</Typography>
+      <Typography sx={{ mb: '26px' }} variant="h2">
+        {errorMessage}
+      </Typography>
       <SwButton
         sx={{
           borderColor: 'primary.main',
+          mb: '26px',
         }}
         onClick={action}
         btnType="large"
         mode="dark"
-        label="Go Back"
+        label={actionLabel}
       />
     </Box>
   );

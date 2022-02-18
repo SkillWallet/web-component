@@ -8,6 +8,7 @@ import { currentCommunity, setLoading, currentUsername, setTokenId, profileImage
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 interface Role {
   roleId: number;
@@ -35,7 +36,10 @@ const UserRole: React.FunctionComponent = (props) => {
     formState: { isValid },
   } = useForm({ defaultValues });
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+
   const onSubmit = async (data: any) => {
+    console.log(data);
     dispatch(setLoading(true));
     await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
       .then((result) => {
@@ -45,7 +49,20 @@ const UserRole: React.FunctionComponent = (props) => {
         dispatch(setLoading(false));
       })
       .catch((e) => {
-        setErrorData({ message: 'Something went wrong' });
+        if (
+          e.message === ErrorTypes.CommunitySlotsFull ||
+          e.message === ErrorTypes.AlreadyAMember ||
+          e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
+        ) {
+          history.push('/');
+          dispatch(resetState());
+          setErrorData({ message: e.message, actionLabel: 'Back to Home' });
+        } else {
+          console.log(e);
+          handleSubmit(onSubmit)();
+          setErrorData(undefined);
+          setErrorData({ message: 'Something went wrong', actionLabel: 'Retry' });
+        }
         dispatch(setLoading(false));
       });
   };
@@ -89,8 +106,8 @@ const UserRole: React.FunctionComponent = (props) => {
   };
 
   const handleError = () => {
-    dispatch(resetState());
     history.push('/');
+    dispatch(resetState());
   };
 
   return (
@@ -106,7 +123,7 @@ const UserRole: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel={errorData.actionLabel} />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box

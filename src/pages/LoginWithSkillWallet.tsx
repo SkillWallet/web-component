@@ -11,13 +11,13 @@ import {
   setUserName,
   setUserProfilePicture,
   showDialog,
-  setTokenId,
 } from '../store/sw-auth.reducer';
-import { checkForInactiveSkillWallet, fetchSkillWallet } from '../services/web3/web3Service';
+import { fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
@@ -25,58 +25,48 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const [errorData, setErrorData] = useState(undefined);
 
   const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
+    setErrorData(undefined);
+  };
+
+  const performMetamaskLogin = async () => {
+    dispatch(setLoading(true));
+    await fetchSkillWallet()
+      .then((result) => {
+        dispatch(setSkillWallet(result));
+        dispatch(setUserName(result.nickname));
+        dispatch(setUserProfilePicture(result.imageUrl));
+        dispatch(setLoggedIn(true));
+        dispatch(showDialog(false));
+        window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
+        console.log(result);
+        history.push('/');
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: true,
+        });
+        console.log('sending login event');
+        window.dispatchEvent(event);
+        dispatch(setLoading(false));
+      })
+      .catch((e) => {
+        if (e.message === ErrorTypes.SkillWalletExistsButInactive) {
+          dispatch(setLoading(false));
+          history.push('/qr');
+        } else if (e.message === ErrorTypes.SkillWalletNotFound) {
+          setErrorData({ message: 'SkillWallet not found.' });
+          dispatch(setLoading(false));
+        } else {
+          console.log(e);
+          dispatch(setLoading(false));
+          setErrorData({ message: 'An unexpected error occured.' });
+        }
+      });
   };
 
   const handleMetamaskClick = async () => {
-    dispatch(setLoading(true));
-
-    const { ethereum } = window;
-    try {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (ethereum.selectedAddress) {
-        const res = await checkForInactiveSkillWallet(ethereum.selectedAddress);
-        if (res && res.inactiveSkillWalletExists) {
-          dispatch(setTokenId(res.tokenId.toString()));
-          history.push('/qr');
-        } else {
-          await fetchSkillWallet(ethereum.selectedAddress)
-            .then((result) => {
-              dispatch(setSkillWallet(result));
-              dispatch(setUserName(result.nickname));
-              dispatch(setUserProfilePicture(result.imageUrl));
-              dispatch(setLoggedIn(true));
-              dispatch(showDialog(false));
-              window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
-              console.log(result);
-              history.push('/');
-              const event = new CustomEvent('onSkillwalletLogin', {
-                composed: true,
-                cancelable: true,
-                bubbles: true,
-                detail: true,
-              });
-              console.log('sending login event');
-              window.dispatchEvent(event);
-              dispatch(setLoading(false));
-            })
-            .catch((e) => {
-              setErrorData({ message: 'Failed to retrieve SkillWallet' });
-            })
-            .finally(() => {
-              dispatch(setLoading(false));
-            });
-        }
-      }
-      dispatch(setLoading(false));
-    } catch (error) {
-      dispatch(setLoading(false));
-      setErrorData({ message: 'Failed to retrieve SkillWallet' });
-      // this.onSkillwalletError.emit();
-      // this.isLoadingEvent.emit(false);
-      // alert(error);
-    }
+    performMetamaskLogin();
   };
 
   return (
@@ -91,7 +81,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
       ) : (
         <>
           <Box

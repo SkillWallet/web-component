@@ -62,8 +62,7 @@ const UserDetails: React.FunctionComponent = (props) => {
   };
 
   const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
+    setErrorData(undefined);
   };
 
   return (
@@ -79,7 +78,7 @@ const UserDetails: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
       ) : (
         <>
           <Box

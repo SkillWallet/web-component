@@ -5,10 +5,9 @@ import { Box, Typography } from '@mui/material';
 import { QRCode } from 'react-qrcode-logo';
 import { ethers } from 'ethers';
 import { useHistory } from 'react-router-dom';
-import { fetchSkillWallet, getActivationNonce, isQrCodeActive } from '../services/web3/web3Service';
+import { fetchSkillWallet, getActivationNonce, getTokenId, isQrCodeActive } from '../services/web3/web3Service';
 import {
   setLoading,
-  currentTokenId,
   currentCommunity,
   setLoggedIn,
   showDialog,
@@ -21,65 +20,55 @@ import ErrorBox from '../components/ErrorBox';
 const ScanQR: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const tokenId = useSelector(currentTokenId);
   const community = useSelector(currentCommunity);
-  console.log('Token Id', tokenId);
-  const [nonce, setNonce] = useState(undefined);
+  const [qrData, setQrData] = useState(undefined);
   const [errorData, setErrorData] = useState(undefined);
 
-  const pollQRCodeActivated = async () => {
-    const { ethereum } = window;
-    if (ethereum.selectedAddress) {
-      const fn = () => isQrCodeActive(tokenId);
-      const condition = (active: boolean) => !active;
-      return asyncPoll<boolean>(fn, condition, 8000, 50);
-    }
+  const pollQRCodeActivated = async (token) => {
+    const fn = () => isQrCodeActive(token);
+    const condition = (active: boolean) => !active;
+    return asyncPoll<boolean>(fn, condition, 8000, 50);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      await getActivationNonce(tokenId)
-        .then((result) => {
-          console.log('NONCE', result);
-          setNonce(result);
+      await getTokenId()
+        .then(async (token) => {
+          await getActivationNonce(token.toString()).then(async (nonce) => {
+            console.log('NONCE', nonce);
+            setQrData({ tokenId: token.toString(), nonce });
+            dispatch(setLoading(false));
+            await pollQRCodeActivated(token).then(async (result) => {
+              if (result) {
+                const skillWallet = await fetchSkillWallet();
+                window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
+                dispatch(setLoggedIn(true));
+                dispatch(setUserName(skillWallet.nickname));
+                dispatch(setUserProfilePicture(skillWallet.imageUrl));
+                dispatch(showDialog(false));
+                history.push('/');
+                const event = new CustomEvent('onSkillwalletLogin', {
+                  composed: true,
+                  cancelable: true,
+                  bubbles: true,
+                  detail: true,
+                });
+                console.log('sending login event');
+                window.dispatchEvent(event);
+              } else {
+                setErrorData({ message: 'QR not scanned.' });
+              }
+            });
+          });
         })
         .catch((e) => {
           console.log(e);
           setErrorData({ message: 'Something went wrong' });
-        })
-        .finally(() => {
           dispatch(setLoading(false));
         });
-
-      console.log('DONE NONCE');
-      await pollQRCodeActivated()
-        .then(async (result) => {
-          if (result) {
-            const skillWallet = await fetchSkillWallet(window.ethereum.selectedAddress);
-            window.sessionStorage.setItem('skillWallet', JSON.stringify(skillWallet));
-            dispatch(setLoggedIn(true));
-            dispatch(setUserName(skillWallet.nickname));
-            dispatch(setUserProfilePicture(skillWallet.imageUrl));
-            dispatch(showDialog(false));
-            history.push('/');
-            const event = new CustomEvent('onSkillwalletLogin', {
-              composed: true,
-              cancelable: true,
-              bubbles: true,
-              detail: true,
-            });
-            console.log('sending login event');
-            window.dispatchEvent(event);
-          } else {
-            setErrorData({ message: 'QR not scanned.' });
-          }
-        })
-        .catch((e) => {
-          setErrorData({ message: 'Something went wrong' });
-        });
     };
-    if (tokenId) fetchData();
+    fetchData();
   }, []);
 
   const handleError = () => {
@@ -100,7 +89,7 @@ const ScanQR: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
       ) : (
         <>
           <Box
@@ -127,18 +116,7 @@ const ScanQR: React.FunctionComponent = (props) => {
                 backgroundColor: '#FFFFFF',
               }}
             >
-              {nonce && (
-                <QRCode
-                  size={250}
-                  logoImage={community}
-                  logoWidth={70}
-                  logoHeight={70}
-                  value={JSON.stringify({
-                    tokenId,
-                    nonce,
-                  })}
-                />
-              )}
+              {qrData && <QRCode size={250} logoImage={community} logoWidth={70} logoHeight={70} value={JSON.stringify(qrData)} />}
             </Box>
           </Box>
 

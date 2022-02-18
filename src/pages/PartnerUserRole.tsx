@@ -120,7 +120,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
       ) : (
         <>
           <Box
