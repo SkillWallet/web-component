@@ -112,8 +112,11 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   };
 
   const url = await storeMetadata(metadataJson);
-
-  throw new Error(ErrorTypes.AlreadyAMember);
+  const rand = Math.floor(Math.random() * 100);
+  if (rand % 2 === 0) {
+    throw new Error(ErrorTypes.AlreadyAMember);
+  }
+  throw new Error('Something went wrong');
   // eslint-disable-next-line dot-notation
   const createTx = await contract.joinNewMember(url, role['roleId']).catch((e) => {
     if (e.includes('No free spots left')) {

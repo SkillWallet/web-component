@@ -36,8 +36,6 @@ const UserRole: React.FunctionComponent = (props) => {
     formState: { isValid },
   } = useForm({ defaultValues });
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-
   const onSubmit = async (data: any) => {
     console.log(data);
     dispatch(setLoading(true));
@@ -54,14 +52,23 @@ const UserRole: React.FunctionComponent = (props) => {
           e.message === ErrorTypes.AlreadyAMember ||
           e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
         ) {
-          history.push('/');
-          dispatch(resetState());
-          setErrorData({ message: e.message, actionLabel: 'Back to Home' });
+          setErrorData({
+            message: e.message,
+            actionLabel: 'Back to Home',
+            action: () => {
+              dispatch(resetState());
+              history.push('/');
+            },
+          });
         } else {
           console.log(e);
-          handleSubmit(onSubmit)();
-          setErrorData(undefined);
-          setErrorData({ message: 'Something went wrong', actionLabel: 'Retry' });
+          setErrorData({
+            message: 'Something went wrong',
+            actionLabel: 'Retry',
+            action: () => {
+              handleSubmit(onSubmit)();
+            },
+          });
         }
         dispatch(setLoading(false));
       });
@@ -93,7 +100,13 @@ const UserRole: React.FunctionComponent = (props) => {
         })
         .catch((e) => {
           console.log(e);
-          setErrorData({ message: 'Something went wrong' });
+          setErrorData({
+            message: 'Something went wrong',
+            actionLabel: 'Retry',
+            action: () => {
+              handleSubmit(onSubmit)();
+            },
+          });
           dispatch(setLoading(false));
         });
     };
@@ -103,11 +116,6 @@ const UserRole: React.FunctionComponent = (props) => {
   const handleRoleSelected = (role) => {
     console.log(role);
     setSelectedRole(role);
-  };
-
-  const handleError = () => {
-    history.push('/');
-    dispatch(resetState());
   };
 
   return (
@@ -123,7 +131,7 @@ const UserRole: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel={errorData.actionLabel} />
+        <ErrorBox errorData={errorData} />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box

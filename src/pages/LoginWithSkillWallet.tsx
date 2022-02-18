@@ -24,10 +24,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const history = useHistory();
   const [errorData, setErrorData] = useState(undefined);
 
-  const handleError = () => {
-    setErrorData(undefined);
-  };
-
   const performMetamaskLogin = async () => {
     dispatch(setLoading(true));
     await fetchSkillWallet()
@@ -55,12 +51,25 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           dispatch(setLoading(false));
           history.push('/qr');
         } else if (e.message === ErrorTypes.SkillWalletNotFound) {
-          setErrorData({ message: 'SkillWallet not found.' });
+          setErrorData({
+            message: 'SkillWallet not found.',
+            actionLabel: 'Go Back',
+            action: () => {
+              dispatch(resetState());
+              history.push('/');
+            },
+          });
           dispatch(setLoading(false));
         } else {
           console.log(e);
+          setErrorData({
+            message: 'An unexpected error occured.',
+            actionLabel: 'Retry',
+            action: () => {
+              performMetamaskLogin();
+            },
+          });
           dispatch(setLoading(false));
-          setErrorData({ message: 'An unexpected error occured.' });
         }
       });
   };
@@ -81,7 +90,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           <Box

@@ -89,7 +89,7 @@ const ScanQR: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           <Box

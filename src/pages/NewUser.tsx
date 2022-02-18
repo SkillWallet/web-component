@@ -40,7 +40,14 @@ const NewUser: React.FunctionComponent = (props) => {
           dispatch(setLoading(false));
         })
         .catch((e) => {
-          setErrorData({ message: 'Unable to fetch community.' });
+          console.log(e);
+          setErrorData({
+            message: 'Unable to fetch community.',
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+            },
+          });
           dispatch(setLoading(false));
         });
     };
@@ -53,8 +60,15 @@ const NewUser: React.FunctionComponent = (props) => {
       await fetchSkillWallet()
         .then((wallet) => {
           if (wallet) {
+            setErrorData({
+              message: 'There is already a SkillWallet owned by this address.',
+              actionLabel: 'Go back',
+              action: () => {
+                dispatch(resetState());
+                history.push('/');
+              },
+            });
             dispatch(setLoading(false));
-            setErrorData({ message: 'There is already a SkillWallet owned by this address.' });
           }
         })
         .catch((e) => {
@@ -67,7 +81,13 @@ const NewUser: React.FunctionComponent = (props) => {
           } else {
             console.log(e);
             dispatch(setLoading(false));
-            setErrorData({ message: 'Something went wrong.' });
+            setErrorData({
+              message: 'Something went wrong.',
+              actionLabel: 'Retry',
+              action: () => {
+                handleInjectFromMetamaskClick();
+              },
+            });
           }
         });
     }
@@ -88,10 +108,10 @@ const NewUser: React.FunctionComponent = (props) => {
     // }
   };
 
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
-  };
+  // const handleError = () => {
+  //   dispatch(resetState());
+  //   history.push('/');
+  // };
 
   return (
     <Box
@@ -105,7 +125,7 @@ const NewUser: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           {community && (
