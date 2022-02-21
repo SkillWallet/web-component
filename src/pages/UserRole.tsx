@@ -41,8 +41,6 @@ const UserRole: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
       .then((result) => {
-        console.log(result);
-        dispatch(setTokenId(result));
         history.push('/qr');
         dispatch(setLoading(false));
       })
@@ -53,7 +51,7 @@ const UserRole: React.FunctionComponent = (props) => {
           e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
         ) {
           setErrorData({
-            message: e.message,
+            errorMessage: e.message,
             actionLabel: 'Back to Home',
             action: () => {
               dispatch(resetState());
@@ -63,9 +61,10 @@ const UserRole: React.FunctionComponent = (props) => {
         } else {
           console.log(e);
           setErrorData({
-            message: 'Something went wrong',
+            errorMessage: 'Something went wrong',
             actionLabel: 'Retry',
             action: () => {
+              setErrorData(undefined);
               handleSubmit(onSubmit)();
             },
           });
@@ -101,10 +100,10 @@ const UserRole: React.FunctionComponent = (props) => {
         .catch((e) => {
           console.log(e);
           setErrorData({
-            message: 'Something went wrong',
+            errorMessage: 'Something went wrong',
             actionLabel: 'Retry',
             action: () => {
-              handleSubmit(onSubmit)();
+              fetchData();
             },
           });
           dispatch(setLoading(false));

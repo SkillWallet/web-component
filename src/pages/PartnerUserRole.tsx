@@ -17,26 +17,12 @@ import {
 } from '../store/sw-auth.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 interface Role {
   roleId: number;
   roleName: string;
 }
-
-const partnerRoles = [
-  {
-    roleName: 'Founder',
-    roleId: 1,
-  },
-  {
-    roleName: 'Contributor',
-    roleId: 2,
-  },
-  {
-    roleName: 'Investor',
-    roleId: 3,
-  },
-];
 
 const PartnerUserRole: React.FunctionComponent = (props) => {
   const history = useHistory();
@@ -69,12 +55,18 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
               return { roleId, roleName };
             });
           setMemberRoles(filteredRoles);
+          dispatch(setLoading(false));
         })
         .catch((e) => {
           console.log(e);
-          setErrorData({ message: 'Something went wrong' });
-        })
-        .finally(() => {
+          setErrorData({
+            errorMessage: 'Something went wrong',
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+              fetchData();
+            },
+          });
           dispatch(setLoading(false));
         });
     };
@@ -85,14 +77,33 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     await joinCommunity(community.address, username, imageUrl, selectedRole, 10)
       .then(async (result) => {
-        dispatch(setTokenId(result));
         history.push('/qr');
       })
       .catch((e) => {
-        console.log(e);
-        setErrorData({ errorMessage: 'Something went wrong' });
-      })
-      .finally(() => {
+        if (
+          e.message === ErrorTypes.CommunitySlotsFull ||
+          e.message === ErrorTypes.AlreadyAMember ||
+          e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
+        ) {
+          setErrorData({
+            errorMessage: e.message,
+            actionLabel: 'Back to Home',
+            action: () => {
+              dispatch(resetState());
+              history.push('/');
+            },
+          });
+        } else {
+          console.log(e);
+          setErrorData({
+            errorMessage: 'Something went wrong',
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+              handleJoinClicked();
+            },
+          });
+        }
         dispatch(setLoading(false));
       });
   };
@@ -100,11 +111,6 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const handleRoleSelected = (role) => {
     console.log(role);
     setSelectedRole(role);
-  };
-
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
   };
 
   return (
@@ -120,7 +126,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} actionLabel="Go Back" />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           <Box
@@ -171,9 +177,10 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
                       className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
                       mode="dark"
                       btnType="large"
-                      label={role.roleName}
                       onClick={() => handleRoleSelected(role)}
-                    />
+                    >
+                      <Typography variant="h3">{role.roleName}</Typography>
+                    </SwButton>
                   );
                 })}
             </Box>

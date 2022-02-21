@@ -56,10 +56,12 @@ const UserDetails: React.FunctionComponent = (props) => {
         dispatch(setLoading(false));
       })
       .catch((e) => {
+        console.log(e);
         setErrorData({
-          message: 'Something went wrong',
+          errorMessage: 'Something went wrong',
           actionLabel: 'Retry',
           action: () => {
+            setErrorData(undefined);
             handleSubmit(onSubmit)();
           },
         });

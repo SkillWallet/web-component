@@ -52,7 +52,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           history.push('/qr');
         } else if (e.message === ErrorTypes.SkillWalletNotFound) {
           setErrorData({
-            message: 'SkillWallet not found.',
+            errorMessage: 'SkillWallet not found.',
             actionLabel: 'Go Back',
             action: () => {
               dispatch(resetState());
@@ -63,9 +63,10 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         } else {
           console.log(e);
           setErrorData({
-            message: 'An unexpected error occured.',
+            errorMessage: 'An unexpected error occured.',
             actionLabel: 'Retry',
             action: () => {
+              setErrorData(undefined);
               performMetamaskLogin();
             },
           });

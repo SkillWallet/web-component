@@ -16,6 +16,7 @@ import {
   setUserProfilePicture,
 } from '../store/sw-auth.reducer';
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 const ScanQR: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
@@ -57,24 +58,45 @@ const ScanQR: React.FunctionComponent = (props) => {
                 console.log('sending login event');
                 window.dispatchEvent(event);
               } else {
-                setErrorData({ message: 'QR not scanned.' });
+                setErrorData({
+                  errorMessage: 'QR Code not scanned.',
+                  actionLabel: 'Retry',
+                  action: () => {
+                    setErrorData(undefined);
+                    fetchData();
+                  },
+                });
               }
             });
           });
         })
         .catch((e) => {
           console.log(e);
-          setErrorData({ message: 'Something went wrong' });
+          if (e.message === ErrorTypes.CouldNotGetActivationNonce) {
+            setErrorData({
+              errorMessage: 'Could not retreave activation nonce.',
+              actionLabel: 'Retry',
+              action: () => {
+                setErrorData(undefined);
+                fetchData();
+              },
+            });
+          } else {
+            console.log(e);
+            setErrorData({
+              errorMessage: 'Something went wrong.',
+              actionLabel: 'Retry',
+              action: () => {
+                setErrorData(undefined);
+                fetchData();
+              },
+            });
+          }
           dispatch(setLoading(false));
         });
     };
     fetchData();
   }, []);
-
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
-  };
 
   return (
     <Box

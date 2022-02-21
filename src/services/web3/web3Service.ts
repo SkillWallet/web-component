@@ -17,7 +17,12 @@ export const getPAKeyByCommunity = async (community) => {
 };
 
 export const getActivationNonce = async (tokenId) => {
-  return axios.post(`${env.SKILL_WALLET_API}/skillwallet/${tokenId}/nonces?action=0`).then((response) => response.data.nonce);
+  return axios
+    .post(`${env.SKILL_WALLET_API}/skillwallet/${tokenId}/nonces?action=0`)
+    .then((response) => response.data.nonce)
+    .catch((e) => {
+      throw new Error(ErrorTypes.CouldNotGetActivationNonce);
+    });
 };
 
 export const getTokenId = async () => {
@@ -38,12 +43,12 @@ export const isQrCodeActive = async (tokenId): Promise<boolean> => {
     const skillwalletAddress = await getSkillWalletAddress();
     const contract = await Web3ContractProvider(skillwalletAddress, SkillWalletAbi);
     const status = await contract.isSkillWalletActivated(tokenId);
-    console.log(status);
 
+    console.log('Polling qr!', status);
     return status;
   } catch (error) {
     console.log(error);
-    console.log('QR Code not active, error!!');
+    console.log('QR Code verification failed!');
     return false;
   }
 };
@@ -51,7 +56,6 @@ export const isQrCodeActive = async (tokenId): Promise<boolean> => {
 export const isCoreTeamMember = async (communityAddress, user) => {
   const contract = await Web3ContractProvider(communityAddress, communityAbi);
   const result = await contract.isCoreTeamMember(user);
-  console.log('isCoreTeamMember', result);
 
   return result;
 };
@@ -112,11 +116,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   };
 
   const url = await storeMetadata(metadataJson);
-  const rand = Math.floor(Math.random() * 100);
-  if (rand % 2 === 0) {
-    throw new Error(ErrorTypes.AlreadyAMember);
-  }
-  throw new Error('Something went wrong');
+
   // eslint-disable-next-line dot-notation
   const createTx = await contract.joinNewMember(url, role['roleId']).catch((e) => {
     if (e.includes('No free spots left')) {

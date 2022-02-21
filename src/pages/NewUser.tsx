@@ -14,6 +14,7 @@ import {
   currentPartnerKey,
   resetState,
   setTokenId,
+  setPartnerMode,
 } from '../store/sw-auth.reducer';
 import { fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
@@ -31,6 +32,7 @@ const NewUser: React.FunctionComponent = (props) => {
   const isPartner = useSelector(partnerMode);
 
   useEffect(() => {
+    dispatch(setPartnerMode(true));
     const fetchData = async () => {
       dispatch(setLoading(true));
       await getCommunity(partnerKey)
@@ -42,7 +44,7 @@ const NewUser: React.FunctionComponent = (props) => {
         .catch((e) => {
           console.log(e);
           setErrorData({
-            message: 'Unable to fetch community.',
+            errorMessage: 'Unable to fetch community.',
             actionLabel: 'Retry',
             action: () => {
               setErrorData(undefined);
@@ -61,7 +63,7 @@ const NewUser: React.FunctionComponent = (props) => {
         .then((wallet) => {
           if (wallet) {
             setErrorData({
-              message: 'There is already a SkillWallet owned by this address.',
+              errorMessage: 'There is already a SkillWallet owned by this address.',
               actionLabel: 'Go back',
               action: () => {
                 dispatch(resetState());
@@ -82,36 +84,17 @@ const NewUser: React.FunctionComponent = (props) => {
             console.log(e);
             dispatch(setLoading(false));
             setErrorData({
-              message: 'Something went wrong.',
+              errorMessage: 'Something went wrong.',
               actionLabel: 'Retry',
               action: () => {
+                setErrorData(undefined);
                 handleInjectFromMetamaskClick();
               },
             });
           }
         });
     }
-
-    // const res = await checkForInactiveSkillWallet(ethereum.selectedAddress);
-    // if (res && res.inactiveSkillWalletExists) {
-    //   dispatch(setTokenId(res.tokenId.toString()));
-    //   history.push('/qr');
-    // } else {
-    //   const activeSWExists = await checkForActiveSkillWallet(ethereum.selectedAddress);
-    //   dispatch(setLoading(false));
-    //   if (activeSWExists) {
-    //     setErrorData({ message: 'There is already a SkillWallet owned by this address.' });
-    //   } else {
-    //     // figure out where to store this
-    //     setMetamaskSelected(true);
-    //   }
-    // }
   };
-
-  // const handleError = () => {
-  //   dispatch(resetState());
-  //   history.push('/');
-  // };
 
   return (
     <Box
