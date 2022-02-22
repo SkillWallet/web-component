@@ -60,7 +60,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
         .catch((e) => {
           console.log(e);
           setErrorData({
-            errorMessage: 'Something went wrong',
+            errorMessage: e.message,
             actionLabel: 'Retry',
             action: () => {
               setErrorData(undefined);
@@ -96,7 +96,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
         } else {
           console.log(e);
           setErrorData({
-            errorMessage: 'Something went wrong',
+            errorMessage: e.message,
             actionLabel: 'Retry',
             action: () => {
               setErrorData(undefined);

@@ -32,7 +32,6 @@ const NewUser: React.FunctionComponent = (props) => {
   const isPartner = useSelector(partnerMode);
 
   useEffect(() => {
-    dispatch(setPartnerMode(true));
     const fetchData = async () => {
       dispatch(setLoading(true));
       await getCommunity(partnerKey)
@@ -44,7 +43,7 @@ const NewUser: React.FunctionComponent = (props) => {
         .catch((e) => {
           console.log(e);
           setErrorData({
-            errorMessage: 'Unable to fetch community.',
+            errorMessage: e.message,
             actionLabel: 'Retry',
             action: () => {
               setErrorData(undefined);
@@ -84,7 +83,7 @@ const NewUser: React.FunctionComponent = (props) => {
             console.log(e);
             dispatch(setLoading(false));
             setErrorData({
-              errorMessage: 'Something went wrong.',
+              errorMessage: e.message,
               actionLabel: 'Retry',
               action: () => {
                 setErrorData(undefined);

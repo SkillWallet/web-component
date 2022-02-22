@@ -18,6 +18,7 @@ const ErrorBox = ({ errorData }) => {
         justifyContent: 'center',
         flexDirection: 'column',
         alignItems: 'center',
+        p: '14px',
       }}
     >
       <Typography sx={{ mb: '26px' }} variant="h2">

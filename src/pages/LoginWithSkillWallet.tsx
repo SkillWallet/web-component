@@ -63,7 +63,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         } else {
           console.log(e);
           setErrorData({
-            errorMessage: 'An unexpected error occured.',
+            errorMessage: e.message,
             actionLabel: 'Retry',
             action: () => {
               setErrorData(undefined);

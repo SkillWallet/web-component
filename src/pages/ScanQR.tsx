@@ -82,9 +82,8 @@ const ScanQR: React.FunctionComponent = (props) => {
               },
             });
           } else {
-            console.log(e);
             setErrorData({
-              errorMessage: 'Something went wrong.',
+              errorMessage: e.message,
               actionLabel: 'Retry',
               action: () => {
                 setErrorData(undefined);

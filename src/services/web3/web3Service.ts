@@ -119,14 +119,14 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
   // eslint-disable-next-line dot-notation
   const createTx = await contract.joinNewMember(url, role['roleId']).catch((e) => {
-    if (e.includes('No free spots left')) {
+    if (e.message.includes('No free spots left')) {
       throw new Error(ErrorTypes.CommunitySlotsFull);
-    } else if (e.includes('Already a member')) {
+    } else if (e.message.includes('Already a member')) {
       throw new Error(ErrorTypes.AlreadyAMember);
-    } else if (e.includes('SkillWallet already registered')) {
+    } else if (e.message.includes('SkillWallet already registered')) {
       throw new Error(ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered);
     } else {
-      throw new Error('Something went wrong');
+      throw new Error(e.message);
     }
   });
 
