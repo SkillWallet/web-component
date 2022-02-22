@@ -165,8 +165,10 @@ export const fetchSkillWallet = async () => {
       const uriCid = await contract.tokenURI(tokenId);
       const jsonUri = ipfsCIDToHttpUrl(uriCid, true);
       const community = await contract.getActiveCommunity(tokenId);
+      console.log(community);
 
       const partnersAgreementKey = await getPAKeyByCommunity(community);
+      console.log(partnersAgreementKey);
       const res = await fetch(jsonUri);
       const jsonMetadata = await res.json();
       const isCoreTeam = await isCoreTeamMember(partnersAgreementKey.communityAddress, selectedAddress);
@@ -176,6 +178,7 @@ export const fetchSkillWallet = async () => {
         nickname: jsonMetadata.properties.username,
         skills: jsonMetadata.properties.skills,
         community,
+        partnersAgreementKey,
         diToCredits: 0,
         tokenId: tokenId.toString(),
         isCoreTeamMember: isCoreTeam,
@@ -195,42 +198,3 @@ export const fetchSkillWallet = async () => {
     throw new Error('No selected wallet address.');
   }
 };
-
-// export const checkForInactiveSkillWallet = async (address: string) => {
-//   try {
-//     console.log(address);
-
-//     const skillWalletAddress = await getSkillWalletAddress();
-//     console.log(skillWalletAddress);
-//     const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
-
-//     console.log(contract);
-//     const tokenId = await contract.getSkillWalletIdByOwner(address);
-//     console.log(tokenId);
-
-//     const isActive = await contract.isSkillWalletActivated(tokenId);
-//     console.log(isActive);
-//     return { inactiveSkillWalletExists: !isActive, tokenId };
-//   } catch (e) {
-//     console.log('Error retreaving inactive SW');
-//   }
-// };
-
-// export const checkForActiveSkillWallet = async (address: string) => {
-//   try {
-//     console.log(address);
-
-//     const skillWalletAddress = await getSkillWalletAddress();
-//     console.log(skillWalletAddress);
-//     const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
-
-//     console.log(contract);
-//     const tokenId = await contract.getSkillWalletIdByOwner(address);
-//     console.log(tokenId);
-
-//     const activeSWExists = await contract.isSkillWalletActivated(tokenId);
-//     return activeSWExists;
-//   } catch (e) {
-//     console.log('Error retreaving active SW');
-//   }
-// };
