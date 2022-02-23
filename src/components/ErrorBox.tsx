@@ -1,10 +1,14 @@
-import { Label } from '@mui/icons-material';
-import { Input, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
 import { SwButton } from 'sw-web-shared';
 
-const ErrorBox = ({ errorMessage, action }) => {
+const ErrorBox = ({ errorData }) => {
+  const handleOnClick = () => {
+    console.log(errorData);
+    if (errorData) {
+      errorData.action();
+    }
+  };
   return (
     <Box
       sx={{
@@ -14,17 +18,21 @@ const ErrorBox = ({ errorMessage, action }) => {
         justifyContent: 'center',
         flexDirection: 'column',
         alignItems: 'center',
+        p: '14px',
       }}
     >
-      <Typography variant="h2">{errorMessage}</Typography>
+      <Typography sx={{ mb: '26px' }} variant="h2">
+        {errorData.errorMessage}
+      </Typography>
       <SwButton
         sx={{
           borderColor: 'primary.main',
+          mb: '26px',
         }}
-        onClick={action}
+        onClick={handleOnClick}
         btnType="large"
         mode="dark"
-        label="Go Back"
+        label={errorData.actionLabel}
       />
     </Box>
   );

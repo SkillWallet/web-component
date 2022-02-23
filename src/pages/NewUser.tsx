@@ -14,11 +14,13 @@ import {
   currentPartnerKey,
   resetState,
   setTokenId,
+  setPartnerMode,
 } from '../store/sw-auth.reducer';
-import { checkForActiveSkillWallet, checkForInactiveSkillWallet, fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
+import { fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 const NewUser: React.FunctionComponent = (props) => {
   const [metamaskSelected, setMetamaskSelected] = useState(false);
@@ -39,7 +41,14 @@ const NewUser: React.FunctionComponent = (props) => {
           dispatch(setLoading(false));
         })
         .catch((e) => {
-          setErrorData({ message: 'Unable to fetch community.' });
+          console.log(e);
+          setErrorData({
+            errorMessage: e.message,
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+            },
+          });
           dispatch(setLoading(false));
         });
     };
@@ -47,38 +56,43 @@ const NewUser: React.FunctionComponent = (props) => {
   }, []);
 
   const handleInjectFromMetamaskClick = async () => {
-    const { ethereum } = window;
-    try {
-      if (ethereum.request) {
-        await ethereum.request({ method: 'eth_requestAccounts' });
-        if (ethereum.selectedAddress) {
-          dispatch(setLoading(true));
-          const res = await checkForInactiveSkillWallet(ethereum.selectedAddress);
-          if (res && res.inactiveSkillWalletExists) {
-            dispatch(setTokenId(res.tokenId.toString()));
-            history.push('/qr');
-          } else {
-            const activeSWExists = await checkForActiveSkillWallet(ethereum.selectedAddress);
+    if (!metamaskSelected) {
+      dispatch(setLoading(true));
+      await fetchSkillWallet()
+        .then((wallet) => {
+          if (wallet) {
+            setErrorData({
+              errorMessage: 'There is already a SkillWallet owned by this address.',
+              actionLabel: 'Go back',
+              action: () => {
+                dispatch(resetState());
+                history.push('/');
+              },
+            });
             dispatch(setLoading(false));
-            if (activeSWExists) {
-              setErrorData({ message: 'There is already a SkillWallet owned by this address.' });
-            } else {
-              // figure out where to store this
-              setMetamaskSelected(true);
-            }
           }
-        }
-      }
-    } catch (error) {
-      setErrorData({ message: 'Failed to retrieve MetaMask account' });
-      //   this.onSkillwalletError.emit();
-      //   alert(error);
+        })
+        .catch((e) => {
+          if (e.message === ErrorTypes.SkillWalletExistsButInactive) {
+            dispatch(setLoading(false));
+            history.push('/qr');
+          } else if (e.message === ErrorTypes.SkillWalletNotFound) {
+            setMetamaskSelected(true);
+            dispatch(setLoading(false));
+          } else {
+            console.log(e);
+            dispatch(setLoading(false));
+            setErrorData({
+              errorMessage: e.message,
+              actionLabel: 'Retry',
+              action: () => {
+                setErrorData(undefined);
+                handleInjectFromMetamaskClick();
+              },
+            });
+          }
+        });
     }
-  };
-
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
   };
 
   return (
@@ -93,7 +107,7 @@ const NewUser: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           {community && (

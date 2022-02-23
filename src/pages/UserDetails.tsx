@@ -56,14 +56,17 @@ const UserDetails: React.FunctionComponent = (props) => {
         dispatch(setLoading(false));
       })
       .catch((e) => {
-        setErrorData({ message: 'Something went wrong.' });
+        console.log(e);
+        setErrorData({
+          errorMessage: e.message,
+          actionLabel: 'Retry',
+          action: () => {
+            setErrorData(undefined);
+            handleSubmit(onSubmit)();
+          },
+        });
         dispatch(setLoading(false));
       });
-  };
-
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
   };
 
   return (
@@ -79,7 +82,7 @@ const UserDetails: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorData={errorData} />
       ) : (
         <>
           <Box

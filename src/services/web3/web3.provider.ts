@@ -21,7 +21,7 @@ export const Web3ContractProvider = async (addressOrName: string, contractInterf
   await changeNetwork();
 
   if (!window.ethereum.selectedAddress) {
-    await window.ethereum.enable();
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
   }
 
   const provider = new ethers.providers.Web3Provider(window.ethereum);

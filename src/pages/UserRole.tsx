@@ -8,6 +8,7 @@ import { currentCommunity, setLoading, currentUsername, setTokenId, profileImage
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
+import { ErrorTypes } from '../types/error-types';
 
 interface Role {
   roleId: number;
@@ -36,16 +37,38 @@ const UserRole: React.FunctionComponent = (props) => {
   } = useForm({ defaultValues });
 
   const onSubmit = async (data: any) => {
+    console.log(data);
     dispatch(setLoading(true));
     await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
       .then((result) => {
-        console.log(result);
-        dispatch(setTokenId(result));
         history.push('/qr');
         dispatch(setLoading(false));
       })
       .catch((e) => {
-        setErrorData({ message: 'Something went wrong' });
+        if (
+          e.message === ErrorTypes.CommunitySlotsFull ||
+          e.message === ErrorTypes.AlreadyAMember ||
+          e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
+        ) {
+          setErrorData({
+            errorMessage: e.message,
+            actionLabel: 'Back to Home',
+            action: () => {
+              dispatch(resetState());
+              history.push('/');
+            },
+          });
+        } else {
+          console.log(e);
+          setErrorData({
+            errorMessage: e.message,
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+              handleSubmit(onSubmit)();
+            },
+          });
+        }
         dispatch(setLoading(false));
       });
   };
@@ -76,7 +99,14 @@ const UserRole: React.FunctionComponent = (props) => {
         })
         .catch((e) => {
           console.log(e);
-          setErrorData({ message: 'Something went wrong' });
+          setErrorData({
+            errorMessage: e.message,
+            actionLabel: 'Retry',
+            action: () => {
+              setErrorData(undefined);
+              fetchData();
+            },
+          });
           dispatch(setLoading(false));
         });
     };
@@ -86,11 +116,6 @@ const UserRole: React.FunctionComponent = (props) => {
   const handleRoleSelected = (role) => {
     console.log(role);
     setSelectedRole(role);
-  };
-
-  const handleError = () => {
-    dispatch(resetState());
-    history.push('/');
   };
 
   return (
@@ -106,7 +131,7 @@ const UserRole: React.FunctionComponent = (props) => {
       }}
     >
       {errorData ? (
-        <ErrorBox errorMessage={errorData.message} action={handleError} />
+        <ErrorBox errorData={errorData} />
       ) : (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Box
