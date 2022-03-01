@@ -5,7 +5,8 @@ import { Link, useHistory } from 'react-router-dom';
 import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, setLoading, partnerMode, setUserName, setUserProfilePicture, resetState } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, partnerMode, resetState, swData } from '../store/sw-auth.reducer';
+import { setUserData } from '../store/sw-user-data.reducer';
 import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import { CustomInput } from '../components/CustomInput';
@@ -30,8 +31,7 @@ const UserDetails: React.FunctionComponent = (props) => {
   const [image, setImage] = useState(undefined);
   const [errorData, setErrorData] = useState(undefined);
   const dispatch = useDispatch();
-  const community = useSelector(currentCommunity);
-  const isPartner = useSelector(partnerMode);
+  const swState = useSelector(swData);
 
   const parseImage = (event) => {
     const reader = new FileReader();
@@ -46,9 +46,13 @@ const UserDetails: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     await uploadFile(data.picture[0])
       .then((result) => {
-        dispatch(setUserProfilePicture(result));
-        dispatch(setUserName(data.username));
-        if (isPartner) {
+        dispatch(
+          setUserData({
+            username: data.username,
+            profileImageUrl: result,
+          })
+        );
+        if (swState.isPartner) {
           history.push('/partnerRole');
         } else {
           history.push('/role');
@@ -93,7 +97,7 @@ const UserDetails: React.FunctionComponent = (props) => {
               alignContent: 'center',
             }}
           >
-            {isPartner ? (
+            {swState.isPartner ? (
               <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
                 Great! Now let's start - tell us about yourself
               </Typography>
@@ -101,7 +105,7 @@ const UserDetails: React.FunctionComponent = (props) => {
               <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
                 Welcome to{' '}
                 <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                  {community.name}
+                  {swState.community.name}
                 </Typography>
                 !
               </Typography>

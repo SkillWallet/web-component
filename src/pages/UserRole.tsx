@@ -4,7 +4,8 @@ import { SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, setLoading, currentUsername, setTokenId, profileImageUrl, resetState } from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, resetState } from '../store/sw-auth.reducer';
+import { currentUserState } from '../store/sw-user-data.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
@@ -23,8 +24,7 @@ const UserRole: React.FunctionComponent = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
-  const username = useSelector(currentUsername);
-  const profilePictureUrl = useSelector(profileImageUrl);
+  const userState = useSelector(currentUserState);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
   const [errorData, setErrorData] = useState(undefined);
@@ -39,7 +39,7 @@ const UserRole: React.FunctionComponent = (props) => {
   const onSubmit = async (data: any) => {
     console.log(data);
     dispatch(setLoading(true));
-    await joinCommunity(community.address, username, profilePictureUrl, selectedRole, data.commitment)
+    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, data.commitment)
       .then((result) => {
         history.push('/qr');
         dispatch(setLoading(false));

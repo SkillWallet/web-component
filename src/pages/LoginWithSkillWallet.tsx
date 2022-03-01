@@ -3,15 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import {
-  setLoading,
-  setSkillWallet,
-  resetState,
-  setLoggedIn,
-  setUserName,
-  setUserProfilePicture,
-  showDialog,
-} from '../store/sw-auth.reducer';
+import { setLoading, resetState, showDialog } from '../store/sw-auth.reducer';
+import { setUserData } from '../store/sw-user-data.reducer';
 import { fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
@@ -28,14 +21,16 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
     dispatch(setLoading(true));
     await fetchSkillWallet()
       .then((result) => {
-        dispatch(setSkillWallet(result));
-        dispatch(setUserName(result.nickname));
-        dispatch(setUserProfilePicture(result.imageUrl));
-        dispatch(setLoggedIn(true));
         dispatch(showDialog(false));
+        dispatch(
+          setUserData({
+            username: result.nickname,
+            profileImageUrl: result.imageUrl,
+            isLoggedIn: true,
+          })
+        );
         window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
         console.log(result);
-        history.push('/');
         const event = new CustomEvent('onSkillwalletLogin', {
           composed: true,
           cancelable: true,
@@ -44,7 +39,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         });
         console.log('sending login event');
         window.dispatchEvent(event);
-        dispatch(setLoading(false));
       })
       .catch((e) => {
         if (e.message === ErrorTypes.SkillWalletExistsButInactive) {

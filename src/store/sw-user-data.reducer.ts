@@ -1,40 +1,62 @@
-import { createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { Interface } from 'ethers/lib/utils';
+import { createSelector } from 'reselect';
 import { ActionPayload } from './action-payload';
 
-interface UserData {
+export interface SwAuthState {
   username?: string;
   profileImageUrl?: string;
-  tokenId?: string;
+  isLoggedIn: boolean;
 }
 
-const initialState: UserData = {
+const initialState: SwAuthState = {
   username: undefined,
   profileImageUrl: undefined,
-  tokenId: undefined,
+  isLoggedIn: false,
 };
 
-const swUserDataSlice = createSlice({
-  name: 'swUserData',
+export interface UserData {
+  username: string;
+  profileImageUrl: string;
+}
+
+export interface UserState {
+  username: string;
+  profileImageUrl: string;
+  isLoggedIn?: boolean;
+}
+
+export const swUserDataSlice = createSlice({
+  name: 'userData',
   initialState,
   reducers: {
-    setUserProfilePicture(state, action: ActionPayload<string>) {
-      state.profileImageUrl = action.payload;
+    resetUIState: () => initialState,
+    setLoggedIn(state, action: ActionPayload<boolean>) {
+      state.isLoggedIn = action.payload;
     },
-    setUserName(state, action: ActionPayload<string>) {
-      state.username = action.payload;
-    },
-    setTokenId(state, action: ActionPayload<string>) {
-      console.log('SETTING TOKEN ID', action.payload);
-      state.tokenId = action.payload;
+    setUserData(state, action: ActionPayload<UserState>) {
+      state.username = action.payload.username;
+      state.profileImageUrl = action.payload.profileImageUrl;
+      state.isLoggedIn = action.payload.isLoggedIn;
     },
   },
 });
 
-const { setUserProfilePicture, setUserName, setTokenId } = swUserDataSlice.actions;
+export const {
+  // SLICE
+  setUserData,
+  setLoggedIn,
+} = swUserDataSlice.actions;
 
-const username = (state) => state.username;
-const currentUsername = createSelector(username, (user) => user);
-const tokenId = (state) => state.tokenId;
-const currentTokenId = createSelector(tokenId, (token) => token);
+export const currentUserState = createSelector(
+  (state) => {
+    return {
+      username: state.userData.username,
+      profileImageUrl: state.userData.profileImageUrl,
+      isLoggedIn: state.userData.isLoggedIn,
+    };
+  },
+  (userState) => userState
+);
 
-// export default swUserDataSlice.reducer;
+export default swUserDataSlice.reducer;
