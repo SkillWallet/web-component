@@ -1,16 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getCommunity } from '../services/web3/web3Service';
-import {
-  setCommunity,
-  setPartnerKey,
-  setCommunityAddress,
-  setPartnerAddress,
-  setPartnerMode,
-  showDialog,
-  showButton,
-  setDisplayButton,
-} from '../store/sw-auth.reducer';
+import { setCommunity, setPartnerKey, setPartnerMode, showDialog } from '../store/sw-auth.reducer';
 
 export const EventsHandlerWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -27,8 +18,8 @@ export const EventsHandlerWrapper = ({ children }) => {
       async (e) => {
         console.log(e);
         const { communityAddr, partnersAddr, partnerKey } = (e as any).detail;
-        dispatch(setCommunityAddress(communityAddr));
-        dispatch(setPartnerAddress(partnersAddr));
+        // dispatch(setCommunityAddress(communityAddr));
+        // dispatch(setPartnerAddress(partnersAddr));
         dispatch(setPartnerKey(partnerKey));
         console.log('PK: ', partnerKey);
         // maybe redundant

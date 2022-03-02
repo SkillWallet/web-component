@@ -17,13 +17,8 @@ export interface SwAuthState {
   loading: boolean;
   // Add type
   community?: any;
-  skillWallet?: any;
   mode: string;
   // SLICE
-  username?: string;
-  profileImageUrl?: string;
-  isLoggedIn: boolean;
-  tokenId?: string;
 }
 
 const initialState: SwAuthState = {
@@ -35,14 +30,19 @@ const initialState: SwAuthState = {
   partnerMode: false,
   loading: false,
   community: undefined,
-  skillWallet: undefined,
   mode: 'light',
-  // SLICE
-  username: undefined,
-  profileImageUrl: undefined,
-  isLoggedIn: false,
-  tokenId: undefined,
 };
+
+export interface UserData {
+  username: string;
+  profileImageUrl: string;
+}
+
+export interface UserState {
+  username: string;
+  profileImageUrl: string;
+  isLoggedIn: boolean;
+}
 
 export const swAuthSlice = createSlice({
   name: 'swAuth',
@@ -67,29 +67,10 @@ export const swAuthSlice = createSlice({
     setCommunity: (state, action: ActionPayload<any>) => {
       state.community = action.payload;
     },
-    // SUS
-    setCommunityAddress: (state, action: ActionPayload<string>) => {
-      state.communityAddress = action.payload;
-    },
     setPartnerMode: (state, action: ActionPayload<boolean>) => {
       state.partnerMode = action.payload;
     },
-    setSkillWallet: (state, action: ActionPayload<any>) => {
-      state.skillWallet = action.payload;
-    },
     // SLICE
-    setUserProfilePicture(state, action: ActionPayload<string>) {
-      state.profileImageUrl = action.payload;
-    },
-    setUserName(state, action: ActionPayload<string>) {
-      state.username = action.payload;
-    },
-    setTokenId(state, action: ActionPayload<string>) {
-      state.tokenId = action.payload;
-    },
-    setLoggedIn(state, action: ActionPayload<boolean>) {
-      state.isLoggedIn = action.payload;
-    },
     resetState(state, action: ActionPayload<void>) {
       state = {
         ...initialState,
@@ -101,51 +82,42 @@ export const swAuthSlice = createSlice({
   },
 });
 
-export const {
-  resetState,
-  setDisplayButton,
-  resetUIState,
-  setSkillWallet,
-  showDialog,
-  setPartnerKey,
-  setLoading,
-  setCommunity,
-  setPartnerMode,
-  setCommunityAddress,
-  setPartnerAddress,
-  // SLICE
-  setUserProfilePicture,
-  setUserName,
-  setTokenId,
-  setLoggedIn,
-} = swAuthSlice.actions;
+export const { resetState, setDisplayButton, resetUIState, showDialog, setPartnerKey, setLoading, setCommunity, setPartnerMode } =
+  swAuthSlice.actions;
 
-const show = (state) => state.swAuth.showDialog;
-export const isOpen = createSelector(show, (isShown) => isShown);
-const displayButton = (state) => state.swAuth.displayButton;
-export const showButton = createSelector(displayButton, (display) => display);
-const key = (state) => state.swAuth.partnerKey;
-export const currentPartnerKey = createSelector(key, (currentKey) => currentKey);
-const loading = (state) => state.swAuth.loading;
-export const loadingInProgress = createSelector(loading, (isLoading) => isLoading);
-const community = (state) => state.swAuth.community;
-export const currentCommunity = createSelector(community, (comm) => comm);
-const communityAddr = (state) => state.swAuth.communityAddress;
-export const communityAddress = createSelector(communityAddr, (address) => address);
-const partner = (state) => state.swAuth.partnerMode;
-export const partnerMode = createSelector(partner, (isPartner) => isPartner);
-const sw = (state) => state.swAuth.skillWallet;
-export const currentSkillWallet = createSelector(sw, (currentWallet) => currentWallet);
-// SLICE
-const username = (state) => state.swAuth.username;
-export const currentUsername = createSelector(username, (user) => user);
-const picture = (state) => state.swAuth.profileImageUrl;
-export const profileImageUrl = createSelector(picture, (pic) => pic);
-const tokenId = (state) => state.swAuth.tokenId;
-export const currentTokenId = createSelector(tokenId, (token) => token);
-const userLoggedIn = (state) => state.swAuth.isLoggedIn;
-export const currentlyLoggedIn = createSelector(userLoggedIn, (loggedIn) => loggedIn);
-const partnerAddress = (state) => state.swAuth.partnerAddress;
-export const currentPartnerAddress = createSelector(partnerAddress, (addres) => addres);
+export const isOpen = createSelector(
+  (state) => state.swAuth.showDialog,
+  (isShown) => isShown
+);
+export const showButton = createSelector(
+  (state) => state.swAuth.displayButton,
+  (display) => display
+);
+export const currentPartnerKey = createSelector(
+  (state) => state.swAuth.partnerKey,
+  (currentKey) => currentKey
+);
+export const loadingInProgress = createSelector(
+  (state) => state.swAuth.loading,
+  (isLoading) => isLoading
+);
+export const currentCommunity = createSelector(
+  (state) => state.swAuth.community,
+  (comm) => comm
+);
+export const partnerMode = createSelector(
+  (state) => state.swAuth.partnerMode,
+  (isPartner) => isPartner
+);
+export const swData = createSelector(
+  (state) => {
+    return {
+      community: state.swAuth.community,
+      partnerMode: state.swAuth.partnerMode,
+      partnerKey: state.swAuth.partnerKey,
+    };
+  },
+  (data) => data
+);
 
 export default swAuthSlice.reducer;

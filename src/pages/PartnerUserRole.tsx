@@ -4,17 +4,8 @@ import { SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import {
-  currentCommunity,
-  setLoading,
-  partnerMode,
-  currentUsername,
-  setTokenId,
-  setPartnerAddress,
-  currentPartnerAddress,
-  resetState,
-  profileImageUrl,
-} from '../store/sw-auth.reducer';
+import { currentCommunity, setLoading, resetState } from '../store/sw-auth.reducer';
+import { currentUserState } from '../store/sw-user-data.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
@@ -29,9 +20,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
   const [errorData, setErrorData] = useState(undefined);
   const community = useSelector(currentCommunity);
-  const username = useSelector(currentUsername);
-  const imageUrl = useSelector(profileImageUrl);
-  const partnerAddress = useSelector(currentPartnerAddress);
+  const userState = useSelector(currentUserState);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
 
@@ -75,7 +64,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
 
   const handleJoinClicked = async () => {
     dispatch(setLoading(true));
-    await joinCommunity(community.address, username, imageUrl, selectedRole, 10)
+    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, 10)
       .then(async (result) => {
         history.push('/qr');
       })
@@ -109,7 +98,6 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   };
 
   const handleRoleSelected = (role) => {
-    console.log(role);
     setSelectedRole(role);
   };
 

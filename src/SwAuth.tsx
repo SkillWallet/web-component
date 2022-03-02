@@ -6,30 +6,17 @@ import { useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import {
-  isOpen,
-  showDialog,
-  setPartnerKey,
-  profileImageUrl,
-  currentUsername,
-  currentlyLoggedIn,
-  resetState,
-  setLoggedIn,
-  setUserProfilePicture,
-  setUserName,
-} from './store/sw-auth.reducer';
+import { isOpen, showDialog, setPartnerKey, resetState, setLoading } from './store/sw-auth.reducer';
+import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
-// import { setUserName, setUserProfilePicture } from './store/sw-user-data.reducer';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
 
   const handleClose = () => {
     dispatch(showDialog(false));
     dispatch(resetState());
-    history.push('/');
   };
 
   useEffect(() => {
@@ -47,10 +34,9 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
 });
 
 export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) => {
+  const history = useHistory();
   const dispatch = useDispatch();
-  const username = useSelector(currentUsername);
-  const image = useSelector(profileImageUrl);
-  const loggedIn = useSelector(currentlyLoggedIn);
+  const currentUser = useSelector(currentUserState);
 
   const [buttonHidden, setButtonHidden] = useState(false);
 
@@ -81,7 +67,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         cancelable: true,
         bubbles: true,
       });
-      console.log('dispatchin init event');
       window.dispatchEvent(event);
     }
     const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
@@ -90,9 +75,13 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
       // 8 Hours
       const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
       if (currentTime < sessionLength) {
-        dispatch(setUserName(sw.nickname));
-        dispatch(setUserProfilePicture(sw.imageUrl));
-        dispatch(setLoggedIn(true));
+        dispatch(
+          setUserData({
+            username: sw.nickname,
+            profileImageUrl: sw.imageUrl,
+            isLoggedIn: true,
+          })
+        );
         const event = new CustomEvent('onSkillwalletLogin', {
           composed: true,
           cancelable: true,
@@ -116,7 +105,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   }, []);
 
   const handleButtonClick = () => {
-    if (loggedIn) {
+    if (currentUser.isLoggedIn) {
       window.sessionStorage.removeItem('skillWallet');
       dispatch(resetState());
       dispatch(setLoggedIn(false));
@@ -128,6 +117,8 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
       });
       window.dispatchEvent(event);
     } else {
+      history.push('/');
+      dispatch(setLoading(false));
       dispatch(showDialog(true));
     }
   };
@@ -144,8 +135,10 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
             mode="dark"
             btnType="medium"
             onClick={handleButtonClick}
-            label={loggedIn ? username : 'Connect Wallet'}
-            startIcon={loggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={image} /> : undefined}
+            label={currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
+            startIcon={
+              currentUser.isLoggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} /> : undefined
+            }
           />
         )}
       </Portal>

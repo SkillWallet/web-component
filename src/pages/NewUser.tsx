@@ -3,19 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import {
-  currentCommunity,
-  setLoading,
-  partnerMode,
-  setLoggedIn,
-  setUserProfilePicture,
-  setUserName,
-  setCommunity,
-  currentPartnerKey,
-  resetState,
-  setTokenId,
-  setPartnerMode,
-} from '../store/sw-auth.reducer';
+import { setLoading, setCommunity, resetState, swData } from '../store/sw-auth.reducer';
 import { fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
@@ -27,14 +15,12 @@ const NewUser: React.FunctionComponent = (props) => {
   const [errorData, setErrorData] = useState(undefined);
   const history = useHistory();
   const dispatch = useDispatch();
-  const community = useSelector(currentCommunity);
-  const partnerKey = useSelector(currentPartnerKey);
-  const isPartner = useSelector(partnerMode);
+  const swState = useSelector(swData);
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      await getCommunity(partnerKey)
+      await getCommunity(swState.partnerKey)
         .then((result) => {
           console.log('community', result);
           dispatch(setCommunity(result));
@@ -110,7 +96,7 @@ const NewUser: React.FunctionComponent = (props) => {
         <ErrorBox errorData={errorData} />
       ) : (
         <>
-          {community && (
+          {swState && swState.community && (
             <>
               <Box
                 sx={{
@@ -120,7 +106,7 @@ const NewUser: React.FunctionComponent = (props) => {
                   alignContent: 'center',
                 }}
               >
-                {isPartner ? (
+                {swState.isPartner ? (
                   <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
                     Hello, Partner!
                   </Typography>
@@ -128,7 +114,7 @@ const NewUser: React.FunctionComponent = (props) => {
                   <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
                     Welcome to{' '}
                     <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                      {community.name}
+                      {swState.community.name}
                     </Typography>
                     !
                   </Typography>
