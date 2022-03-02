@@ -37,7 +37,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           bubbles: true,
           detail: true,
         });
-        console.log('sending login event');
         window.dispatchEvent(event);
       })
       .catch((e) => {

@@ -98,7 +98,6 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   };
 
   const handleRoleSelected = (role) => {
-    console.log(role);
     setSelectedRole(role);
   };
 

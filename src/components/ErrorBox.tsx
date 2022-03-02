@@ -20,7 +20,7 @@ const ErrorBox = ({ errorData }) => {
         alignItems: 'center',
       }}
     >
-      <Typography sx={{ mb: '26px', px: '14px' }} variant="h2">
+      <Typography sx={{ mb: '26px', width: '90%' }} variant="h2">
         {errorData.errorMessage}
       </Typography>
       <SwButton

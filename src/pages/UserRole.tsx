@@ -37,7 +37,6 @@ const UserRole: React.FunctionComponent = (props) => {
   } = useForm({ defaultValues });
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     dispatch(setLoading(true));
     await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, data.commitment)
       .then((result) => {
@@ -76,7 +75,6 @@ const UserRole: React.FunctionComponent = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       dispatch(setLoading(true));
-      console.log(community.address, window.ethereum.selectedAddress);
       await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
           const roles = community?.roles?.roles || [];
@@ -84,7 +82,6 @@ const UserRole: React.FunctionComponent = (props) => {
           const filteredRoles = roles
             .filter((r) => r.isCoreTeamMember === result)
             .map((curr, index) => {
-              console.log(curr);
               const { roleName } = curr;
               let roleId;
               if (roleId <= 3) {
@@ -114,7 +111,6 @@ const UserRole: React.FunctionComponent = (props) => {
   }, []);
 
   const handleRoleSelected = (role) => {
-    console.log(role);
     setSelectedRole(role);
   };
 

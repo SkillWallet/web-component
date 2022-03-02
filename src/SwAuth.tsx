@@ -9,22 +9,14 @@ import MainDialog from './components/MainDialog';
 import { isOpen, showDialog, setPartnerKey, resetState, setLoading } from './store/sw-auth.reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
-// import { setUserName, setUserProfilePicture } from './store/sw-user-data.reducer';
-
-let modalRenders = 1;
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useDispatch();
   const open = useSelector(isOpen);
 
-  console.log(modalRenders);
-  // eslint-disable-next-line no-plusplus
-  modalRenders++;
-
   const handleClose = () => {
     dispatch(showDialog(false));
     dispatch(resetState());
-    console.log('pushing');
   };
 
   useEffect(() => {
@@ -32,11 +24,10 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
     if (rootContainer) {
       (rootContainer as HTMLElement).style.zIndex = open ? '999999' : '0';
     }
-  }, [rootContainer]);
+  }, [open, rootContainer]);
 
   return (
     <>
-      {console.log('IS OPEN RERENDER ', open)}
       <MainDialog open={open} handleClose={handleClose} container={container} />
     </>
   );
@@ -46,7 +37,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector(currentUserState);
-  console.log(currentUser);
 
   const [buttonHidden, setButtonHidden] = useState(false);
 
@@ -77,7 +67,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         cancelable: true,
         bubbles: true,
       });
-      console.log('dispatchin init event');
       window.dispatchEvent(event);
     }
     const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
@@ -93,9 +82,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
             isLoggedIn: true,
           })
         );
-        // dispatch(setUserName(sw.nickname));
-        // dispatch(setUserProfilePicture(sw.imageUrl));
-        // dispatch(setLoggedIn(true));
         const event = new CustomEvent('onSkillwalletLogin', {
           composed: true,
           cancelable: true,
@@ -139,7 +125,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
 
   return (
     <>
-      {console.log('ROOT RENDER BUTTON')}
       <Portal container={container}>
         {!buttonHidden && (
           <SwButton

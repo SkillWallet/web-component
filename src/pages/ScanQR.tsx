@@ -55,7 +55,6 @@ const ScanQR: React.FunctionComponent = (props) => {
                   bubbles: true,
                   detail: true,
                 });
-                console.log('sending login event');
                 window.dispatchEvent(event);
               } else {
                 setErrorData({

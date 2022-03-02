@@ -74,7 +74,6 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
   const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
-  console.log(role, typeof role);
   const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
   const config = {
     avatar: ipfsCIDToHttpUrl(imageUrl, false),
@@ -85,10 +84,6 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   const { toFile } = await SkillWalletIDBadgeGenerator(config);
 
   const file = await toFile();
-  console.log(file);
-
-  // eslint-disable-next-line dot-notation
-  console.log('Role name', role.roleName);
 
   const metadataJson = {
     name: `${username}`,
