@@ -5,10 +5,10 @@ import { Box, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { ReactComponent as PlusIcon } from '../assets/create-unsel.svg';
 import { ReactComponent as SwIcon } from '../assets/sw-logo-icon.svg';
-import { partnerMode } from '../store/sw-auth.reducer';
+import { swData } from '../store/sw-auth.reducer';
 
 const LoginWith: React.FunctionComponent = (props) => {
-  const isPartner = useSelector(partnerMode);
+  const swState = useSelector(swData);
   return (
     <Box
       sx={{
@@ -50,9 +50,9 @@ const LoginWith: React.FunctionComponent = (props) => {
           startIcon={<SwIcon />}
           mode="dark"
           component={Link}
-          disabled={isPartner}
+          // disabled={isPartner}
           to="/skillwallet"
-          label={isPartner ? 'Existing Partner' : 'SkillWallet'}
+          label={swState.isPartner ? 'Existing Partner' : 'SkillWallet'}
         />
         <SwButton
           sx={{
@@ -61,9 +61,10 @@ const LoginWith: React.FunctionComponent = (props) => {
           btnType="large"
           startIcon={<PlusIcon />}
           mode="dark"
+          disabled={swState.disableCreateNewUser}
           component={Link}
           to="/newuser"
-          label={isPartner ? 'New Partner' : 'New User'}
+          label={swState.isPartner ? 'New Partner' : 'New User'}
         />
       </Box>
     </Box>

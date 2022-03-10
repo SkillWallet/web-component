@@ -42,11 +42,7 @@ export const swUserDataSlice = createSlice({
   },
 });
 
-export const {
-  // SLICE
-  setUserData,
-  setLoggedIn,
-} = swUserDataSlice.actions;
+export const { setUserData, setLoggedIn } = swUserDataSlice.actions;
 
 export const currentUserState = createSelector(
   (state) => {
