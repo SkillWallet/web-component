@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Route, Switch, RouteComponentProps } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import routes from '../config/routes';
-import { loadingInProgress } from '../store/sw-auth.reducer';
+import { loadingInProgress } from '../store/sw-ui-reducer';
 
 function MainDialog({ container, open, handleClose }) {
   const loading = useSelector(loadingInProgress);

@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog, setPartnerKey, resetState, setLoading, setDisableCreateNewUser } from './store/sw-auth.reducer';
+import { setPartnerKey, resetState } from './store/sw-auth.reducer';
+import { isOpen, showDialog, setLoading, setDisableCreateNewUser } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 
@@ -51,6 +52,9 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   }, []);
 
   useEffect(() => {
+    setInterval(() => {
+      dispatch({ type: 'USER_LOGOUT' });
+    }, 10000);
     const { disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
     if (hideButton) {
       setButtonHidden(hideButton === 'true');
