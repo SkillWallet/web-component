@@ -48,7 +48,7 @@ const ScanQR: React.FunctionComponent = (props) => {
                 // dispatch(setLoggedIn(true));
                 // dispatch(setUserName(sw.nickname));
                 // dispatch(setUserProfilePicture(sw.imageUrl));
-                dispatch(loadingFinished());
+                dispatch(showDialog(false));
                 history.push('/');
                 const event = new CustomEvent('onSkillwalletLogin', {
                   composed: true,
