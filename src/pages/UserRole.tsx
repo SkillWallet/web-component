@@ -4,8 +4,9 @@ import { SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, resetState } from '../store/sw-auth.reducer';
-import { setLoading } from '../store/sw-ui-reducer';
+import { currentCommunity } from '../store/sw-auth.reducer';
+import { resetUIState } from '../store/store';
+import { loadingFinished, setLoading, startLoading } from '../store/sw-ui-reducer';
 import { currentUserState } from '../store/sw-user-data.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
@@ -38,11 +39,11 @@ const UserRole: React.FunctionComponent = (props) => {
   } = useForm({ defaultValues });
 
   const onSubmit = async (data: any) => {
-    dispatch(setLoading(true));
-    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, data.commitment)
+    dispatch(startLoading('Joining community.'));
+    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, data.commitment, dispatch)
       .then((result) => {
         history.push('/qr');
-        dispatch(setLoading(false));
+        dispatch(loadingFinished());
       })
       .catch((e) => {
         if (
@@ -54,7 +55,7 @@ const UserRole: React.FunctionComponent = (props) => {
             errorMessage: e.message,
             actionLabel: 'Back to Home',
             action: () => {
-              dispatch(resetState());
+              dispatch(resetUIState);
               history.push('/');
             },
           });
@@ -69,13 +70,13 @@ const UserRole: React.FunctionComponent = (props) => {
             },
           });
         }
-        dispatch(setLoading(false));
+        dispatch(loadingFinished());
       });
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setLoading(true));
+      dispatch(startLoading('Checking membership.'));
       await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
           const roles = community?.roles?.roles || [];
@@ -93,7 +94,7 @@ const UserRole: React.FunctionComponent = (props) => {
               return { roleId, roleName };
             });
           setMemberRoles(filteredRoles);
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         })
         .catch((e) => {
           console.log(e);
@@ -105,7 +106,7 @@ const UserRole: React.FunctionComponent = (props) => {
               fetchData();
             },
           });
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         });
     };
     fetchData();

@@ -7,13 +7,19 @@ export interface SwUIState {
   displayButton: boolean;
   disableCreateNewUser: boolean;
   loading: boolean;
+  loadingMessage: string;
+}
+export interface LoadingData {
+  loading: boolean;
+  loadingMessage?: string;
 }
 
-const initialState: SwUIState = {
+export const initialState: SwUIState = {
   showDialog: false,
   displayButton: true,
   disableCreateNewUser: false,
   loading: false,
+  loadingMessage: undefined,
 };
 
 export const swUIlice = createSlice({
@@ -32,10 +38,34 @@ export const swUIlice = createSlice({
     setLoading: (state, action: ActionPayload<boolean>) => {
       state.loading = action.payload;
     },
+    startLoading: (state, action: ActionPayload<string>) => {
+      state.loading = true;
+      state.loadingMessage = action.payload;
+    },
+    setLoadingMessage: (state, action: ActionPayload<string>) => {
+      state.loadingMessage = action.payload;
+    },
+    setLoadingData: (state, action: ActionPayload<LoadingData>) => {
+      state.loading = action.payload.loading;
+      state.loadingMessage = action.payload.loadingMessage;
+    },
+    loadingFinished: (state, action: ActionPayload<void>) => {
+      state.loading = false;
+      state.loadingMessage = undefined;
+    },
   },
 });
 
-export const { setDisplayButton, showDialog, setLoading, setDisableCreateNewUser } = swUIlice.actions;
+export const {
+  setDisplayButton,
+  showDialog,
+  setLoading,
+  setDisableCreateNewUser,
+  setLoadingMessage,
+  setLoadingData,
+  loadingFinished,
+  startLoading,
+} = swUIlice.actions;
 
 export const isOpen = createSelector(
   (state) => state.swUI.showDialog,
@@ -47,6 +77,16 @@ export const showButton = createSelector(
 );
 export const loadingInProgress = createSelector(
   (state) => state.swUI.loading,
+  (isLoading) => isLoading
+);
+
+export const loadingData = createSelector(
+  (state) => {
+    return {
+      loading: state.swUI.loading,
+      loadingMessage: state.swUI.loadingMessage,
+    };
+  },
   (isLoading) => isLoading
 );
 

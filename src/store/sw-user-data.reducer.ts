@@ -9,7 +9,7 @@ export interface SwAuthState {
   isLoggedIn: boolean;
 }
 
-const initialState: SwAuthState = {
+export const initialState: SwAuthState = {
   username: undefined,
   profileImageUrl: undefined,
   isLoggedIn: false,

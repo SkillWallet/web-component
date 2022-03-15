@@ -3,8 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { setCommunity, resetState, swData } from '../store/sw-auth.reducer';
-import { setLoading } from '../store/sw-ui-reducer';
+import { setCommunity, swData } from '../store/sw-auth.reducer';
+import { resetUIState } from '../store/store';
+import { loadingFinished, setLoading, startLoading } from '../store/sw-ui-reducer';
 import { fetchSkillWallet, getCommunity } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
@@ -20,12 +21,12 @@ const NewUser: React.FunctionComponent = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setLoading(true));
+      dispatch(startLoading('Retrieving community data.'));
       await getCommunity(swState.partnerKey)
         .then((result) => {
           console.log('community', result);
           dispatch(setCommunity(result));
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         })
         .catch((e) => {
           console.log(e);
@@ -36,7 +37,7 @@ const NewUser: React.FunctionComponent = (props) => {
               setErrorData(undefined);
             },
           });
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         });
     };
     fetchData();
@@ -44,7 +45,7 @@ const NewUser: React.FunctionComponent = (props) => {
 
   const handleInjectFromMetamaskClick = async () => {
     if (!metamaskSelected) {
-      dispatch(setLoading(true));
+      dispatch(startLoading('Checking for an exisitng SkillWallet.'));
       await fetchSkillWallet()
         .then((wallet) => {
           if (wallet) {
@@ -52,23 +53,23 @@ const NewUser: React.FunctionComponent = (props) => {
               errorMessage: 'There is already a SkillWallet owned by this address.',
               actionLabel: 'Go back',
               action: () => {
-                dispatch(resetState());
+                dispatch(resetUIState);
                 history.push('/');
               },
             });
-            dispatch(setLoading(false));
+            dispatch(loadingFinished());
           }
         })
         .catch((e) => {
           if (e.message === ErrorTypes.SkillWalletExistsButInactive) {
-            dispatch(setLoading(false));
+            dispatch(loadingFinished());
             history.push('/qr');
           } else if (e.message === ErrorTypes.SkillWalletNotFound) {
             setMetamaskSelected(true);
-            dispatch(setLoading(false));
+            dispatch(loadingFinished());
           } else {
             console.log(e);
-            dispatch(setLoading(false));
+            dispatch(loadingFinished());
             setErrorData({
               errorMessage: e.message,
               actionLabel: 'Retry',

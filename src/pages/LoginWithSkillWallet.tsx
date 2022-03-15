@@ -3,8 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { resetState } from '../store/sw-auth.reducer';
-import { showDialog, setLoading } from '../store/sw-ui-reducer';
+import { resetUIState } from '../store/store';
+import { showDialog, setLoading, loadingFinished } from '../store/sw-ui-reducer';
 import { setUserData } from '../store/sw-user-data.reducer';
 import { fetchSkillWallet } from '../services/web3/web3Service';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
@@ -20,7 +20,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
 
   const performMetamaskLogin = async () => {
     dispatch(setLoading(true));
-    await fetchSkillWallet()
+    await fetchSkillWallet(dispatch)
       .then((result) => {
         dispatch(showDialog(false));
         dispatch(
@@ -39,21 +39,23 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           detail: true,
         });
         window.dispatchEvent(event);
+
+        dispatch(loadingFinished());
       })
       .catch((e) => {
         if (e.message === ErrorTypes.SkillWalletExistsButInactive) {
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
           history.push('/qr');
         } else if (e.message === ErrorTypes.SkillWalletNotFound) {
           setErrorData({
             errorMessage: 'SkillWallet not found.',
             actionLabel: 'Go Back',
             action: () => {
-              dispatch(resetState());
+              dispatch(resetUIState);
               history.push('/');
             },
           });
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         } else {
           console.log(e);
           setErrorData({
@@ -64,7 +66,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
               performMetamaskLogin();
             },
           });
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         }
       });
   };

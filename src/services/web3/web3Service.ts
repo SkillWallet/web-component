@@ -2,6 +2,7 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
+import { setLoadingMessage } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import { env } from './env';
@@ -69,9 +70,9 @@ export const getCommunity = async (partnerKey) => {
   // return community;
 };
 
-export const joinCommunity = async (communityAddress, username, imageUrl, role, level) => {
+export const joinCommunity = async (communityAddress, username, imageUrl, role, level, dispatch) => {
   console.log('trying to join community', communityAddress);
-
+  dispatch(setLoadingMessage('Preparing to join community.'));
   const contract = await Web3ContractProvider(communityAddress, communityAbi);
 
   const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
@@ -110,8 +111,10 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     },
   };
 
+  dispatch(setLoadingMessage('Uploading metadata.'));
   const url = await storeMetadata(metadataJson);
 
+  dispatch(setLoadingMessage('Awaiting transaction confirmation.'));
   // eslint-disable-next-line dot-notation
   const createTx = await contract.joinNewMember(url, role['roleId']).catch((e) => {
     if (e.message.includes('No free spots left')) {
@@ -125,6 +128,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
     }
   });
 
+  dispatch(setLoadingMessage('Confirming transaction.'));
   const communityTransactionResult = await createTx.wait();
   console.log(communityTransactionResult);
   const { events } = communityTransactionResult;
@@ -137,11 +141,17 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   throw new Error('Something went wrong');
 };
 
-export const fetchSkillWallet = async () => {
+export const fetchSkillWallet = async (dispatch?) => {
   const skillWalletAddress = await getSkillWalletAddress();
 
+  if (!window.ethereum.selectedAddress && dispatch) {
+    dispatch(setLoadingMessage('Getting MetaMask info.'));
+  }
   const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
 
+  if (dispatch) {
+    dispatch(setLoadingMessage('Retrieving SkillWallet.'));
+  }
   if (window.ethereum.selectedAddress) {
     const { selectedAddress } = window.ethereum;
     console.log(selectedAddress);

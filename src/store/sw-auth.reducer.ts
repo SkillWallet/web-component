@@ -27,7 +27,7 @@ export interface SwAuthState {
   mode: string;
 }
 
-const initialState: SwAuthState = {
+export const initialState: SwAuthState = {
   // showDialog: false,
   // displayButton: true,
   partnerKey: undefined,
@@ -55,55 +55,22 @@ export const swAuthSlice = createSlice({
   name: 'swAuth',
   initialState,
   reducers: {
-    resetUIState: () => initialState,
-    // showDialog: (state, action: ActionPayload<boolean>) => {
-    //   state.showDialog = action.payload;
-    // },
     setPartnerKey: (state, action: ActionPayload<string>) => {
       state.partnerKey = action.payload;
     },
-    // setDisableCreateNewUser: (state, action: ActionPayload<boolean>) => {
-    //   state.disableCreateNewUser = action.payload;
-    // },
-    // setDisplayButton: (state, action: ActionPayload<boolean>) => {
-    //   state.displayButton = action.payload;
-    // },
     setPartnerAddress: (state, action: ActionPayload<string>) => {
       state.partnerAddress = action.payload;
     },
-    // setLoading: (state, action: ActionPayload<boolean>) => {
-    //   state.loading = action.payload;
-    // },
     setCommunity: (state, action: ActionPayload<any>) => {
       state.community = action.payload;
     },
     setPartnerMode: (state, action: ActionPayload<boolean>) => {
       state.partnerMode = action.payload;
     },
-    // SLICE
-    resetState(state, action: ActionPayload<void>) {
-      state = {
-        ...initialState,
-        partnerKey: state.partnerKey,
-        partnerMode: state.partnerMode,
-        partnerAddress: state.partnerAddress,
-        // disableCreateNewUser: state.disableCreateNewUser,
-      };
-    },
   },
 });
 
-export const {
-  resetState,
-  // setDisplayButton,
-  resetUIState,
-  // showDialog,
-  setPartnerKey,
-  // setLoading,
-  setCommunity,
-  setPartnerMode,
-  // setDisableCreateNewUser,
-} = swAuthSlice.actions;
+export const { setPartnerKey, setCommunity, setPartnerMode } = swAuthSlice.actions;
 
 export const currentPartnerKey = createSelector(
   (state) => state.swAuth.partnerKey,
