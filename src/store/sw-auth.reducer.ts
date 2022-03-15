@@ -8,34 +8,20 @@ export interface Community {
   address?: string;
 }
 export interface SwAuthState {
-  // SLICE
-  // showDialog: boolean;
-  // displayButton: boolean;
-  // SLICE
   partnerKey?: string;
-  // SLICE
-  // disableCreateNewUser: boolean;
-  // SLICE
   partnerAddress?: string;
   communityAddress?: string;
   partnerMode?: boolean;
-  // SLICE
-  // loading: boolean;
-  // SLICE
   // Add type
   community?: any;
   mode: string;
 }
 
 export const initialState: SwAuthState = {
-  // showDialog: false,
-  // displayButton: true,
   partnerKey: undefined,
-  // disableCreateNewUser: false,
   partnerAddress: undefined,
   communityAddress: undefined,
   partnerMode: false,
-  // loading: false,
   community: undefined,
   mode: 'light',
 };
