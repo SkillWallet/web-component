@@ -8,28 +8,20 @@ export interface Community {
   address?: string;
 }
 export interface SwAuthState {
-  showDialog: boolean;
-  displayButton: boolean;
   partnerKey?: string;
-  disableCreateNewUser: boolean;
   partnerAddress?: string;
   communityAddress?: string;
   partnerMode?: boolean;
-  loading: boolean;
   // Add type
   community?: any;
   mode: string;
 }
 
-const initialState: SwAuthState = {
-  showDialog: false,
-  displayButton: true,
+export const initialState: SwAuthState = {
   partnerKey: undefined,
-  disableCreateNewUser: false,
   partnerAddress: undefined,
   communityAddress: undefined,
   partnerMode: false,
-  loading: false,
   community: undefined,
   mode: 'light',
 };
@@ -49,24 +41,11 @@ export const swAuthSlice = createSlice({
   name: 'swAuth',
   initialState,
   reducers: {
-    resetUIState: () => initialState,
-    showDialog: (state, action: ActionPayload<boolean>) => {
-      state.showDialog = action.payload;
-    },
     setPartnerKey: (state, action: ActionPayload<string>) => {
       state.partnerKey = action.payload;
     },
-    setDisableCreateNewUser: (state, action: ActionPayload<boolean>) => {
-      state.disableCreateNewUser = action.payload;
-    },
-    setDisplayButton: (state, action: ActionPayload<boolean>) => {
-      state.displayButton = action.payload;
-    },
     setPartnerAddress: (state, action: ActionPayload<string>) => {
       state.partnerAddress = action.payload;
-    },
-    setLoading: (state, action: ActionPayload<boolean>) => {
-      state.loading = action.payload;
     },
     setCommunity: (state, action: ActionPayload<any>) => {
       state.community = action.payload;
@@ -74,46 +53,14 @@ export const swAuthSlice = createSlice({
     setPartnerMode: (state, action: ActionPayload<boolean>) => {
       state.partnerMode = action.payload;
     },
-    // SLICE
-    resetState(state, action: ActionPayload<void>) {
-      state = {
-        ...initialState,
-        partnerKey: state.partnerKey,
-        partnerMode: state.partnerMode,
-        partnerAddress: state.partnerAddress,
-        disableCreateNewUser: state.disableCreateNewUser,
-      };
-    },
   },
 });
 
-export const {
-  resetState,
-  setDisplayButton,
-  resetUIState,
-  showDialog,
-  setPartnerKey,
-  setLoading,
-  setCommunity,
-  setPartnerMode,
-  setDisableCreateNewUser,
-} = swAuthSlice.actions;
+export const { setPartnerKey, setCommunity, setPartnerMode } = swAuthSlice.actions;
 
-export const isOpen = createSelector(
-  (state) => state.swAuth.showDialog,
-  (isShown) => isShown
-);
-export const showButton = createSelector(
-  (state) => state.swAuth.displayButton,
-  (display) => display
-);
 export const currentPartnerKey = createSelector(
   (state) => state.swAuth.partnerKey,
   (currentKey) => currentKey
-);
-export const loadingInProgress = createSelector(
-  (state) => state.swAuth.loading,
-  (isLoading) => isLoading
 );
 export const currentCommunity = createSelector(
   (state) => state.swAuth.community,
@@ -129,7 +76,7 @@ export const swData = createSelector(
       community: state.swAuth.community,
       partnerMode: state.swAuth.partnerMode,
       partnerKey: state.swAuth.partnerKey,
-      disableCreateNewUser: state.swAuth.disableCreateNewUser,
+      disableCreateNewUser: state.swUI.disableCreateNewUser,
     };
   },
   (data) => data

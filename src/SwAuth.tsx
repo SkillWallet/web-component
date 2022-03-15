@@ -6,7 +6,9 @@ import { useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import { isOpen, showDialog, setPartnerKey, resetState, setLoading, setDisableCreateNewUser } from './store/sw-auth.reducer';
+import { setPartnerKey } from './store/sw-auth.reducer';
+import { resetUIState } from './store/store';
+import { isOpen, showDialog, setLoading, setDisableCreateNewUser } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 
@@ -16,7 +18,7 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
 
   const handleClose = () => {
     dispatch(showDialog(false));
-    dispatch(resetState());
+    dispatch(resetUIState);
   };
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         window.dispatchEvent(event);
       } else {
         window.sessionStorage.removeItem('skillWallet');
-        dispatch(resetState());
+        dispatch(resetUIState);
         dispatch(setLoggedIn(false));
         const event = new CustomEvent('onSkillwalletLogin', {
           composed: true,
@@ -110,8 +112,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const handleButtonClick = () => {
     if (currentUser.isLoggedIn) {
       window.sessionStorage.removeItem('skillWallet');
-      dispatch(resetState());
-      dispatch(setLoggedIn(false));
+      dispatch(resetUIState);
       const event = new CustomEvent('onSkillwalletLogin', {
         composed: true,
         cancelable: true,

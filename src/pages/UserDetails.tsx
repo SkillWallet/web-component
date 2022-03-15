@@ -5,7 +5,8 @@ import { Link, useHistory } from 'react-router-dom';
 import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useForm } from 'react-hook-form';
-import { currentCommunity, setLoading, partnerMode, resetState, swData } from '../store/sw-auth.reducer';
+import { currentCommunity, partnerMode, swData } from '../store/sw-auth.reducer';
+import { setLoading, loadingFinished, startLoading } from '../store/sw-ui-reducer';
 import { setUserData } from '../store/sw-user-data.reducer';
 import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
@@ -43,7 +44,7 @@ const UserDetails: React.FunctionComponent = (props) => {
   };
 
   const onSubmit = async (data) => {
-    dispatch(setLoading(true));
+    dispatch(startLoading('Uploading user image.'));
     await uploadFile(data.picture[0])
       .then((result) => {
         dispatch(
@@ -57,7 +58,7 @@ const UserDetails: React.FunctionComponent = (props) => {
         } else {
           history.push('/role');
         }
-        dispatch(setLoading(false));
+        dispatch(loadingFinished());
       })
       .catch((e) => {
         console.log(e);
@@ -69,7 +70,7 @@ const UserDetails: React.FunctionComponent = (props) => {
             handleSubmit(onSubmit)();
           },
         });
-        dispatch(setLoading(false));
+        dispatch(loadingFinished());
       });
   };
 

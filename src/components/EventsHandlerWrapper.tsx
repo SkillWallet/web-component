@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { getCommunity } from '../services/web3/web3Service';
-import { setCommunity, setPartnerKey, setPartnerMode, showDialog } from '../store/sw-auth.reducer';
+import { setCommunity, setPartnerKey, setPartnerMode } from '../store/sw-auth.reducer';
+import { showDialog } from '../store/sw-ui-reducer';
 
 export const EventsHandlerWrapper = ({ children }) => {
   const dispatch = useDispatch();

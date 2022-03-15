@@ -9,7 +9,7 @@ export interface SwAuthState {
   isLoggedIn: boolean;
 }
 
-const initialState: SwAuthState = {
+export const initialState: SwAuthState = {
   username: undefined,
   profileImageUrl: undefined,
   isLoggedIn: false,
@@ -27,10 +27,9 @@ export interface UserState {
 }
 
 export const swUserDataSlice = createSlice({
-  name: 'userData',
+  name: 'swUserData',
   initialState,
   reducers: {
-    resetUIState: () => initialState,
     setLoggedIn(state, action: ActionPayload<boolean>) {
       state.isLoggedIn = action.payload;
     },
@@ -47,9 +46,9 @@ export const { setUserData, setLoggedIn } = swUserDataSlice.actions;
 export const currentUserState = createSelector(
   (state) => {
     return {
-      username: state.userData.username,
-      profileImageUrl: state.userData.profileImageUrl,
-      isLoggedIn: state.userData.isLoggedIn,
+      username: state.swUserData.username,
+      profileImageUrl: state.swUserData.profileImageUrl,
+      isLoggedIn: state.swUserData.isLoggedIn,
     };
   },
   (userState) => userState

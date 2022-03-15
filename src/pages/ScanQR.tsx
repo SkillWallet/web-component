@@ -6,7 +6,8 @@ import { QRCode } from 'react-qrcode-logo';
 import { ethers } from 'ethers';
 import { useHistory } from 'react-router-dom';
 import { fetchSkillWallet, getActivationNonce, getTokenId, isQrCodeActive } from '../services/web3/web3Service';
-import { setLoading, currentCommunity, showDialog } from '../store/sw-auth.reducer';
+import { currentCommunity } from '../store/sw-auth.reducer';
+import { loadingFinished, setLoading, showDialog, startLoading } from '../store/sw-ui-reducer';
 import { setUserData } from '../store/sw-user-data.reducer';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
@@ -26,13 +27,13 @@ const ScanQR: React.FunctionComponent = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setLoading(true));
+      dispatch(startLoading('Generating activation QR.'));
       await getTokenId()
         .then(async (token) => {
           await getActivationNonce(token.toString()).then(async (nonce) => {
             console.log('NONCE', nonce);
             setQrData({ tokenId: token.toString(), nonce });
-            dispatch(setLoading(false));
+            dispatch(loadingFinished());
             await pollQRCodeActivated(token).then(async (result) => {
               if (result) {
                 const sw = await fetchSkillWallet();
@@ -90,7 +91,7 @@ const ScanQR: React.FunctionComponent = (props) => {
               },
             });
           }
-          dispatch(setLoading(false));
+          dispatch(loadingFinished());
         });
     };
     fetchData();
