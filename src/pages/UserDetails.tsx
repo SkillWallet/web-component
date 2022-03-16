@@ -12,6 +12,7 @@ import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import { CustomInput } from '../components/CustomInput';
 import ErrorBox from '../components/ErrorBox';
+import BackButton from '../components/BackButton';
 
 interface Values {
   picture?: File;
@@ -74,6 +75,10 @@ const UserDetails: React.FunctionComponent = (props) => {
       });
   };
 
+  const handleBackClick = async () => {
+    history.goBack();
+  };
+
   return (
     <Box
       sx={{
@@ -83,7 +88,6 @@ const UserDetails: React.FunctionComponent = (props) => {
         justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
-        py: '16px',
       }}
     >
       {errorData ? (
@@ -92,29 +96,47 @@ const UserDetails: React.FunctionComponent = (props) => {
         <>
           <Box
             sx={{
+              width: '100%',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
+              justifyContent: 'space-between',
               alignContent: 'center',
             }}
           >
-            {swState.isPartner ? (
-              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                Great! Now let's start - tell us about yourself
-              </Typography>
-            ) : (
-              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                Welcome to{' '}
-                <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                  {swState.community.name}
+            <BackButton handleClick={handleBackClick} />
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignContent: 'center',
+              }}
+            >
+              {swState.isPartner ? (
+                <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                  Great! Now let's start - tell us about yourself
                 </Typography>
-                !
-              </Typography>
-            )}
+              ) : (
+                <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                  Welcome to{' '}
+                  <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                    {swState.community.name}
+                  </Typography>
+                  !
+                </Typography>
+              )}
 
-            <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
-              Tell us about you
-            </Typography>
+              <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
+                Tell us about you
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                width: '45px',
+                height: '45px',
+              }}
+            />
           </Box>
           <Box
             sx={{
