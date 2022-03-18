@@ -59,7 +59,9 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           });
           dispatch(loadingFinished());
         } else {
-          console.log(e);
+          if (e.message === 'Already processing eth_requestAccounts. Please wait.') {
+            e.message = ErrorTypes.GetAccountsInProgress;
+          }
           setErrorData({
             errorMessage: e.message,
             actionLabel: 'Retry',

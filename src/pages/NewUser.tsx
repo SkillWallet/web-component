@@ -70,6 +70,9 @@ const NewUser: React.FunctionComponent = (props) => {
             dispatch(loadingFinished());
           } else {
             console.log(e);
+            if (e.message === 'Already processing eth_requestAccounts. Please wait.') {
+              e.message = ErrorTypes.GetAccountsInProgress;
+            }
             dispatch(loadingFinished());
             setErrorData({
               errorMessage: e.message,

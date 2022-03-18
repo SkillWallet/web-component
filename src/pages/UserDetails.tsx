@@ -43,20 +43,6 @@ const UserDetails: React.FunctionComponent = (props) => {
     } else {
       history.push('/role');
     }
-    //   dispatch(loadingFinished());
-    // })
-    // .catch((e) => {
-    //   console.log(e);
-    //   setErrorData({
-    //     errorMessage: e.message,
-    //     actionLabel: 'Retry',
-    //     action: () => {
-    //       setErrorData(undefined);
-    //       handleSubmit(onSubmit)();
-    //     },
-    //   });
-    //   dispatch(loadingFinished());
-    // });
   };
 
   const handleBackClick = async () => {

@@ -6,4 +6,5 @@ export enum ErrorTypes {
   AlreadyAMember = 'You are already a member of this community.',
   SkillWalletWithThisAddressAlreadyRegistered = 'You already registered a SkillWallet for this wallet address.',
   CouldNotGetActivationNonce = 'Failed to retrieve activation nonce.',
+  GetAccountsInProgress = 'Waiting for MetaMask login.',
 }
