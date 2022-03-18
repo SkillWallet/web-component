@@ -101,7 +101,7 @@ const ScanQR: React.FunctionComponent = (props) => {
     <Box
       sx={{
         width: '100%',
-        minHeight: '460px',
+        minHeight: '429px',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',

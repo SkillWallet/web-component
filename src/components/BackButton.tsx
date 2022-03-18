@@ -3,15 +3,14 @@ import { IconButton, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { SwButton } from 'sw-web-shared';
 
-const BackButton = (props) => {
+const BackButton = ({ handleClick }) => {
   const handleOnClick = () => {
-    props.handleClick();
+    handleClick();
   };
   return (
     <IconButton
       onClick={handleOnClick}
       sx={{
-        ...props.sx,
         borderRadius: '30px',
         '&:hover': {
           background: '#FFFFFF',
@@ -22,7 +21,6 @@ const BackButton = (props) => {
         width: '45px',
         height: '45px',
       }}
-      {...props}
     >
       <ArrowBackIos
         color="secondary"

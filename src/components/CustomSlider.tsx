@@ -2,14 +2,16 @@ import { Box, Slider, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 
-export const CustomSlider = ({ name, control, setValue, rules }) => {
-  const [sliderValue, setSliderValue] = React.useState(0);
+export const CustomSlider = ({ name, control, setValue, rules, onValueChange, defaultValue }) => {
+  console.log(defaultValue);
+  const [sliderValue, setSliderValue] = React.useState(defaultValue);
 
   useEffect(() => {
     if (sliderValue) setValue(name, sliderValue, { shouldValidate: true });
   }, [name, setValue, sliderValue]);
 
   const handleChange = (event: any, newValue: number | number[]) => {
+    onValueChange(newValue);
     setSliderValue(newValue as number);
   };
 
@@ -22,7 +24,7 @@ export const CustomSlider = ({ name, control, setValue, rules }) => {
         <>
           <Slider
             sx={{ maxWidth: '166px', border: 2, borderRadius: 0, borderColor: '#000000', p: '10px' }}
-            defaultValue={0}
+            defaultValue={defaultValue}
             step={1}
             min={1}
             max={10}

@@ -1,76 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SwButton } from 'sw-web-shared';
+import { base64toFile, SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { currentCommunity } from '../store/sw-auth.reducer';
 import { resetUIState } from '../store/store';
-import { loadingFinished, setLoading, startLoading } from '../store/sw-ui-reducer';
-import { currentUserState } from '../store/sw-user-data.reducer';
+import { loadingFinished, setLoading, setLoadingMessage, startLoading } from '../store/sw-ui-reducer';
+import { currentUserState, setCommitment, setRole } from '../store/sw-user-data.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import { CustomSlider } from '../components/CustomSlider';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
 import BackButton from '../components/BackButton';
+import { uploadFile } from '../services/textile/textile.hub';
 
 interface Role {
   roleId: number;
   roleName: string;
 }
 
-const defaultValues = {
-  commitment: 0,
-};
+// const defaultValues = {
+//   commitment: 0,
+// };
 
 const UserRole: React.FunctionComponent = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const community = useSelector(currentCommunity);
-  const userState = useSelector(currentUserState);
+  // const userState = useSelector(currentUserState);
+  const swUserState = useSelector(currentUserState);
   const [memberRoles, setMemberRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(undefined);
   const [errorData, setErrorData] = useState(undefined);
 
+  console.log(swUserState);
   const {
     handleSubmit,
     control,
     setValue,
     formState: { isValid },
-  } = useForm({ defaultValues });
+  } = useForm({
+    mode: 'onChange',
+    defaultValues: swUserState,
+  });
 
   const onSubmit = async (data: any) => {
-    dispatch(startLoading('Joining community.'));
-    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, data.commitment, dispatch)
-      .then((result) => {
-        history.push('/qr');
-        dispatch(loadingFinished());
+    dispatch(startLoading('Uploading user image.'));
+    await uploadFile(await base64toFile(swUserState.profileImageUrl, 'avatar'))
+      .then(async (result) => {
+        dispatch(setLoadingMessage('Joining community.'));
+        await joinCommunity(community.address, swUserState.username, result, selectedRole, data.commitment, dispatch)
+          .then(() => {
+            history.push('/qr');
+            dispatch(loadingFinished());
+          })
+          .catch((e) => {
+            if (
+              e.message === ErrorTypes.CommunitySlotsFull ||
+              e.message === ErrorTypes.AlreadyAMember ||
+              e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
+            ) {
+              setErrorData({
+                errorMessage: e.message,
+                actionLabel: 'Back to Home',
+                action: () => {
+                  dispatch(resetUIState);
+                  history.push('/');
+                },
+              });
+            } else {
+              console.log(e);
+              setErrorData({
+                errorMessage: e.message,
+                actionLabel: 'Retry',
+                action: () => {
+                  setErrorData(undefined);
+                  handleSubmit(onSubmit)();
+                },
+              });
+            }
+            dispatch(loadingFinished());
+          });
       })
       .catch((e) => {
-        if (
-          e.message === ErrorTypes.CommunitySlotsFull ||
-          e.message === ErrorTypes.AlreadyAMember ||
-          e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
-        ) {
-          setErrorData({
-            errorMessage: e.message,
-            actionLabel: 'Back to Home',
-            action: () => {
-              dispatch(resetUIState);
-              history.push('/');
-            },
-          });
-        } else {
-          console.log(e);
-          setErrorData({
-            errorMessage: e.message,
-            actionLabel: 'Retry',
-            action: () => {
-              setErrorData(undefined);
-              handleSubmit(onSubmit)();
-            },
-          });
-        }
+        console.log(e);
+        setErrorData({
+          errorMessage: e.message,
+          actionLabel: 'Retry',
+          action: () => {
+            setErrorData(undefined);
+            handleSubmit(onSubmit)();
+          },
+        });
         dispatch(loadingFinished());
       });
   };
@@ -114,7 +136,13 @@ const UserRole: React.FunctionComponent = (props) => {
   }, []);
 
   const handleRoleSelected = (role) => {
+    dispatch(setRole(role.roleName));
     setSelectedRole(role);
+  };
+
+  const handleSliderChange = (value) => {
+    console.log(value);
+    dispatch(setCommitment(value));
   };
 
   const handleBackClick = async () => {
@@ -244,7 +272,14 @@ const UserRole: React.FunctionComponent = (props) => {
                 <Typography align="center" variant="h5" sx={{ color: '#000000', fontWeight: '400', maxWidth: '320px', mb: '12px' }}>
                   Tell your community how much time you commit to this Role!
                 </Typography>
-                <CustomSlider name="commitment" control={control} setValue={setValue} rules={{ min: 1, max: 10 }} />
+                <CustomSlider
+                  name="commitment"
+                  control={control}
+                  onValueChange={handleSliderChange}
+                  setValue={setValue}
+                  rules={{ min: 1, max: 10 }}
+                  defaultValue={swUserState.commitment}
+                />
               </Box>
             ) : (
               memberRoles &&

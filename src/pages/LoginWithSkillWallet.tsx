@@ -99,16 +99,11 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              width: '100%',
+              mx: '2px',
             }}
           >
-            <BackButton
-              sx={{
-                background: '#FFFFFF',
-              }}
-              handleClick={handleBackClick}
-            />
+            <BackButton handleClick={handleBackClick} />
             <Box
               sx={{
                 flexGrow: 1,
@@ -117,7 +112,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
                 gap: '30px',
               }}
             >
-              <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
+              <Typography align="center" variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
                 Welcome back! 🙌
               </Typography>
             </Box>

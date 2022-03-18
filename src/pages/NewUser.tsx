@@ -47,8 +47,7 @@ const NewUser: React.FunctionComponent = (props) => {
 
   const handleInjectFromMetamaskClick = async () => {
     if (!metamaskSelected) {
-      dispatch(startLoading('Checking for an exisitng SkillWallet.'));
-      await fetchSkillWallet()
+      await fetchSkillWallet(dispatch, true)
         .then((wallet) => {
           if (wallet) {
             setErrorData({

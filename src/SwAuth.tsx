@@ -18,7 +18,6 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
 
   const handleClose = () => {
     dispatch(showDialog(false));
-    dispatch(resetUIState);
   };
 
   useEffect(() => {
@@ -122,7 +121,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
       window.dispatchEvent(event);
     } else {
       history.push('/');
-      dispatch(setLoading(false));
+      dispatch(resetUIState);
       dispatch(showDialog(true));
     }
   };
