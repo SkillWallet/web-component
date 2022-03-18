@@ -11,6 +11,7 @@ import { currentUserState } from '../store/sw-user-data.reducer';
 import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
+import BackButton from '../components/BackButton';
 
 interface Role {
   roleId: number;
@@ -102,6 +103,10 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
     setSelectedRole(role);
   };
 
+  const handleBackClick = async () => {
+    history.goBack();
+  };
+
   return (
     <Box
       sx={{
@@ -120,15 +125,32 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
         <>
           <Box
             sx={{
+              width: '100%',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: 'space-between',
+              alignContent: 'center',
+              my: '17px',
             }}
           >
-            <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-              Pick your Role in your Community - and let it be known for the generations to come!
-            </Typography>
+            <BackButton handleClick={handleBackClick} />
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                Pick your Role in your Community - and let it be known for the generations to come!
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                width: '45px',
+                height: '45px',
+              }}
+            />
           </Box>
           <Box
             sx={{

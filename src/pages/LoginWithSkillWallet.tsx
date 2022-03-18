@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { resetUIState } from '../store/store';
 import { showDialog, setLoading, loadingFinished } from '../store/sw-ui-reducer';
 import { setUserData } from '../store/sw-user-data.reducer';
@@ -12,6 +13,7 @@ import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
+import BackButton from '../components/BackButton';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
@@ -57,7 +59,9 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           });
           dispatch(loadingFinished());
         } else {
-          console.log(e);
+          if (e.message === 'Already processing eth_requestAccounts. Please wait.') {
+            e.message = ErrorTypes.GetAccountsInProgress;
+          }
           setErrorData({
             errorMessage: e.message,
             actionLabel: 'Retry',
@@ -73,6 +77,10 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
 
   const handleMetamaskClick = async () => {
     performMetamaskLogin();
+  };
+
+  const handleBackClick = async () => {
+    history.goBack();
   };
 
   return (
@@ -93,13 +101,29 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'center',
-              gap: '30px',
+              width: '100%',
+              mx: '2px',
             }}
           >
-            <Typography variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
-              Welcome back! 🙌
-            </Typography>
+            <BackButton handleClick={handleBackClick} />
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '30px',
+              }}
+            >
+              <Typography align="center" variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
+                Welcome back! 🙌
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                width: '45px',
+                height: '45px',
+              }}
+            />
           </Box>
           <Box
             sx={{

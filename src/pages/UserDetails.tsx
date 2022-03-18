@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SwButton } from 'sw-web-shared';
+import { SwButton, SwUploadFile, toBase64 } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
 import { ethers } from 'ethers';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { currentCommunity, partnerMode, swData } from '../store/sw-auth.reducer';
 import { setLoading, loadingFinished, startLoading } from '../store/sw-ui-reducer';
-import { setUserData } from '../store/sw-user-data.reducer';
+import { currentUserState, setUserData } from '../store/sw-user-data.reducer';
 import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import { CustomInput } from '../components/CustomInput';
 import ErrorBox from '../components/ErrorBox';
+import BackButton from '../components/BackButton';
 
 interface Values {
   picture?: File;
@@ -19,59 +20,33 @@ interface Values {
 }
 
 const UserDetails: React.FunctionComponent = (props) => {
+  const swState = useSelector(swData);
+  const [swUserState] = useState(useSelector(currentUserState));
+  const [errorData, setErrorData] = useState(undefined);
   const history = useHistory();
+  const dispatch = useDispatch();
+  console.log(swUserState);
   const {
-    register,
     handleSubmit,
     control,
     setValue,
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
+    defaultValues: swUserState,
   });
-  const [image, setImage] = useState(undefined);
-  const [errorData, setErrorData] = useState(undefined);
-  const dispatch = useDispatch();
-  const swState = useSelector(swData);
-
-  const parseImage = (event) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = e.target?.result;
-      setImage(img as any);
-    };
-    if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
-  };
 
   const onSubmit = async (data) => {
-    dispatch(startLoading('Uploading user image.'));
-    await uploadFile(data.picture[0])
-      .then((result) => {
-        dispatch(
-          setUserData({
-            username: data.username,
-            profileImageUrl: result,
-          })
-        );
-        if (swState.isPartner) {
-          history.push('/partnerRole');
-        } else {
-          history.push('/role');
-        }
-        dispatch(loadingFinished());
-      })
-      .catch((e) => {
-        console.log(e);
-        setErrorData({
-          errorMessage: e.message,
-          actionLabel: 'Retry',
-          action: () => {
-            setErrorData(undefined);
-            handleSubmit(onSubmit)();
-          },
-        });
-        dispatch(loadingFinished());
-      });
+    dispatch(setUserData(data));
+    if (true) {
+      history.push('/partnerRole');
+    } else {
+      history.push('/role');
+    }
+  };
+
+  const handleBackClick = async () => {
+    history.goBack();
   };
 
   return (
@@ -83,19 +58,25 @@ const UserDetails: React.FunctionComponent = (props) => {
         justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
-        py: '16px',
       }}
     >
-      {errorData ? (
-        <ErrorBox errorData={errorData} />
-      ) : (
-        <>
+      <>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignContent: 'center',
+          }}
+        >
+          <BackButton handleClick={handleBackClick} />
           <Box
             sx={{
+              flexGrow: 1,
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              alignContent: 'center',
+              alignItems: 'center',
             }}
           >
             {swState.isPartner ? (
@@ -116,68 +97,83 @@ const UserDetails: React.FunctionComponent = (props) => {
               Tell us about you
             </Typography>
           </Box>
+
           <Box
             sx={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-              alignItems: 'center',
+              width: '45px',
+              height: '45px',
             }}
-          >
-            <form onSubmit={handleSubmit(onSubmit)}>
+          />
+        </Box>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Box
+              sx={{
+                maxWidth: '382px',
+                display: 'flex',
+                justifyContent: 'center',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <Box sx={{ width: '382px', mb: '18px' }}>
+                <Typography variant="h4" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                  Nickname
+                </Typography>
+              </Box>
               <Box
                 sx={{
-                  maxWidth: '382px',
+                  position: 'relative',
+                  height: '68px',
                   display: 'flex',
+                  alignContent: 'center',
                   justifyContent: 'center',
-                  flexDirection: 'column',
                   alignItems: 'center',
+                  backgroundColor: '#FFFFFF',
+                  mb: '18px',
+                  px: '16px',
                 }}
               >
-                <Box sx={{ width: '382px', mb: '18px' }}>
-                  <Typography variant="h4" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                    Nickname
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    position: 'relative',
-                    height: '68px',
-                    display: 'flex',
-                    alignContent: 'center',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: '#FFFFFF',
-                    mb: '18px',
-                    px: '16px',
-                  }}
-                >
-                  <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                    How do you want your community to call you?
-                  </Typography>
-                  <CustomInput maxLength={12} name="username" control={control} setValue={setValue} rules={{ required: true }} />
-                </Box>
-                <Box sx={{ width: '382px', mb: '18px' }}>
-                  <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                    Avatar
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    height: '96px',
-                    alignContent: 'center',
-                    justifyContent: 'center',
-                    display: 'flex',
-                    backgroundColor: '#FFFFFF',
-                    mb: '24px',
-                    px: '16px',
-                  }}
-                >
-                  <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                    A public image - that’s how others will see you.
-                  </Typography>
-                  <Button
+                <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
+                  How do you want your community to call you?
+                </Typography>
+                <CustomInput
+                  maxLength={12}
+                  name="username"
+                  control={control}
+                  setValue={setValue}
+                  rules={{ required: true }}
+                  defaultValue={swUserState.username}
+                />
+              </Box>
+              <Box sx={{ width: '382px', mb: '18px' }}>
+                <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                  Avatar
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  height: '96px',
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  backgroundColor: '#FFFFFF',
+                  mb: '24px',
+                  px: '16px',
+                }}
+              >
+                <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
+                  A public image - that’s how others will see you.
+                </Typography>
+                {/* <Button
                     disableElevation
                     sx={{
                       ':hover': {
@@ -231,25 +227,60 @@ const UserDetails: React.FunctionComponent = (props) => {
                       type="file"
                       inputProps={{ accept: '.png, .jpg' }}
                     />
-                  </Button>
-                </Box>
-                <SwButton
-                  sx={{
-                    borderColor: 'primary.main',
-                    height: '75px',
-                    maxWidth: '320px',
+                  </Button> */}
+                <Controller
+                  name="profileImageUrl"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { name, value, onChange }, fieldState, formState }) => {
+                    return (
+                      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '75px' }}>
+                        <SwUploadFile
+                          mode="dark"
+                          variant="rounded"
+                          name={name}
+                          initialPreviewUrl={value}
+                          fileChange={async (file) => {
+                            if (file) {
+                              onChange(await toBase64(file));
+                            } else {
+                              onChange(null);
+                            }
+                          }}
+                          defaulUploadIcon={<Upload style={{ fontSize: 30, fill: 'black' }} />}
+                          sx={{
+                            width: '50px',
+                            height: '50px',
+                          }}
+                        />
+                        {!value ? (
+                          <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
+                            .png or .jpg
+                          </Typography>
+                        ) : (
+                          ''
+                        )}
+                      </Box>
+                    );
                   }}
-                  mode="dark"
-                  component={Button}
-                  type="submit"
-                  disabled={!isValid}
-                  label="Next: Pick your Role"
                 />
               </Box>
-            </form>
-          </Box>
-        </>
-      )}
+              <SwButton
+                sx={{
+                  borderColor: 'primary.main',
+                  height: '75px',
+                  maxWidth: '320px',
+                }}
+                mode="dark"
+                component={Button}
+                type="submit"
+                disabled={!isValid}
+                label="Next: Pick your Role"
+              />
+            </Box>
+          </form>
+        </Box>
+      </>
     </Box>
   );
 };

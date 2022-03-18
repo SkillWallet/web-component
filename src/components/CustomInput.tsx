@@ -2,8 +2,8 @@ import { Box, Input, Slider, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 
-export const CustomInput = ({ maxLength, name, control, setValue, rules }) => {
-  const [inputValue, setInputValue] = useState('');
+export const CustomInput = ({ maxLength, name, control, setValue, rules, defaultValue }) => {
+  const [inputValue, setInputValue] = useState(defaultValue);
   const [remainingChars, setRemainingChars] = useState(maxLength);
 
   useEffect(() => {
@@ -31,7 +31,6 @@ export const CustomInput = ({ maxLength, name, control, setValue, rules }) => {
               border: 2,
               borderColor: '#000000',
             }}
-            defaultValue={undefined}
             value={inputValue}
             onChange={handleChange}
             inputProps={{ maxLength }}

@@ -2,7 +2,7 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
-import { setLoadingMessage } from '../../store/sw-ui-reducer';
+import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 import { Web3ContractProvider } from './web3.provider';
 import { env } from './env';
@@ -141,16 +141,20 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   throw new Error('Something went wrong');
 };
 
-export const fetchSkillWallet = async (dispatch?) => {
+export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
   const skillWalletAddress = await getSkillWalletAddress();
 
   if (!window.ethereum.selectedAddress && dispatch) {
-    dispatch(setLoadingMessage('Getting MetaMask info.'));
+    dispatch(startLoading('Getting MetaMask info. Make sure you are logged into your account.'));
   }
   const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
 
   if (dispatch) {
-    dispatch(setLoadingMessage('Retrieving SkillWallet.'));
+    if (checkIfExists) {
+      dispatch(setLoadingMessage('Checking for an existing SkillWallet.'));
+    } else {
+      dispatch(setLoadingMessage('Retrieving SkillWallet.'));
+    }
   }
   if (window.ethereum.selectedAddress) {
     const { selectedAddress } = window.ethereum;

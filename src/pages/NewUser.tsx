@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { setCommunity, swData } from '../store/sw-auth.reducer';
 import { resetUIState } from '../store/store';
 import { loadingFinished, setLoading, startLoading } from '../store/sw-ui-reducer';
@@ -11,6 +12,7 @@ import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
 import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
+import BackButton from '../components/BackButton';
 
 const NewUser: React.FunctionComponent = (props) => {
   const [metamaskSelected, setMetamaskSelected] = useState(false);
@@ -45,8 +47,7 @@ const NewUser: React.FunctionComponent = (props) => {
 
   const handleInjectFromMetamaskClick = async () => {
     if (!metamaskSelected) {
-      dispatch(startLoading('Checking for an exisitng SkillWallet.'));
-      await fetchSkillWallet()
+      await fetchSkillWallet(dispatch, true)
         .then((wallet) => {
           if (wallet) {
             setErrorData({
@@ -69,6 +70,9 @@ const NewUser: React.FunctionComponent = (props) => {
             dispatch(loadingFinished());
           } else {
             console.log(e);
+            if (e.message === 'Already processing eth_requestAccounts. Please wait.') {
+              e.message = ErrorTypes.GetAccountsInProgress;
+            }
             dispatch(loadingFinished());
             setErrorData({
               errorMessage: e.message,
@@ -83,13 +87,17 @@ const NewUser: React.FunctionComponent = (props) => {
     }
   };
 
+  const handleBackClick = async () => {
+    history.goBack();
+  };
+
   return (
     <Box
       sx={{
         width: '100%',
         minHeight: '460px',
         display: 'flex',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         flexDirection: 'column',
         alignItems: 'center',
       }}
@@ -103,27 +111,44 @@ const NewUser: React.FunctionComponent = (props) => {
               <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignContent: 'center',
+                  width: '100%',
+                  mx: '2px',
                 }}
               >
-                {swState.isPartner ? (
-                  <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                    Hello, Partner!
-                  </Typography>
-                ) : (
-                  <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                    Welcome to{' '}
-                    <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                      {swState.community.name}
+                <BackButton handleClick={handleBackClick} />
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {swState.isPartner ? (
+                    <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                      Hello, Partner!
                     </Typography>
-                    !
+                  ) : (
+                    <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
+                      Welcome to{' '}
+                      <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
+                        {swState.community.name}
+                      </Typography>
+                      !
+                    </Typography>
+                  )}
+                  <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
+                    First, Import your Wallet, or create a brand new account.
                   </Typography>
-                )}
-                <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
-                  First, Import your Wallet, or create a brand new account.
-                </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    width: '45px',
+                    height: '45px',
+                  }}
+                />
               </Box>
               <Box
                 sx={{

@@ -3,22 +3,21 @@ import { Interface } from 'ethers/lib/utils';
 import { createSelector } from 'reselect';
 import { ActionPayload } from './action-payload';
 
-export interface SwAuthState {
+export interface SwUserData {
   username?: string;
   profileImageUrl?: string;
+  role?: string;
+  commitment: number;
   isLoggedIn: boolean;
 }
 
-export const initialState: SwAuthState = {
-  username: undefined,
+export const initialState: SwUserData = {
+  username: '',
   profileImageUrl: undefined,
+  role: undefined,
+  commitment: 0,
   isLoggedIn: false,
 };
-
-export interface UserData {
-  username: string;
-  profileImageUrl: string;
-}
 
 export interface UserState {
   username: string;
@@ -33,25 +32,34 @@ export const swUserDataSlice = createSlice({
     setLoggedIn(state, action: ActionPayload<boolean>) {
       state.isLoggedIn = action.payload;
     },
+    setCommitment(state, action: ActionPayload<number>) {
+      console.log(action.payload);
+      state.commitment = action.payload;
+    },
+    setRole(state, action: ActionPayload<string>) {
+      state.role = action.payload;
+    },
     setUserData(state, action: ActionPayload<UserState>) {
-      state.username = action.payload.username;
-      state.profileImageUrl = action.payload.profileImageUrl;
-      state.isLoggedIn = action.payload.isLoggedIn;
+      Object.keys(action.payload).forEach((key) => {
+        state[key] = action.payload[key];
+      });
     },
   },
 });
 
-export const { setUserData, setLoggedIn } = swUserDataSlice.actions;
+export const { setUserData, setLoggedIn, setRole, setCommitment } = swUserDataSlice.actions;
 
-export const currentUserState = createSelector(
-  (state) => {
-    return {
-      username: state.swUserData.username,
-      profileImageUrl: state.swUserData.profileImageUrl,
-      isLoggedIn: state.swUserData.isLoggedIn,
-    };
-  },
-  (userState) => userState
-);
+// export const currentUserState = createSelector(
+//   (state) => {
+//     return {
+//       username: state.swUserData.username,
+//       profileImageUrl: state.swUserData.profileImageUrl,
+//       isLoggedIn: state.swUserData.isLoggedIn,
+//     };
+//   },
+//   (userState) => userState
+// );
+
+export const currentUserState = (state) => state.swUserData as typeof initialState;
 
 export default swUserDataSlice.reducer;
