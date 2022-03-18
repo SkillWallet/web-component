@@ -38,7 +38,7 @@ const UserDetails: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data) => {
     dispatch(setUserData(data));
-    if (swState.isPartner) {
+    if (swState.partnerMode) {
       history.push('/partnerRole');
     } else {
       history.push('/role');
