@@ -3,10 +3,10 @@ import { withRouter, useHistory } from 'react-router-dom';
 import { SwButton } from 'sw-web-shared';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Avatar } from '@mui/material';
+import { Avatar, Box, Button, Menu, MenuItem } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import { setPartnerKey } from './store/sw-auth.reducer';
+import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
 import { isOpen, showDialog, setLoading, setDisableCreateNewUser } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
@@ -40,6 +40,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const currentUser = useSelector(currentUserState);
 
   const [buttonHidden, setButtonHidden] = useState(false);
+  const [showButtonDropDown, setShowButtonDropDown] = useState(false);
 
   useEffect(() => {
     // Remember they are strings
@@ -52,7 +53,11 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   }, []);
 
   useEffect(() => {
-    const { disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
+    const { useButtonOptions, disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
+    if (useButtonOptions) {
+      console.log(useButtonOptions);
+      setShowButtonDropDown(useButtonOptions === 'true');
+    }
     if (hideButton) {
       setButtonHidden(hideButton === 'true');
     }
@@ -107,9 +112,10 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
       }
     }
   }, []);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleButtonClick = () => {
-    if (currentUser.isLoggedIn) {
+    if (currentUser.isLoggedIn && !showButtonDropDown) {
       window.sessionStorage.removeItem('skillWallet');
       dispatch(resetUIState);
       const event = new CustomEvent('onSkillwalletLogin', {
@@ -126,23 +132,81 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
     }
   };
 
+  const handleMouseEnter = (event) => {
+    console.log(showButtonDropDown);
+    console.log('ENTER');
+    if (anchorEl !== event.currentTarget && showButtonDropDown && currentUser.isLoggedIn) {
+      console.log(event.currentTarget);
+      setAnchorEl(container);
+    }
+  };
+
+  const handleMenuButtonClicked = () => {
+    window.sessionStorage.removeItem('skillWallet');
+    dispatch(resetUIState);
+    const event = new CustomEvent('onSkillwalletLogin', {
+      composed: true,
+      cancelable: true,
+      bubbles: true,
+      detail: false,
+    });
+    window.dispatchEvent(event);
+    setAnchorEl(null);
+  };
+
+  const handleHideMenu = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <Portal container={container}>
         {!buttonHidden && (
-          <SwButton
-            sx={{
-              height: '57px',
-              width: '180px',
-            }}
-            mode="dark"
-            btnType="medium"
-            onClick={handleButtonClick}
-            label={currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
-            startIcon={
-              currentUser.isLoggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} /> : undefined
-            }
-          />
+          <>
+            <SwButton
+              sx={{
+                height: '57px',
+                width: '180px',
+              }}
+              mode="dark"
+              btnType="medium"
+              onClick={handleButtonClick}
+              onMouseEnter={handleMouseEnter}
+              label={currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
+              startIcon={
+                currentUser.isLoggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} /> : undefined
+              }
+            />
+            <Menu
+              sx={{
+                '& .MuiMenu-list': {
+                  padding: '0px',
+                },
+                '& .MuiPaper-root': {
+                  backgroundColor: 'transparent',
+                  boxShadow: 'none',
+                },
+              }}
+              container={container}
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleHideMenu}
+              MenuListProps={{ onMouseLeave: handleHideMenu }}
+            >
+              <MenuItem sx={{ p: '0px' }}>
+                <SwButton
+                  sx={{
+                    height: '40px',
+                    width: '180px',
+                  }}
+                  mode="dark"
+                  btnType="small"
+                  onClick={handleMenuButtonClicked}
+                  label="Logout"
+                />
+              </MenuItem>
+            </Menu>
+          </>
         )}
       </Portal>
     </>
