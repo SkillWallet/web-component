@@ -145,6 +145,12 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
                 Pick your Role in your Community - and let it be known for the generations to come!
               </Typography>
             </Box>
+            <Box
+              sx={{
+                width: '45px',
+                height: '45px',
+              }}
+            />
           </Box>
           <Box
             sx={{
