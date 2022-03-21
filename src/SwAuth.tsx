@@ -115,17 +115,21 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleButtonClick = () => {
-    if (currentUser.isLoggedIn && !showButtonDropDown) {
-      window.sessionStorage.removeItem('skillWallet');
-      dispatch(resetUIState);
-      const event = new CustomEvent('onSkillwalletLogin', {
-        composed: true,
-        cancelable: true,
-        bubbles: true,
-        detail: false,
-      });
-      window.dispatchEvent(event);
+    if (currentUser.isLoggedIn) {
+      if (!showButtonDropDown) {
+        console.log('LOGOUT');
+        window.sessionStorage.removeItem('skillWallet');
+        dispatch(resetUIState);
+        const event = new CustomEvent('onSkillwalletLogin', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: false,
+        });
+        window.dispatchEvent(event);
+      }
     } else {
+      console.log('EMPTY');
       history.push('/');
       dispatch(resetUIState);
       dispatch(showDialog(true));
