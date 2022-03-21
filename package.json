@@ -1,6 +1,6 @@
 {
   "name": "@skill-wallet/auth",
-  "version": "1.0.41",
+  "version": "1.0.44",
   "main": "build/index.js",
   "types": "dist/index.d.ts",
   "files": [

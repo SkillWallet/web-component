@@ -23,7 +23,7 @@ const rootReducer = (state, action) => {
         partnerAddress: state.swAuth.partnerAddress,
       },
       swUserData: { ...initUserDataState },
-      swUI: { ...initUIState },
+      swUI: { ...initUIState, showDialog: state.swUI.showDialog },
     };
   }
   return appReducer(state, action);
