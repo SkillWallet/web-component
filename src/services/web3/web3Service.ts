@@ -14,7 +14,7 @@ export const getSkillWalletAddress = async () => {
 };
 
 export const getPAKeyByCommunity = async (community) => {
-  return axios.get(`${env.DITO_API}/community/${community}/key`).then((response) => response.data);
+  return axios.get(`${env.SKILL_WALLET_API}/community/${community}/key`).then((response) => response.data);
 };
 
 export const getActivationNonce = async (tokenId) => {
@@ -62,7 +62,7 @@ export const isCoreTeamMember = async (communityAddress, user) => {
 };
 
 export const getCommunity = async (partnerKey) => {
-  return axios.get(`${env.DITO_API}/community/key/${partnerKey}`).then((response) => response.data);
+  return axios.get(`${env.SKILL_WALLET_API}/community/key/${partnerKey}`).then((response) => response.data);
   // this probably shouldn't be here
   // partnersAgreementAddress = community.partnersAgreementAddress;
   // console.log('partnersA address: ', partnersAgreementAddress);
