@@ -1,19 +1,22 @@
 {
   "name": "@skill-wallet/auth",
   "version": "1.0.44",
-  "main": "build/index.js",
-  "types": "dist/index.d.ts",
+  "main": "build/cjs/index.js",
+  "module": "build/ems/index.js",
+  "types": "build/index.d.ts",
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "react-app-rewired build",
+    "build": "npm run build-cjs && npm run build-ems && tsc",
     "deploy": "gh-pages -d build",
     "eject": "react-app-rewired eject",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "start": "react-app-rewired start",
-    "test": "react-app-rewired test"
+    "test": "react-app-rewired test",
+    "build-cjs": "cross-env BUILD_CJS=true react-app-rewired build",
+    "build-ems": "cross-env BUILD_CJS=false react-app-rewired build"
   },
   "browserslist": {
     "production": [
@@ -51,6 +54,9 @@
     "@typescript-eslint/eslint-plugin": "~5.6.0",
     "@typescript-eslint/parser": "~5.6.0",
     "axios": "^0.24.0",
+    "browserify": "^17.0.0",
+    "clean-webpack-plugin": "^4.0.0",
+    "cross-env": "^7.0.3",
     "customize-cra": "~1.0.0",
     "dateformat": "^5.0.2",
     "eslint": "~8.5.0",
@@ -70,6 +76,7 @@
     "prettier": "~2.5.1",
     "react": "~17.0.2",
     "react-app-rewire-alias": "~1.1.5",
+    "react-app-rewire-multiple-entry": "^2.2.1",
     "react-app-rewired": "~2.1.8",
     "react-dom": "~17.0.2",
     "react-dotenv": "^0.1.3",
@@ -85,5 +92,9 @@
     "sw-web-shared": "github:DistributedTown/sw-web-shared#master",
     "typescript": "~4.5.3",
     "webpack": "^5.0.0"
+  },
+  "dependencies": {
+    "deglobalify": "^0.2.0",
+    "es6ify": "^1.6.0"
   }
 }
