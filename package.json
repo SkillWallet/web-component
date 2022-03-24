@@ -1,19 +1,22 @@
 {
   "name": "@skill-wallet/auth",
-  "version": "1.0.44",
-  "main": "build/index.js",
-  "types": "dist/index.d.ts",
+  "version": "1.0.45",
+  "main": "build/cjs/index.js",
+  "module": "build/ems/index.js",
+  "types": "build/index.d.ts",
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "react-app-rewired build",
+    "build": "npm run build-cjs && npm run build-ems && tsc",
     "deploy": "gh-pages -d build",
     "eject": "react-app-rewired eject",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "start": "react-app-rewired start",
-    "test": "react-app-rewired test"
+    "test": "react-app-rewired test",
+    "build-cjs": "cross-env BUILD_CJS=true react-app-rewired build",
+    "build-ems": "cross-env BUILD_CJS=false react-app-rewired build"
   },
   "browserslist": {
     "production": [
@@ -51,6 +54,7 @@
     "@typescript-eslint/eslint-plugin": "~5.6.0",
     "@typescript-eslint/parser": "~5.6.0",
     "axios": "^0.24.0",
+    "cross-env": "^7.0.3",
     "customize-cra": "~1.0.0",
     "dateformat": "^5.0.2",
     "eslint": "~8.5.0",
