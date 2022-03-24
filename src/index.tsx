@@ -11,7 +11,7 @@ import SwAuthModal, { SwAuthButton } from './SwAuth';
 import { SwAuthConfig } from './types/sw-auth-config';
 import { createShadowElement, extractAttributes, isElement } from './utils/utils';
 
-function InitSwAuth(authConfig: SwAuthConfig = null) {
+export function InitSwAuth(authConfig: SwAuthConfig = null) {
   const TAG_NAME = 'sw-auth';
   // we don't to initialized again when saving changes on hot-reloading
   if (customElements.get(TAG_NAME)) {
@@ -99,5 +99,3 @@ function InitSwAuth(authConfig: SwAuthConfig = null) {
     }
   );
 }
-
-export default InitSwAuth;
