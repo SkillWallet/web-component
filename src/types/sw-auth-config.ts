@@ -3,7 +3,7 @@ import { CSSObject } from '@emotion/react';
 
 export interface SwAuthConfig {
   container: HTMLElement | JSX.Element | any;
-  containerStyles: CSSObject;
+  containerStyles?: CSSObject;
 }
 
 export interface ShadowRootConfig {
