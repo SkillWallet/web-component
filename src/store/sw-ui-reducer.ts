@@ -8,6 +8,8 @@ export interface SwUIState {
   disableCreateNewUser: boolean;
   loading: boolean;
   loadingMessage: string;
+  globalErrorMessage: string;
+  showGlobalError: boolean;
 }
 export interface LoadingData {
   loading: boolean;
@@ -20,6 +22,8 @@ export const initialState: SwUIState = {
   disableCreateNewUser: false,
   loading: false,
   loadingMessage: undefined,
+  globalErrorMessage: null,
+  showGlobalError: false,
 };
 
 export const swUIlice = createSlice({
@@ -53,6 +57,10 @@ export const swUIlice = createSlice({
       state.loading = false;
       state.loadingMessage = undefined;
     },
+    showGlobalError: (state, action: ActionPayload<string>) => {
+      state.globalErrorMessage = action.payload;
+      state.showGlobalError = true;
+    },
   },
 });
 
@@ -65,6 +73,7 @@ export const {
   setLoadingData,
   loadingFinished,
   startLoading,
+  showGlobalError,
 } = swUIlice.actions;
 
 export const isOpen = createSelector(
@@ -80,11 +89,13 @@ export const loadingInProgress = createSelector(
   (isLoading) => isLoading
 );
 
-export const loadingData = createSelector(
+export const uiData = createSelector(
   (state) => {
     return {
       loading: state.swUI.loading,
       loadingMessage: state.swUI.loadingMessage,
+      globalErrorMessage: state.swUI.globalErrorMessage,
+      showGlobalError: state.swUI.showGlobalError,
     };
   },
   (isLoading) => isLoading
