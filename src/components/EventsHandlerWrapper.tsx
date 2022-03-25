@@ -7,34 +7,40 @@ import { showDialog } from '../store/sw-ui-reducer';
 export const EventsHandlerWrapper = ({ children }) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    window.addEventListener(
-      'mayday',
-      (e) => {
-        console.log('LOUD AND CLEAR');
-      },
-      false
-    );
-    window.addEventListener(
-      'activateSkillwalletCommunity',
-      async (e) => {
-        console.log(e);
-        const { communityAddr, partnersAddr, partnerKey } = (e as any).detail;
-        // dispatch(setCommunityAddress(communityAddr));
-        // dispatch(setPartnerAddress(partnersAddr));
-        dispatch(setPartnerKey(partnerKey));
-        console.log('PK: ', partnerKey);
-        // maybe redundant
+    const onActivateCommunity = async ({ detail }: any) => {
+      const { communityAddr, partnersAddr, partnerKey } = detail;
+      dispatch(setPartnerKey(partnerKey));
+      try {
         const comm = await getCommunity(partnerKey);
+        const event = new CustomEvent('activateSkillWalletCommunitySuccess', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: 'Successfully initiated SkillWallet authentiaciton.',
+        });
+        console.log('Sending event.');
+        window.dispatchEvent(event);
         console.log('Community', comm);
         dispatch(setCommunity(comm));
         dispatch(setPartnerMode(true));
         dispatch(showDialog(true));
-      },
-      false
-    );
+      } catch (error) {
+        console.log(error);
+        const event = new CustomEvent('activateSkillWalletCommunityError', {
+          composed: true,
+          cancelable: true,
+          bubbles: true,
+          detail: 'Filed to retrieve community',
+        });
+        console.log('Sending event.');
+        window.dispatchEvent(event);
+      }
+    };
 
-    return function cleanup() {
-      console.log('memory leak');
+    window.addEventListener('activateSkillwalletCommunity', onActivateCommunity, false);
+
+    return () => {
+      window.removeEventListener('activateSkillwalletCommunity', onActivateCommunity);
     };
   }, [dispatch]);
 
