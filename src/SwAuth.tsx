@@ -91,9 +91,13 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         setUseDev(useDev === 'true');
       } else {
         dispatch(startValidatingDomain());
-        const isValid = await validateDomain(partnerKey);
-        if (!isValid) {
-          dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
+        try {
+          const isValid = await validateDomain(partnerKey);
+          if (!isValid) {
+            dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
+          }
+        } catch (e) {
+          dispatch(showGlobalError('Failed to validate domain.'));
         }
         dispatch(finishValidatingDomain());
       }
