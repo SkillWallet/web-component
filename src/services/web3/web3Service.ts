@@ -2,9 +2,10 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import { SkillWalletAbi, PartnersAgreementABI } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
+import { ethers } from 'ethers';
 import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
-import { Web3ContractProvider } from './web3.provider';
+import { changeNetwork, Web3ContractProvider } from './web3.provider';
 import { env } from './env';
 import communityAbi from './community-abi.json';
 import { ErrorTypes } from '../../types/error-types';
@@ -27,9 +28,10 @@ export const getActivationNonce = async (tokenId) => {
 };
 
 export const getPAUrl = async (partnersAgreementAddress) => {
-  const contract = await Web3ContractProvider(partnersAgreementAddress, PartnersAgreementABI);
+  await changeNetwork();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const contract = new ethers.Contract(partnersAgreementAddress, PartnersAgreementABI, provider);
   const urls = await contract.getURLs();
-  console.log('urls', urls);
   return urls?.length > 0 ? urls[urls.length - 1] : undefined;
 };
 

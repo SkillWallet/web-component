@@ -134,7 +134,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const handleButtonClick = () => {
     if (currentUser.isLoggedIn) {
       if (!showButtonDropDown) {
-        console.log('LOGOUT');
         window.sessionStorage.removeItem('skillWallet');
         dispatch(resetUIState);
         const event = new CustomEvent('onSkillwalletLogin', {
@@ -146,7 +145,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         window.dispatchEvent(event);
       }
     } else {
-      console.log('EMPTY');
       history.push('/');
       dispatch(resetUIState);
       dispatch(showDialog(true));
@@ -154,9 +152,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   };
 
   const handleMouseEnter = (event) => {
-    console.log(showButtonDropDown);
     if (anchorEl !== event.currentTarget && showButtonDropDown && currentUser.isLoggedIn) {
-      console.log(event.currentTarget);
       setAnchorEl(container);
     }
   };
