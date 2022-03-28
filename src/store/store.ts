@@ -26,6 +26,7 @@ const rootReducer = (state, action) => {
       swUI: {
         ...initUIState,
         showDialog: state.swUI.showDialog,
+        validatingDomain: state.swUI.validatingDomain,
         globalErrorMessage: state.swUI.globalErrorMessage,
         showGlobalError: state.swUI.showGlobalError,
       },

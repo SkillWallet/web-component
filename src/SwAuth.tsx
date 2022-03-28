@@ -8,7 +8,17 @@ import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
 import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
-import { isOpen, showDialog, setLoading, setDisableCreateNewUser, showGlobalError, startLoading } from './store/sw-ui-reducer';
+import {
+  isOpen,
+  showDialog,
+  setLoading,
+  setDisableCreateNewUser,
+  showGlobalError,
+  startLoading,
+  startValidatingDomain,
+  loadingFinished,
+  finishValidatingDomain,
+} from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 import { validateDomain } from './services/web3/web3Service';
@@ -77,17 +87,20 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         dispatch(showGlobalError('Partner key attribute is missing.'));
       }
       if (useDev) {
-        dispatch(startLoading('Validating domain name.'));
+        dispatch(startValidatingDomain());
         setUseDev(useDev === 'true');
         const isValid = await validateDomain(partnerKey);
         if (!isValid) {
           dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
         }
+        dispatch(finishValidatingDomain());
       } else {
+        dispatch(startValidatingDomain());
         const isValid = await validateDomain(partnerKey);
         if (!isValid) {
           dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
         }
+        dispatch(finishValidatingDomain());
       }
 
       if (disableCreateNewUser) {

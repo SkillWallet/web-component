@@ -10,6 +10,7 @@ export interface SwUIState {
   loadingMessage: string;
   globalErrorMessage: string;
   showGlobalError: boolean;
+  validatingDomain: boolean;
 }
 export interface LoadingData {
   loading: boolean;
@@ -24,6 +25,7 @@ export const initialState: SwUIState = {
   loadingMessage: undefined,
   globalErrorMessage: null,
   showGlobalError: false,
+  validatingDomain: false,
 };
 
 export const swUIlice = createSlice({
@@ -57,6 +59,12 @@ export const swUIlice = createSlice({
       state.loading = false;
       state.loadingMessage = undefined;
     },
+    startValidatingDomain: (state, action: ActionPayload<void>) => {
+      state.validatingDomain = true;
+    },
+    finishValidatingDomain: (state, action: ActionPayload<void>) => {
+      state.validatingDomain = false;
+    },
     showGlobalError: (state, action: ActionPayload<string>) => {
       state.globalErrorMessage = action.payload;
       state.showGlobalError = true;
@@ -73,7 +81,9 @@ export const {
   setLoadingData,
   loadingFinished,
   startLoading,
+  startValidatingDomain,
   showGlobalError,
+  finishValidatingDomain,
 } = swUIlice.actions;
 
 export const isOpen = createSelector(
@@ -94,6 +104,7 @@ export const uiData = createSelector(
     return {
       loading: state.swUI.loading,
       loadingMessage: state.swUI.loadingMessage,
+      validatingDomain: state.swUI.validatingDomain,
       globalErrorMessage: state.swUI.globalErrorMessage,
       showGlobalError: state.swUI.showGlobalError,
     };

@@ -31,21 +31,26 @@ function MainDialog({ container, open, handleClose }) {
             width: '99%',
             minHeight: '460px',
             minWidth: '480px',
-            display: uiState.loading ? 'flex' : 'none',
+            display: uiState.loading || uiState.validatingDomain ? 'flex' : 'none',
             justifyContent: 'center',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          {uiState.loadingMessage && (
+          {console.log(uiState.validatingDomain ? 'Validating domain name.' : uiState.loadingMessage)}
+          {(uiState.loadingMessage || uiState.validatingDomain) && (
             <Typography align="center" sx={{ mb: '26px', width: '90%' }} variant="h2">
-              {uiState.loadingMessage}
+              {uiState.validatingDomain ? 'Validating domain name.' : uiState.loadingMessage}
             </Typography>
           )}
           <CircularProgress color="secondary" />
         </Box>
         <Box
-          sx={{ display: !uiState.loading && !uiState.showGlobalError ? 'flex' : 'none', alignContent: 'center', justifyContent: 'center' }}
+          sx={{
+            display: !uiState.loading && !uiState.showGlobalError && !uiState.validatingDomain ? 'flex' : 'none',
+            alignContent: 'center',
+            justifyContent: 'center',
+          }}
         >
           <Switch>
             {routes.map((route, index) => {

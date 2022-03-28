@@ -84,7 +84,6 @@ export const validateDomain = async (partnerKey) => {
   const community = await getCommunity(partnerKey);
   const partnersUrl = await getPAUrl(community.partnersAgreementAddress);
   const url = partnersUrl.match('^(?:https?://)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)');
-  console.log(url[0]);
   const isValid = url[0] === windowPath;
   // const contract = await Web3ContractProvider(community.partnersAgreementAddress, PartnersAgreementABI);
   // const isValid = await contract.isURLListed(windowPath);
