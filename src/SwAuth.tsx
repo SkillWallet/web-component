@@ -67,7 +67,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
     const initialize = async () => {
       const { useButtonOptions, disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
       if (useButtonOptions) {
-        console.log(useButtonOptions);
         setShowButtonDropDown(useButtonOptions === 'true');
       }
       if (hideButton) {
@@ -87,7 +86,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         dispatch(showGlobalError('Partner key attribute is missing.'));
       }
       if (useDev) {
-        dispatch(startValidatingDomain());
         setUseDev(useDev === 'true');
       } else {
         dispatch(startValidatingDomain());
