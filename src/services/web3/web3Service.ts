@@ -1,10 +1,11 @@
 import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
-import { SkillWalletAbi } from '@skill-wallet/sw-abi-types';
+import { SkillWalletAbi, PartnersAgreementABI } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
+import { ethers } from 'ethers';
 import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
-import { Web3ContractProvider } from './web3.provider';
+import { changeNetwork, Web3ContractProvider } from './web3.provider';
 import { env } from './env';
 import communityAbi from './community-abi.json';
 import { ErrorTypes } from '../../types/error-types';
@@ -24,6 +25,14 @@ export const getActivationNonce = async (tokenId) => {
     .catch((e) => {
       throw new Error(ErrorTypes.CouldNotGetActivationNonce);
     });
+};
+
+export const getPAUrl = async (partnersAgreementAddress) => {
+  await changeNetwork();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const contract = new ethers.Contract(partnersAgreementAddress, PartnersAgreementABI, provider);
+  const urls = await contract.getURLs();
+  return urls?.length > 0 ? urls[urls.length - 1] : undefined;
 };
 
 export const getTokenId = async () => {
@@ -68,6 +77,18 @@ export const getCommunity = async (partnerKey) => {
   // console.log('partnersA address: ', partnersAgreementAddress);
   // membershipAddress = await getMembershipAddress();
   // return community;
+};
+
+export const validateDomain = async (partnerKey) => {
+  const windowPath = window.location.href;
+  const community = await getCommunity(partnerKey);
+  const partnersUrl = await getPAUrl(community.partnersAgreementAddress);
+  const url = partnersUrl.match('^(?:https?://)?(?:[^@/\n]+@)?(?:www.)?([^:/?\n]+)');
+  const isValid = url[0] === windowPath;
+  // const contract = await Web3ContractProvider(community.partnersAgreementAddress, PartnersAgreementABI);
+  // const isValid = await contract.isURLListed(windowPath);
+
+  return isValid;
 };
 
 export const joinCommunity = async (communityAddress, username, imageUrl, role, level, dispatch) => {

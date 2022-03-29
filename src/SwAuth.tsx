@@ -8,9 +8,20 @@ import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
 import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
-import { isOpen, showDialog, setLoading, setDisableCreateNewUser } from './store/sw-ui-reducer';
+import {
+  isOpen,
+  showDialog,
+  setLoading,
+  setDisableCreateNewUser,
+  showGlobalError,
+  startLoading,
+  startValidatingDomain,
+  loadingFinished,
+  finishValidatingDomain,
+} from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
+import { validateDomain } from './services/web3/web3Service';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useDispatch();
@@ -53,71 +64,86 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   }, []);
 
   useEffect(() => {
-    const { useButtonOptions, disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
-    if (useButtonOptions) {
-      console.log(useButtonOptions);
-      setShowButtonDropDown(useButtonOptions === 'true');
-    }
-    if (hideButton) {
-      setButtonHidden(hideButton === 'true');
-    }
-    if (useDev) {
-      setUseDev(useDev === 'true');
-    }
-    if (partnerKey) {
-      console.log('PK', partnerKey);
-      dispatch(setPartnerKey(partnerKey));
+    const initialize = async () => {
+      const { useButtonOptions, disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
+      if (useButtonOptions) {
+        setShowButtonDropDown(useButtonOptions === 'true');
+      }
+      if (hideButton) {
+        setButtonHidden(hideButton === 'true');
+      }
+      if (partnerKey) {
+        console.log('PK', partnerKey);
+        dispatch(setPartnerKey(partnerKey));
 
-      const event = new CustomEvent('initSkillwalletAuth', {
-        composed: true,
-        cancelable: true,
-        bubbles: true,
-      });
-      window.dispatchEvent(event);
-    }
-    if (disableCreateNewUser) {
-      dispatch(setDisableCreateNewUser(disableCreateNewUser === 'true'));
-    }
-    const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
-    if (sw) {
-      const currentTime = new Date().getTime();
-      // 8 Hours
-      const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
-      if (currentTime < sessionLength) {
-        dispatch(
-          setUserData({
-            username: sw.nickname,
-            profileImageUrl: sw.imageUrl,
-            isLoggedIn: true,
-          })
-        );
-        const event = new CustomEvent('onSkillwalletLogin', {
+        const event = new CustomEvent('initSkillwalletAuth', {
           composed: true,
           cancelable: true,
           bubbles: true,
-          detail: true,
         });
         window.dispatchEvent(event);
       } else {
-        window.sessionStorage.removeItem('skillWallet');
-        dispatch(resetUIState);
-        dispatch(setLoggedIn(false));
-        const event = new CustomEvent('onSkillwalletLogin', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-          detail: false,
-        });
-        window.dispatchEvent(event);
+        dispatch(showGlobalError('Partner key attribute is missing.'));
       }
-    }
+      if (useDev) {
+        setUseDev(useDev === 'true');
+      } else {
+        dispatch(startValidatingDomain());
+        try {
+          const isValid = await validateDomain(partnerKey);
+          if (!isValid) {
+            dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
+          }
+        } catch (e) {
+          dispatch(showGlobalError('Failed to validate domain.'));
+        }
+        dispatch(finishValidatingDomain());
+      }
+
+      if (disableCreateNewUser) {
+        dispatch(setDisableCreateNewUser(disableCreateNewUser === 'true'));
+      }
+      const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+      if (sw) {
+        const currentTime = new Date().getTime();
+        // 8 Hours
+        const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
+        if (currentTime < sessionLength) {
+          dispatch(
+            setUserData({
+              username: sw.nickname,
+              profileImageUrl: sw.imageUrl,
+              isLoggedIn: true,
+            })
+          );
+          const event = new CustomEvent('onSkillwalletLogin', {
+            composed: true,
+            cancelable: true,
+            bubbles: true,
+            detail: true,
+          });
+          window.dispatchEvent(event);
+        } else {
+          window.sessionStorage.removeItem('skillWallet');
+          dispatch(resetUIState);
+          dispatch(setLoggedIn(false));
+          const event = new CustomEvent('onSkillwalletLogin', {
+            composed: true,
+            cancelable: true,
+            bubbles: true,
+            detail: false,
+          });
+          window.dispatchEvent(event);
+        }
+      }
+    };
+    initialize();
   }, []);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleButtonClick = () => {
     if (currentUser.isLoggedIn) {
       if (!showButtonDropDown) {
-        console.log('LOGOUT');
         window.sessionStorage.removeItem('skillWallet');
         dispatch(resetUIState);
         const event = new CustomEvent('onSkillwalletLogin', {
@@ -129,7 +155,6 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
         window.dispatchEvent(event);
       }
     } else {
-      console.log('EMPTY');
       history.push('/');
       dispatch(resetUIState);
       dispatch(showDialog(true));
@@ -137,10 +162,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   };
 
   const handleMouseEnter = (event) => {
-    console.log(showButtonDropDown);
-    console.log('ENTER');
     if (anchorEl !== event.currentTarget && showButtonDropDown && currentUser.isLoggedIn) {
-      console.log(event.currentTarget);
       setAnchorEl(container);
     }
   };
