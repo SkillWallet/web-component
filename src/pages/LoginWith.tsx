@@ -50,9 +50,9 @@ const LoginWith: React.FunctionComponent = (props) => {
           startIcon={<SwIcon />}
           mode="dark"
           component={Link}
-          // disabled={isPartner}
+          disabled={swState.partnerMode}
           to="/skillwallet"
-          label={swState.isPartner ? 'Existing Partner' : 'SkillWallet'}
+          label={swState.partnerMode ? 'Existing Partner' : 'SkillWallet'}
         />
         <SwButton
           sx={{

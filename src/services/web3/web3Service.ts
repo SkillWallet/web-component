@@ -181,6 +181,7 @@ export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
     const { selectedAddress } = window.ethereum;
     console.log(selectedAddress);
     const tokenId = await contract.getSkillWalletIdByOwner(selectedAddress).catch((e) => {
+      console.log(e);
       if (e.data && e.data.message.includes('invalid')) {
         throw new Error(ErrorTypes.SkillWalletNotFound);
       } else {

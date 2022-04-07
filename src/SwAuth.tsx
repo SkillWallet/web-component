@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Avatar, Box, Button, Menu, MenuItem } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import { setPartnerKey, swData } from './store/sw-auth.reducer';
+import { setPartnerKey, swData, setPartnerMode } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
 import {
   isOpen,
@@ -25,9 +25,11 @@ import { validateDomain } from './services/web3/web3Service';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useDispatch();
+  const swState = useSelector(swData);
   const open = useSelector(isOpen);
 
-  const handleClose = () => {
+  const handleClose = (event, reason) => {
+    if (swState.partnerMode && reason && reason === 'backdropClick') return;
     dispatch(showDialog(false));
   };
 

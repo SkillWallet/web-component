@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SwButton } from 'sw-web-shared';
+import { base64toFile, SwButton } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { ethers } from 'ethers';
@@ -12,6 +12,7 @@ import { isCoreTeamMember, joinCommunity } from '../services/web3/web3Service';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
 import BackButton from '../components/BackButton';
+import { uploadFile } from '../services/textile/textile.hub';
 
 interface Role {
   roleId: number;
@@ -66,35 +67,53 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
   }, []);
 
   const handleJoinClicked = async () => {
-    await joinCommunity(community.address, userState.username, userState.profileImageUrl, selectedRole, 10, dispatch)
-      .then(async (result) => {
-        history.push('/qr');
+    dispatch(startLoading('Uploading user image.'));
+    await uploadFile(await base64toFile(userState.profileImageUrl, 'avatar'))
+      .then(async (imageUrl) => {
+        await joinCommunity(community.address, userState.username, imageUrl, selectedRole, 10, dispatch)
+          .then(async (result) => {
+            console.log('successful join');
+            history.push('/qr');
+          })
+          .catch((e) => {
+            console.log(e);
+            if (
+              e.message === ErrorTypes.CommunitySlotsFull ||
+              e.message === ErrorTypes.AlreadyAMember ||
+              e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
+            ) {
+              setErrorData({
+                errorMessage: e.message,
+                actionLabel: 'Back to Home',
+                action: () => {
+                  dispatch(resetUIState);
+                  history.push('/');
+                },
+              });
+            } else {
+              console.log(e);
+              setErrorData({
+                errorMessage: e.message,
+                actionLabel: 'Retry',
+                action: () => {
+                  setErrorData(undefined);
+                  handleJoinClicked();
+                },
+              });
+            }
+            dispatch(loadingFinished());
+          });
       })
       .catch((e) => {
-        if (
-          e.message === ErrorTypes.CommunitySlotsFull ||
-          e.message === ErrorTypes.AlreadyAMember ||
-          e.message === ErrorTypes.SkillWalletWithThisAddressAlreadyRegistered
-        ) {
-          setErrorData({
-            errorMessage: e.message,
-            actionLabel: 'Back to Home',
-            action: () => {
-              dispatch(resetUIState);
-              history.push('/');
-            },
-          });
-        } else {
-          console.log(e);
-          setErrorData({
-            errorMessage: e.message,
-            actionLabel: 'Retry',
-            action: () => {
-              setErrorData(undefined);
-              handleJoinClicked();
-            },
-          });
-        }
+        console.log(e);
+        setErrorData({
+          errorMessage: e.message,
+          actionLabel: 'Retry',
+          action: () => {
+            setErrorData(undefined);
+            handleJoinClicked();
+          },
+        });
         dispatch(loadingFinished());
       });
   };
