@@ -37,7 +37,6 @@ function MainDialog({ container, open, handleClose }) {
             alignItems: 'center',
           }}
         >
-          {console.log(uiState.validatingDomain ? 'Validating domain name.' : uiState.loadingMessage)}
           {(uiState.loadingMessage || uiState.validatingDomain) && (
             <Typography align="center" sx={{ mb: '26px', width: '90%' }} variant="h2">
               {uiState.validatingDomain ? 'Validating domain name.' : uiState.loadingMessage}
