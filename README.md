@@ -250,5 +250,3 @@ a,
 
 3. use-button-options
    `If set to 'true' a dropdown will pop up when hovering over the Button. Currently the only option is 'Logout'.`
-
-4. Add the custom HTML tag and populate the partner-key property
