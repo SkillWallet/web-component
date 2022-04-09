@@ -34,7 +34,6 @@ const UserRole: React.FunctionComponent = (props) => {
   const [selectedRole, setSelectedRole] = useState(undefined);
   const [errorData, setErrorData] = useState(undefined);
 
-  console.log(swUserState);
   const {
     handleSubmit,
     control,

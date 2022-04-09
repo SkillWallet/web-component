@@ -48,6 +48,11 @@ import './App.css';
 import { InitSwAuth } from '@skill-wallet/auth;
 
 function App() {
+
+  useEffect(() => {
+      InitSwAuth();
+  }, []);
+
   return (
     <div>
         <sw-auth partner-key="c3842343a29eac1d33a53bt60gfs1aqcg6g5g71d"></sw-auth>
@@ -55,7 +60,6 @@ function App() {
   );
 }
 
-InitSwAuth();
 export default App;
 ```
 
