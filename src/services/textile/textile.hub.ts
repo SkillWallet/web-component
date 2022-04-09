@@ -8,8 +8,8 @@ const client = new NFTStorage({
 export function ipfsCIDToHttpUrl(url: string, isJson: boolean) {
   if (!url.includes('textile'))
     return isJson
-      ? `https://hub.textile.io/ipfs/${url.replace('ipfs://', '')}/metadata.json`
-      : `https://hub.textile.io/ipfs/${url.replace('ipfs://', '')}`;
+      ? `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}/metadata.json`
+      : `https://ipfs.io/ipfs/${url.replace('ipfs://', '')}`;
 
   return url;
 }
