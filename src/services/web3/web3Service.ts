@@ -1,13 +1,11 @@
 import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
-import { SkillWalletAbi, PartnersAgreementABI } from '@skill-wallet/sw-abi-types';
+import { Web3PartnersAgreementProvider, Web3SkillWalletCommunityProvider, Web3SkillWalletProvider } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
-import { ethers } from 'ethers';
 import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
-import { changeNetwork, Web3ContractProvider } from './web3.provider';
+import { changeNetwork } from './web3.provider';
 import { env } from './env';
-import communityAbi from './community-abi.json';
 import { ErrorTypes } from '../../types/error-types';
 
 export const getSkillWalletAddress = async () => {
@@ -29,8 +27,7 @@ export const getActivationNonce = async (tokenId) => {
 
 export const getPAUrl = async (partnersAgreementAddress) => {
   await changeNetwork();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const contract = new ethers.Contract(partnersAgreementAddress, PartnersAgreementABI, provider);
+  const contract = await Web3PartnersAgreementProvider(partnersAgreementAddress);
   const urls = await contract.getURLs();
   return urls?.length > 0 ? urls[urls.length - 1] : undefined;
 };
@@ -38,7 +35,7 @@ export const getPAUrl = async (partnersAgreementAddress) => {
 export const getTokenId = async () => {
   console.log('fetching address');
   const skillWalletAddress = await getSkillWalletAddress();
-  const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
+  const contract = await Web3SkillWalletProvider(skillWalletAddress);
 
   if (window.ethereum.selectedAddress) {
     const { selectedAddress } = window.ethereum;
@@ -51,9 +48,8 @@ export const getTokenId = async () => {
 export const isQrCodeActive = async (tokenId): Promise<boolean> => {
   try {
     const skillwalletAddress = await getSkillWalletAddress();
-    const contract = await Web3ContractProvider(skillwalletAddress, SkillWalletAbi);
-    const status = await contract.isSkillWalletActivated(tokenId);
-
+    const contract = await Web3SkillWalletProvider(skillwalletAddress);
+    const status = (await contract.isSkillWalletActivated(tokenId)) as unknown as boolean;
     console.log('Polling qr!', status);
     return status;
   } catch (error) {
@@ -64,7 +60,7 @@ export const isQrCodeActive = async (tokenId): Promise<boolean> => {
 };
 
 export const isCoreTeamMember = async (communityAddress, user) => {
-  const contract = await Web3ContractProvider(communityAddress, communityAbi);
+  const contract = await Web3SkillWalletCommunityProvider(communityAddress);
   const result = await contract.isCoreTeamMember(user);
 
   return result;
@@ -94,7 +90,7 @@ export const validateDomain = async (partnerKey) => {
 export const joinCommunity = async (communityAddress, username, imageUrl, role, level, dispatch) => {
   console.log('trying to join community', communityAddress);
   dispatch(setLoadingMessage('Preparing to join community.'));
-  const contract = await Web3ContractProvider(communityAddress, communityAbi);
+  const contract = await Web3SkillWalletCommunityProvider(communityAddress);
 
   const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
   const config = {
@@ -168,7 +164,7 @@ export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
   if (!window.ethereum.selectedAddress && dispatch) {
     dispatch(startLoading('Getting MetaMask info. Make sure you are logged into your account.'));
   }
-  const contract = await Web3ContractProvider(skillWalletAddress, SkillWalletAbi);
+  const contract = await Web3SkillWalletProvider(skillWalletAddress);
 
   if (dispatch) {
     if (checkIfExists) {
