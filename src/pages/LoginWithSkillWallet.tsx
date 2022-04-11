@@ -14,6 +14,8 @@ import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
 import BackButton from '../components/BackButton';
+import { dispatchSwEvent } from '../utils/utils';
+import { OutputEventTypes } from '../types/event-types';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
@@ -33,15 +35,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           })
         );
         window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
-        console.log(result);
-        const event = new CustomEvent('onSkillwalletLogin', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-          detail: true,
-        });
-        window.dispatchEvent(event);
-
+        dispatchSwEvent(OutputEventTypes.Login, true);
         dispatch(loadingFinished());
       })
       .catch((e) => {

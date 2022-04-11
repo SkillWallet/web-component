@@ -1,5 +1,5 @@
 import { MemoryRouter as Router } from 'react-router-dom';
-import { CacheProvider, ThemeProvider } from '@emotion/react';
+import { CacheProvider, CSSObject, ThemeProvider } from '@emotion/react';
 import { create } from 'jss';
 import { StylesProvider, jssPreset } from '@mui/styles';
 import ReactDOM from 'react-dom';
@@ -8,10 +8,10 @@ import { SwTheme } from './theme';
 import store from './store/store';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
 import SwAuthModal, { SwAuthButton } from './SwAuth';
-import { SwAuthConfig } from './types/sw-auth-config';
-import { createShadowElement, extractAttributes, isElement } from './utils/utils';
+import { AttributeCallbackFn, SwAuthConfig } from './types/sw-auth-config';
+import { AttributeNames, createShadowElement, extractAttributes, isElement } from './utils/utils';
 
-export function InitSwAuth(authConfig: SwAuthConfig = null) {
+export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
   const TAG_NAME = 'sw-auth';
   // we don't to initialized again when saving changes on hot-reloading
   if (customElements.get(TAG_NAME)) {
@@ -20,20 +20,18 @@ export function InitSwAuth(authConfig: SwAuthConfig = null) {
   customElements.define(
     TAG_NAME,
     class extends HTMLElement {
+      public childAttrCalback: AttributeCallbackFn;
+
       static get observedAttributes() {
         // Add all tracked attributes to this array
-        return ['hide-button'];
+        return [AttributeNames.hideButton];
       }
 
-      // eslint-disable-next-line class-methods-use-this
-      attributeChangedCallback(name, oldValue, newValue) {
-        console.log('CALLBACK CALLED');
-        // @ts-ignore
+      attributeChangedCallback(name: string, oldValue: string, newValue: string) {
         if (this.childAttrCalback) this.childAttrCalback(name, oldValue, newValue);
       }
 
-      setAttributeChangeCallback = (callBack) => {
-        // @ts-ignore
+      setAttributeChangeCallback = (callBack: AttributeCallbackFn) => {
         if (callBack) this.childAttrCalback = callBack;
       };
 
