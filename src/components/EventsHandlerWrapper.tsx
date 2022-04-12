@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { getCommunity } from '../services/web3/web3Service';
 import { setCommunity, setPartnerKey, setPartnerMode } from '../store/sw-auth.reducer';
 import { showDialog } from '../store/sw-ui-reducer';
+import { OutputEventTypes, InputEventTypes } from '../types/event-types';
+import { dispatchSwEvent } from '../utils/utils';
 
 export const EventsHandlerWrapper = ({ children }) => {
   const dispatch = useDispatch();
@@ -12,35 +14,21 @@ export const EventsHandlerWrapper = ({ children }) => {
       dispatch(setPartnerKey(partnerKey));
       try {
         const comm = await getCommunity(partnerKey);
-        const event = new CustomEvent('activateSkillWalletCommunitySuccess', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-          detail: 'Successfully initiated SkillWallet authentiaciton.',
-        });
+        dispatchSwEvent(OutputEventTypes.ActivateSuccess, 'Successfully initiated SkillWallet authentiaciton.');
         console.log('Sending event.');
-        window.dispatchEvent(event);
-        console.log('Community', comm);
         dispatch(setCommunity(comm));
         dispatch(setPartnerMode(true));
         dispatch(showDialog(true));
       } catch (error) {
         console.log(error);
-        const event = new CustomEvent('activateSkillWalletCommunityError', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-          detail: 'Filed to retrieve community',
-        });
-        console.log('Sending event.');
-        window.dispatchEvent(event);
+        dispatchSwEvent(OutputEventTypes.ActivateError, 'Filed to retrieve community');
       }
     };
 
-    window.addEventListener('activateSkillwalletCommunity', onActivateCommunity, false);
+    window.addEventListener(InputEventTypes.Activate, onActivateCommunity, false);
 
     return () => {
-      window.removeEventListener('activateSkillwalletCommunity', onActivateCommunity);
+      window.removeEventListener(InputEventTypes.Activate, onActivateCommunity);
     };
   }, [dispatch]);
 

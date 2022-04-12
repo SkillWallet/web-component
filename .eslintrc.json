@@ -50,6 +50,7 @@
                 "endOfLine": "auto"
             }
         ],
+        "no-shadow": "off",
         "no-underscore-dangle": "off",
         "consistent-return": "off",
         "no-await-in-loop": "off",
@@ -91,7 +92,7 @@
         "@typescript-eslint/no-shadow": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "max-len": [
-            "warn",
+            "off",
             {
                 "code": 140
             }

@@ -11,6 +11,8 @@ import { loadingFinished, setLoading, showDialog, startLoading } from '../store/
 import { setUserData } from '../store/sw-user-data.reducer';
 import ErrorBox from '../components/ErrorBox';
 import { ErrorTypes } from '../types/error-types';
+import { OutputEventTypes } from '../types/event-types';
+import { dispatchSwEvent } from '../utils/utils';
 
 const ScanQR: React.FunctionComponent = (props) => {
   const dispatch = useDispatch();
@@ -50,13 +52,7 @@ const ScanQR: React.FunctionComponent = (props) => {
                 // dispatch(setUserProfilePicture(sw.imageUrl));
                 dispatch(showDialog(false));
                 history.push('/');
-                const event = new CustomEvent('onSkillwalletLogin', {
-                  composed: true,
-                  cancelable: true,
-                  bubbles: true,
-                  detail: true,
-                });
-                window.dispatchEvent(event);
+                dispatchSwEvent(OutputEventTypes.Login, true);
               } else {
                 setErrorData({
                   errorMessage: 'QR Code not scanned.',

@@ -1,27 +1,26 @@
-/* eslint-disable class-methods-use-this */
 import { withRouter, useHistory } from 'react-router-dom';
 import { SwButton } from 'sw-web-shared';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Avatar, Box, Button, Menu, MenuItem } from '@mui/material';
+import { Avatar, Menu, MenuItem } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
-import { setPartnerKey, swData, setPartnerMode } from './store/sw-auth.reducer';
+import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
 import {
   isOpen,
   showDialog,
-  setLoading,
   setDisableCreateNewUser,
   showGlobalError,
-  startLoading,
   startValidatingDomain,
-  loadingFinished,
   finishValidatingDomain,
 } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 import { validateDomain } from './services/web3/web3Service';
+import { AttributeNames, checkIfAttributeHasChanged, dispatchSwEvent, parseAttributeValue } from './utils/utils';
+import { SwAuthButtonProps } from './types/sw-auth-config';
+import { OutputEventTypes } from './types/event-types';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useDispatch();
@@ -47,114 +46,74 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   );
 });
 
-export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) => {
+export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthButtonProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector(currentUserState);
 
+  const [anchorEl, setAnchorEl] = useState(null);
   const [buttonHidden, setButtonHidden] = useState(false);
-  const [showButtonDropDown, setShowButtonDropDown] = useState(false);
 
-  useEffect(() => {
-    // Remember they are strings
-    // Set attribute change callback
-    setAttrCallback((name, oldVal, newVal) => {
-      if (name === 'hide-button') {
-        setButtonHidden(newVal === 'true');
-      }
-    });
-  }, []);
+  const onSetParnersKey = (partnerKey: string) => {
+    if (partnerKey) {
+      console.log('PK', attributes.partnerKey);
+      dispatch(setPartnerKey(attributes.partnerKey as string));
+      dispatchSwEvent(OutputEventTypes.Init);
+    } else {
+      dispatch(showGlobalError('Partner key attribute is missing.'));
+    }
+  };
 
-  useEffect(() => {
-    const initialize = async () => {
-      const { useButtonOptions, disableCreateNewUser, partnerKey, useDev, hideButton } = attributes;
-      if (useButtonOptions) {
-        setShowButtonDropDown(useButtonOptions === 'true');
-      }
-      if (hideButton) {
-        setButtonHidden(hideButton === 'true');
-      }
-      if (partnerKey) {
-        console.log('PK', partnerKey);
-        dispatch(setPartnerKey(partnerKey));
-
-        const event = new CustomEvent('initSkillwalletAuth', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-        });
-        window.dispatchEvent(event);
-      } else {
-        dispatch(showGlobalError('Partner key attribute is missing.'));
-      }
-      if (useDev) {
-        setUseDev(useDev === 'true');
-      } else {
-        dispatch(startValidatingDomain());
-        try {
-          const isValid = await validateDomain(partnerKey);
-          if (!isValid) {
-            dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
-          }
-        } catch (e) {
-          dispatch(showGlobalError('Failed to validate domain.'));
+  const onUseEnv = async (useDev: boolean) => {
+    if (useDev) {
+      setUseDev(attributes.useDev);
+    } else {
+      dispatch(startValidatingDomain());
+      try {
+        const isValid = await validateDomain(attributes.partnerKey);
+        if (!isValid) {
+          dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
         }
+      } catch (e) {
+        dispatch(showGlobalError('Failed to validate domain.'));
+      } finally {
         dispatch(finishValidatingDomain());
       }
+    }
+  };
 
-      if (disableCreateNewUser) {
-        dispatch(setDisableCreateNewUser(disableCreateNewUser === 'true'));
+  const initializeSW = async () => {
+    const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+    if (sw) {
+      const currentTime = new Date().getTime();
+      // 8 Hours
+      const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
+      if (currentTime < sessionLength) {
+        const isLoggedIn = true;
+        dispatch(
+          setUserData({
+            username: sw.nickname,
+            profileImageUrl: sw.imageUrl,
+            isLoggedIn,
+          })
+        );
+        dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
+      } else {
+        const isLoggedIn = false;
+        window.sessionStorage.removeItem('skillWallet');
+        dispatch(resetUIState);
+        dispatch(setLoggedIn(isLoggedIn));
+        dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
       }
-      const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
-      if (sw) {
-        const currentTime = new Date().getTime();
-        // 8 Hours
-        const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
-        if (currentTime < sessionLength) {
-          dispatch(
-            setUserData({
-              username: sw.nickname,
-              profileImageUrl: sw.imageUrl,
-              isLoggedIn: true,
-            })
-          );
-          const event = new CustomEvent('onSkillwalletLogin', {
-            composed: true,
-            cancelable: true,
-            bubbles: true,
-            detail: true,
-          });
-          window.dispatchEvent(event);
-        } else {
-          window.sessionStorage.removeItem('skillWallet');
-          dispatch(resetUIState);
-          dispatch(setLoggedIn(false));
-          const event = new CustomEvent('onSkillwalletLogin', {
-            composed: true,
-            cancelable: true,
-            bubbles: true,
-            detail: false,
-          });
-          window.dispatchEvent(event);
-        }
-      }
-    };
-    initialize();
-  }, []);
-  const [anchorEl, setAnchorEl] = useState(null);
+    }
+  };
 
   const handleButtonClick = () => {
     if (currentUser.isLoggedIn) {
-      if (!showButtonDropDown) {
+      if (!attributes.useButtonOptions) {
         window.sessionStorage.removeItem('skillWallet');
         dispatch(resetUIState);
-        const event = new CustomEvent('onSkillwalletLogin', {
-          composed: true,
-          cancelable: true,
-          bubbles: true,
-          detail: false,
-        });
-        window.dispatchEvent(event);
+        dispatchSwEvent(OutputEventTypes.Login, false);
       }
     } else {
       history.push('/');
@@ -164,7 +123,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   };
 
   const handleMouseEnter = (event) => {
-    if (anchorEl !== event.currentTarget && showButtonDropDown && currentUser.isLoggedIn) {
+    if (anchorEl !== event.currentTarget && attributes.useButtonOptions && currentUser.isLoggedIn) {
       setAnchorEl(container);
     }
   };
@@ -172,19 +131,35 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: any) =>
   const handleMenuButtonClicked = () => {
     window.sessionStorage.removeItem('skillWallet');
     dispatch(resetUIState);
-    const event = new CustomEvent('onSkillwalletLogin', {
-      composed: true,
-      cancelable: true,
-      bubbles: true,
-      detail: false,
-    });
-    window.dispatchEvent(event);
+    dispatchSwEvent(OutputEventTypes.Login, false);
     setAnchorEl(null);
   };
 
   const handleHideMenu = () => {
     setAnchorEl(null);
   };
+
+  useEffect(() => {
+    setButtonHidden(attributes.hideButton as boolean);
+    onSetParnersKey(attributes.partnerKey as string);
+    onUseEnv(attributes.useDev as boolean);
+    dispatch(setDisableCreateNewUser(attributes.disableCreateNewUser as boolean));
+
+    setAttrCallback((name: string, prevValue: string, currVal: string) => {
+      const notChanged = !checkIfAttributeHasChanged(prevValue, currVal);
+      if (notChanged) {
+        return; // do nothing if its the same
+      }
+      const value = parseAttributeValue(name, currVal);
+      if (name === AttributeNames.hideButton) {
+        setButtonHidden(value);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    initializeSW();
+  }, []);
 
   return (
     <>
