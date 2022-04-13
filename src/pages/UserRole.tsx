@@ -101,15 +101,15 @@ const UserRole: React.FunctionComponent = (props) => {
       dispatch(startLoading('Checking membership.'));
       await isCoreTeamMember(community.address, window.ethereum.selectedAddress)
         .then((result) => {
-          const roles = community?.roles?.roles || [];
+          const roles = community.properties.skills.roles || [];
           const newUserRolesBaseId = 4;
           const filteredRoles = roles
             .filter((r) => r.isCoreTeamMember === result)
             .map((curr, index) => {
               const { roleName } = curr;
-              let roleId;
+              let roleId: number;
               if (roleId <= 3) {
-                roleId = curr.roleId;
+                roleId = curr.id;
               } else {
                 roleId = newUserRolesBaseId + index;
               }
