@@ -82,10 +82,13 @@ export const getCommunity = async (partnerKey: string): Promise<Community & Part
   }
 
   data.address = data.communityAddress;
-  const contract = await Web3SkillWalletCommunityProvider(data.address);
+  const contract = await SkillWalletCommunityContractProvier(data.address);
   const uri = await contract.metadataUri();
   const metadata: Community = (await axios.get(uri)).data;
+  const metadata1: Community = await axios.get(uri);
+  console.log(metadata1);
   const community = new Community(metadata);
+  console.log(community);
   community.image = ipfsCIDToHttpUrl(community.image as string);
   return {
     ...community,
