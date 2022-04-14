@@ -1,19 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { Interface } from 'ethers/lib/utils';
+import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
+import { Community, PartnerAgreementKey } from '../services/web3/models';
 import { ActionPayload } from './action-payload';
 
-export interface Community {
-  name?: string;
-  address?: string;
-}
 export interface SwAuthState {
   partnerKey?: string;
   partnerAddress?: string;
   communityAddress?: string;
   partnerMode?: boolean;
-  // Add type
-  community?: any;
+  community: Community & PartnerAgreementKey;
   mode: string;
 }
 
@@ -22,7 +17,7 @@ export const initialState: SwAuthState = {
   partnerAddress: undefined,
   communityAddress: undefined,
   partnerMode: false,
-  community: undefined,
+  community: new Community() as Community & PartnerAgreementKey,
   mode: 'light',
 };
 
@@ -63,8 +58,8 @@ export const currentPartnerKey = createSelector(
   (currentKey) => currentKey
 );
 export const currentCommunity = createSelector(
-  (state) => state.swAuth.community,
-  (comm) => comm
+  (state) => state.swAuth.community as Community & PartnerAgreementKey,
+  (comm: Community & PartnerAgreementKey) => comm
 );
 export const partnerMode = createSelector(
   (state) => state.swAuth.partnerMode,

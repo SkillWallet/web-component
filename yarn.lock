@@ -2433,12 +2433,6 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@skill-wallet/auth@file:":
-  "resolved" "file:"
-  "version" "1.0.53"
-  dependencies:
-    "@skill-wallet/auth" "file:"
-
 "@skill-wallet/sw-abi-types@^0.0.33":
   "integrity" "sha512-GmySCBPY+8pIlNyNxeEMhNZScEEvL+oCBXDXtfIVCUe37bkw6fxoCKj+r3f3H9THBKL4dzto4RN9JTeZm0v5hA=="
   "resolved" "https://registry.npmjs.org/@skill-wallet/sw-abi-types/-/sw-abi-types-0.0.33.tgz"

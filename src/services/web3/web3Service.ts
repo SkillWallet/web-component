@@ -12,6 +12,8 @@ import {
 } from './web3.provider';
 import { env } from './env';
 import { ErrorTypes } from '../../types/error-types';
+import { Community, PartnerAgreementKey } from './models';
+import { ParseSWErrorMessage } from './utils';
 
 export const getSkillWalletAddress = async () => {
   return axios.get(`${env.SKILL_WALLET_API}/skillwallet/config`).then((response) => response.data.skillWalletAddress);
@@ -70,13 +72,28 @@ export const isCoreTeamMember = async (communityAddress, user) => {
   return result;
 };
 
-export const getCommunity = async (partnerKey) => {
-  return axios.get(`${env.SKILL_WALLET_API}/community/key/${partnerKey}`).then((response) => response.data);
-  // this probably shouldn't be here
-  // partnersAgreementAddress = community.partnersAgreementAddress;
-  // console.log('partnersA address: ', partnersAgreementAddress);
-  // membershipAddress = await getMembershipAddress();
-  // return community;
+export const getCommunity = async (partnerKey: string): Promise<Community & PartnerAgreementKey> => {
+  const data: PartnerAgreementKey = await axios
+    .get<PartnerAgreementKey>(`${env.SKILL_WALLET_API}/skillwallet/agreement/${partnerKey}`)
+    .then((response) => response.data);
+
+  if (!data) {
+    throw new Error(`No partner agreement was found with key ${partnerKey}`);
+  }
+
+  data.address = data.communityAddress;
+  const contract = await SkillWalletCommunityContractProvier(data.address);
+  const uri = await contract.metadataUri();
+  const metadata: Community = (await axios.get(uri)).data;
+  const metadata1: Community = await axios.get(uri);
+  console.log(metadata1);
+  const community = new Community(metadata);
+  console.log(community);
+  community.image = ipfsCIDToHttpUrl(community.image as string);
+  return {
+    ...community,
+    ...data,
+  };
 };
 
 export const validateDomain = async (partnerKey) => {
