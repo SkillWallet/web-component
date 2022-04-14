@@ -1,10 +1,15 @@
 import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
-import { Web3PartnersAgreementProvider, Web3SkillWalletCommunityProvider, Web3SkillWalletProvider } from '@skill-wallet/sw-abi-types';
 import dateFormat from 'dateformat';
+import { SkillWalletCommunityContractEventType } from '@skill-wallet/sw-abi-types';
 import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
-import { changeNetwork } from './web3.provider';
+import {
+  changeNetwork,
+  PartnersAgreementContractProvier,
+  SkillWalletCommunityContractProvier,
+  SkillWalletContractProvier,
+} from './web3.provider';
 import { env } from './env';
 import { ErrorTypes } from '../../types/error-types';
 import { Community, PartnerAgreementKey } from './models';
@@ -28,8 +33,7 @@ export const getActivationNonce = async (tokenId) => {
 };
 
 export const getPAUrl = async (partnersAgreementAddress) => {
-  await changeNetwork();
-  const contract = await Web3PartnersAgreementProvider(partnersAgreementAddress);
+  const contract = await PartnersAgreementContractProvier(partnersAgreementAddress);
   const urls = await contract.getURLs();
   return urls?.length > 0 ? urls[urls.length - 1] : undefined;
 };
@@ -37,7 +41,7 @@ export const getPAUrl = async (partnersAgreementAddress) => {
 export const getTokenId = async () => {
   console.log('fetching address');
   const skillWalletAddress = await getSkillWalletAddress();
-  const contract = await Web3SkillWalletProvider(skillWalletAddress);
+  const contract = await SkillWalletContractProvier(skillWalletAddress);
 
   if (window.ethereum.selectedAddress) {
     const { selectedAddress } = window.ethereum;
@@ -50,7 +54,7 @@ export const getTokenId = async () => {
 export const isQrCodeActive = async (tokenId): Promise<boolean> => {
   try {
     const skillwalletAddress = await getSkillWalletAddress();
-    const contract = await Web3SkillWalletProvider(skillwalletAddress);
+    const contract = await SkillWalletContractProvier(skillwalletAddress);
     const status = (await contract.isSkillWalletActivated(tokenId)) as unknown as boolean;
     console.log('Polling qr!', status);
     return status;
@@ -62,7 +66,7 @@ export const isQrCodeActive = async (tokenId): Promise<boolean> => {
 };
 
 export const isCoreTeamMember = async (communityAddress, user) => {
-  const contract = await Web3SkillWalletCommunityProvider(communityAddress);
+  const contract = await SkillWalletCommunityContractProvier(communityAddress);
   const result = await contract.isCoreTeamMember(user);
 
   return result;
@@ -104,7 +108,9 @@ export const validateDomain = async (partnerKey) => {
 export const joinCommunity = async (communityAddress, username, imageUrl, role, level, dispatch) => {
   console.log('trying to join community', communityAddress);
   dispatch(setLoadingMessage('Preparing to join community.'));
-  const contract = await Web3SkillWalletCommunityProvider(communityAddress);
+  const contract = await SkillWalletCommunityContractProvier(communityAddress, {
+    event: SkillWalletCommunityContractEventType.MemberAdded,
+  });
 
   const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
   const config = {
@@ -147,7 +153,7 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
 
   dispatch(setLoadingMessage('Awaiting transaction confirmation.'));
   // eslint-disable-next-line dot-notation
-  const createTx = await contract.joinNewMember(url, role['roleId']).catch((e) => {
+  const response = await contract.joinNewMember(url, role['roleId']).catch((e) => {
     if (e.message.includes('No free spots left')) {
       throw new Error(ErrorTypes.CommunitySlotsFull);
     } else if (e.message.includes('Already a member')) {
@@ -160,14 +166,10 @@ export const joinCommunity = async (communityAddress, username, imageUrl, role, 
   });
 
   dispatch(setLoadingMessage('Confirming transaction.'));
-  const communityTransactionResult = await createTx.wait();
-  console.log(communityTransactionResult);
-  const { events } = communityTransactionResult;
-  const memberJoinedEvent = events.find((e) => e.event === 'MemberAdded');
 
-  if (memberJoinedEvent) {
+  if (response) {
     // return tokenID.
-    return memberJoinedEvent.args[1].toString();
+    return response[1].toString();
   }
   throw new Error('Something went wrong');
 };
@@ -178,7 +180,7 @@ export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
   if (!window.ethereum.selectedAddress && dispatch) {
     dispatch(startLoading('Getting MetaMask info. Make sure you are logged into your account.'));
   }
-  const contract = await Web3SkillWalletProvider(skillWalletAddress);
+  const contract = await SkillWalletContractProvier(skillWalletAddress);
 
   if (dispatch) {
     if (checkIfExists) {
@@ -189,10 +191,9 @@ export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
   }
   if (window.ethereum.selectedAddress) {
     const { selectedAddress } = window.ethereum;
-    console.log(selectedAddress);
     const tokenId = await contract.getSkillWalletIdByOwner(selectedAddress).catch((e) => {
-      console.log(e);
-      if (e.data && e.data.message.includes('invalid')) {
+      console.log(e.toString());
+      if (e.toString().includes('invalid')) {
         throw new Error(ErrorTypes.SkillWalletNotFound);
       } else {
         throw e;

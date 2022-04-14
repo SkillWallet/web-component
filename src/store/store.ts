@@ -29,6 +29,7 @@ const rootReducer = (state, action) => {
         validatingDomain: state.swUI.validatingDomain,
         globalErrorMessage: state.swUI.globalErrorMessage,
         showGlobalError: state.swUI.showGlobalError,
+        disableCreateNewUser: state.swUI.disableCreateNewUser,
       },
     };
   }
