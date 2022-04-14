@@ -19,7 +19,6 @@ const rootReducer = (state, action) => {
       swAuth: {
         ...initAuthState,
         partnerKey: state.swAuth.partnerKey,
-        partnerMode: state.swAuth.partnerMode,
         partnerAddress: state.swAuth.partnerAddress,
       },
       swUserData: { ...initUserDataState },
