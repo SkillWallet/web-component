@@ -24,7 +24,7 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
 
       static get observedAttributes() {
         // Add all tracked attributes to this array
-        return [AttributeNames.hideButton];
+        return [AttributeNames.hideButton, AttributeNames.disableCreateNewUser];
       }
 
       attributeChangedCallback(name: string, oldValue: string, newValue: string) {

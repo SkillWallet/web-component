@@ -2433,6 +2433,12 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@skill-wallet/auth@file:":
+  "resolved" "file:"
+  "version" "1.0.53"
+  dependencies:
+    "@skill-wallet/auth" "file:"
+
 "@skill-wallet/sw-abi-types@^0.0.33":
   "integrity" "sha512-GmySCBPY+8pIlNyNxeEMhNZScEEvL+oCBXDXtfIVCUe37bkw6fxoCKj+r3f3H9THBKL4dzto4RN9JTeZm0v5hA=="
   "resolved" "https://registry.npmjs.org/@skill-wallet/sw-abi-types/-/sw-abi-types-0.0.33.tgz"
@@ -6001,11 +6007,6 @@
   "integrity" "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   "version" "1.0.0"
-
-"fsevents@^2.3.2", "fsevents@~2.3.2":
-  "integrity" "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA=="
-  "resolved" "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
-  "version" "2.3.2"
 
 "function-bind@^1.1.1":
   "integrity" "sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A=="

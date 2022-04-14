@@ -153,6 +153,8 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthB
       const value = parseAttributeValue(name, currVal);
       if (name === AttributeNames.hideButton) {
         setButtonHidden(value);
+      } else if (name === AttributeNames.disableCreateNewUser) {
+        dispatch(setDisableCreateNewUser(value));
       }
     });
   }, []);
