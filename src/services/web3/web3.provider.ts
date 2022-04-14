@@ -1,7 +1,19 @@
+import {
+  PartnersAgreementContractEventType,
+  SkillWalletCommunityContractEventType,
+  SkillWalletContractEventType,
+  Web3PartnersAgreementProvider,
+  Web3ProviderExtras,
+  Web3SkillWalletCommunityProvider,
+  Web3SkillWalletProvider,
+} from '@skill-wallet/sw-abi-types';
 import { ContractInterface, ethers } from 'ethers';
 import { env } from './env';
 
 export const changeNetwork = async () => {
+  if (!window.ethereum.selectedAddress) {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+  }
   // try {
   await window.ethereum.request(env.CHANGE_NETWORK_METADATA);
   // } catch (switchError) {
@@ -17,14 +29,32 @@ export const changeNetwork = async () => {
   // }
 };
 
-export const Web3ContractProvider = async (addressOrName: string, contractInterface: ContractInterface) => {
-  await changeNetwork();
+export const SkillWalletContractProvier: typeof Web3SkillWalletProvider = (
+  address: string,
+  extras?: Web3ProviderExtras<SkillWalletContractEventType>
+) => {
+  return Web3SkillWalletProvider(address, {
+    beforeRequest: () => changeNetwork(),
+    ...(extras || {}),
+  });
+};
 
-  if (!window.ethereum.selectedAddress) {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-  }
+export const SkillWalletCommunityContractProvier: typeof Web3SkillWalletCommunityProvider = (
+  address: string,
+  extras?: Web3ProviderExtras<SkillWalletCommunityContractEventType>
+) => {
+  return Web3SkillWalletCommunityProvider(address, {
+    beforeRequest: () => changeNetwork(),
+    ...(extras || {}),
+  });
+};
 
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  return new ethers.Contract(addressOrName, contractInterface, signer);
+export const PartnersAgreementContractProvier: typeof Web3PartnersAgreementProvider = (
+  address: string,
+  extras?: Web3ProviderExtras<PartnersAgreementContractEventType>
+) => {
+  return Web3PartnersAgreementProvider(address, {
+    beforeRequest: () => changeNetwork(),
+    ...(extras || {}),
+  });
 };
