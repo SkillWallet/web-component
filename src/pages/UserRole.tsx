@@ -104,7 +104,7 @@ const UserRole: React.FunctionComponent = (props) => {
           const roles = community.properties.skills.roles || [];
           const newUserRolesBaseId = 4;
           const filteredRoles = roles
-            .filter((r) => r.isCoreTeamMember === result)
+            .filter((r) => r.isCoreTeamMember === result && r.roleName !== '')
             .map((curr, index) => {
               const { roleName } = curr;
               let roleId: number;
@@ -160,6 +160,7 @@ const UserRole: React.FunctionComponent = (props) => {
   ) : (
     <Box
       sx={{
+        minHeight: '462px',
         width: '100%',
       }}
     >
@@ -214,7 +215,8 @@ const UserRole: React.FunctionComponent = (props) => {
           <Box
             sx={{
               py: '24px',
-              mb: '27px',
+              mt: `${memberRoles.length < 3 ? (selectedRole ? '' : '35px') : ''}`,
+              mb: `${selectedRole ? '27px' : memberRoles.length < 3 ? '56px' : '27px'}`,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -284,24 +286,36 @@ const UserRole: React.FunctionComponent = (props) => {
                 />
               </Box>
             ) : (
-              memberRoles &&
-              memberRoles.map((role: Role, index) => {
-                return (
-                  <SwButton
-                    key={index}
-                    sx={{
-                      maxWidth: '212px',
-                      maxHeight: '44px',
-                    }}
-                    className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
-                    mode="dark"
-                    btnType="large"
-                    onClick={() => handleRoleSelected(role)}
-                  >
-                    <Typography variant="h3">{role.roleName}</Typography>
-                  </SwButton>
-                );
-              })
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gridGap: '20px',
+                  minWidth: '380px',
+                  maxHeight: '172px',
+                }}
+              >
+                {memberRoles &&
+                  memberRoles.map((role: Role, index) => {
+                    return (
+                      <SwButton
+                        key={index}
+                        sx={{
+                          maxWidth: '212px',
+                          maxHeight: '44px',
+                        }}
+                        className={selectedRole && selectedRole.roleId === role.roleId ? 'active-link' : ''}
+                        mode="dark"
+                        btnType="large"
+                        onClick={() => handleRoleSelected(role)}
+                      >
+                        <Typography variant="h3">{role.roleName}</Typography>
+                      </SwButton>
+                    );
+                  })}
+              </Box>
             )}
           </Box>
           <SwButton

@@ -38,6 +38,7 @@ const ScanQR: React.FunctionComponent = (props) => {
             dispatch(loadingFinished());
             await pollQRCodeActivated(token).then(async (result) => {
               if (result) {
+                dispatchSwEvent(OutputEventTypes.SkillWalletActivated, true);
                 const sw = await fetchSkillWallet();
                 window.sessionStorage.setItem('skillWallet', JSON.stringify(sw));
                 dispatch(
