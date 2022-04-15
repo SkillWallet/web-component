@@ -178,3 +178,18 @@ InitSwAuth();
 
 3. `use-button-options`
    If set to 'true' a dropdown will pop up when hovering over the Button. Currently the only option is 'Logout'.
+
+# Web Component Helpful window events:
+
+Login = 'onSkillwalletLogin',
+SkillWalletActivated = 'onSkillWalletActivated',
+Init = 'initSkillwalletAuth',
+
+1. `onSkillwalletLogin`
+   Dispatched when the user has 'Logged in'. This means that their skillWallet has been successfully retreived and stored in the session storage (key is skillWallet).
+
+2. `onSkillWalletActivated`
+   Dispatched when a SkillWallet is successfully activated. This happens after the QR Code is scanned from the mobile app.
+
+3. `initSkillwalletAuth`
+   Dispatched after initialization - signifies that the web component has read the partner-key and is ready to use.
