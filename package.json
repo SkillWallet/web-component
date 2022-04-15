@@ -1,6 +1,6 @@
 {
   "name": "@skill-wallet/auth",
-  "version": "1.0.55",
+  "version": "1.0.56",
   "main": "build/cjs/index.js",
   "module": "build/ems/index.js",
   "types": "build/index.d.ts",
