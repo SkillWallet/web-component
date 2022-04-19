@@ -2,7 +2,7 @@ import { withRouter, useHistory } from 'react-router-dom';
 import { SwButton } from 'sw-web-shared';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Avatar, Menu, MenuItem } from '@mui/material';
+import { Avatar, Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import MainDialog from './components/MainDialog';
 import { setPartnerKey, swData } from './store/sw-auth.reducer';
@@ -46,7 +46,7 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   );
 });
 
-export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthButtonProps) => {
+export const SwAuthButton = ({ sxProps, attributes, container, setAttrCallback }: SwAuthButtonProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector(currentUserState);
@@ -168,7 +168,39 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthB
       <Portal container={container}>
         {!buttonHidden && (
           <>
-            <SwButton
+            <Button
+              sx={{
+                cursor: 'pointer',
+                background: '#000000',
+                '& .MuiTypography-root': {
+                  textTransform: 'none',
+                  fontSize: '14px',
+                  lineHeight: '25px',
+                  fontWeight: '500',
+                },
+                boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
+                '&:hover': {
+                  background: '#FFFFFF',
+                  borderColor: '#000000',
+                  '& .MuiTypography-root': {
+                    color: '#000000',
+                  },
+                },
+                height: '47px',
+                width: '180px',
+                ...sxProps,
+              }}
+              onClick={handleButtonClick}
+              onMouseEnter={handleMouseEnter}
+            >
+              <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', height: '100%' }}>
+                {currentUser.isLoggedIn && <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} />}
+                <Typography classes="swButtonName" sx={{ mt: '4px' }} variant="h2" color="#FFFFFF">
+                  {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
+                </Typography>
+              </Box>
+            </Button>
+            {/* <SwButton
               sx={{
                 height: '57px',
                 width: '180px',
@@ -181,7 +213,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthB
               startIcon={
                 currentUser.isLoggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} /> : undefined
               }
-            />
+            /> */}
             <Menu
               sx={{
                 '& .MuiMenu-list': {
@@ -189,7 +221,8 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthB
                 },
                 '& .MuiPaper-root': {
                   backgroundColor: 'transparent',
-                  boxShadow: 'none',
+                  boxShadow:
+                    'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
                 },
               }}
               container={container}
@@ -203,6 +236,7 @@ export const SwAuthButton = ({ attributes, container, setAttrCallback }: SwAuthB
                   sx={{
                     height: '40px',
                     width: '180px',
+                    border: '0px',
                   }}
                   mode="dark"
                   btnType="small"

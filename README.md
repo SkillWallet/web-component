@@ -181,10 +181,6 @@ InitSwAuth();
 
 # Web Component Helpful window events:
 
-Login = 'onSkillwalletLogin',
-SkillWalletActivated = 'onSkillWalletActivated',
-Init = 'initSkillwalletAuth',
-
 1. `onSkillwalletLogin`
    Dispatched when the user has 'Logged in'. This means that their skillWallet has been successfully retreived and stored in the session storage (key is skillWallet).
 

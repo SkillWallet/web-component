@@ -1,7 +1,9 @@
+import { SxProps, Theme } from '@mui/material';
 import { CamelCase } from './camel-case';
 
 export interface SwAuthConfig<CSSObject> {
-  container: HTMLElement;
+  container?: HTMLElement;
+  sxProps?: SxProps<Theme>;
   containerStyles?: CSSObject;
 }
 
@@ -30,5 +32,6 @@ export type AttributeCallbackFn = (name: string, value: string, newVal: string) 
 export interface SwAuthButtonProps {
   attributes: SwAttributes;
   container: HTMLElement;
+  sxProps?: SxProps<Theme>;
   setAttrCallback: (fn: AttributeCallbackFn) => void;
 }
