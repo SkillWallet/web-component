@@ -61,7 +61,13 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
           content = (
             <>
               <CacheProvider value={bConfig.cache}>
-                <SwAuthButton container={bConfig.root} attributes={attributes} setAttrCallback={this.setAttributeChangeCallback} />
+                <SwAuthButton
+                  buttonStyles={authConfig && authConfig.buttonStyles}
+                  dropdownStyles={authConfig && authConfig.dropdownStyles}
+                  container={bConfig.root}
+                  attributes={attributes}
+                  setAttrCallback={this.setAttributeChangeCallback}
+                />
               </CacheProvider>
               <CacheProvider value={mConfig.cache}>
                 <SwAuthModal rootContainer={authConfig.container} container={mConfig.root} />
@@ -74,7 +80,13 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
           content = (
             <>
               <CacheProvider value={config.cache}>
-                <SwAuthButton container={config.root} attributes={attributes} setAttrCallback={this.setAttributeChangeCallback} />
+                <SwAuthButton
+                  buttonStyles={authConfig && authConfig.buttonStyles}
+                  dropdownStyles={authConfig && authConfig.dropdownStyles}
+                  container={config.root}
+                  attributes={attributes}
+                  setAttrCallback={this.setAttributeChangeCallback}
+                />
                 <SwAuthModal container={config.root} />
               </CacheProvider>
             </>

@@ -36,7 +36,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         );
         window.sessionStorage.setItem('skillWallet', JSON.stringify(result));
         dispatchSwEvent(OutputEventTypes.Login, true);
-        dispatch(loadingFinished());
       })
       .catch((e) => {
         if (e.message === ErrorTypes.SkillWalletExistsButInactive) {
@@ -48,7 +47,6 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
             actionLabel: 'Go Back',
             action: () => {
               dispatch(resetUIState);
-              history.push('/');
             },
           });
           dispatch(loadingFinished());

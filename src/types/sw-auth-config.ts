@@ -1,7 +1,11 @@
+import { CSSObject } from '@emotion/react';
+import { SxProps, Theme } from '@mui/material';
 import { CamelCase } from './camel-case';
 
 export interface SwAuthConfig<CSSObject> {
-  container: HTMLElement;
+  container?: HTMLElement;
+  buttonStyles?: CSSObject;
+  dropdownStyles?: CSSObject;
   containerStyles?: CSSObject;
 }
 
@@ -30,5 +34,7 @@ export type AttributeCallbackFn = (name: string, value: string, newVal: string) 
 export interface SwAuthButtonProps {
   attributes: SwAttributes;
   container: HTMLElement;
+  buttonStyles?: CSSObject;
+  dropdownStyles?: CSSObject;
   setAttrCallback: (fn: AttributeCallbackFn) => void;
 }

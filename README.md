@@ -168,6 +168,76 @@ InitSwAuth();
 
 ```
 
+# Override button styles:
+
+You can override all the styles of the button and the dropdown by providing CSSObjects to the InitSwAuth function.
+
+Here's the default button style as an override:
+
+```
+  InitSwAuth({
+    buttonStyles: {
+      cursor: 'pointer',
+      background: '#000000',
+      '& .MuiTypography-root': {
+        textTransform: 'none',
+        fontSize: '14px',
+        lineHeight: '25px',
+        fontWeight: '500',
+      },
+      '& .swButtonAvatar': { width: '36px', height: '36px' },
+      boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
+      '&:hover': {
+        background: '#FFFFFF',
+        borderColor: '#000000',
+        '& .swButtonText': {
+          color: '#000000',
+          mt: '4px',
+        },
+      },
+      height: '47px',
+      width: '180px',
+    },
+  });
+```
+
+The optional dropdown (use-button-options) styles can also be overriden in the same way:
+
+```
+  InitSwAuth({
+    dropdownStyles: {
+      '& .MuiMenu-list': {
+        padding: '0px',
+      },
+      '& .swButtonOption': {
+        cursor: 'pointer',
+        background: '#000000',
+        '& .swButtonOptionText': {
+          textTransform: 'none',
+          fontSize: '14px',
+          lineHeight: '25px',
+          fontWeight: '500',
+        },
+        '&:hover': {
+          background: '#FFFFFF',
+          borderColor: '#000000',
+          '& .swButtonOptionText': {
+            color: '#000000',
+            mt: '4px',
+          },
+        },
+
+        height: '40px',
+        width: '180px',
+        border: '0px',
+      },
+      boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
+    },
+  });
+```
+
+`NOTE: ` Sometimes in order to achieve your desired style you might need to override Mui styles. You can see which styles you need to override by inspecting the web component and it's elements in your browser Developer Tools.
+
 # Web Component Custom HTML element attributes:
 
 1. `partner-key`
@@ -180,10 +250,6 @@ InitSwAuth();
    If set to 'true' a dropdown will pop up when hovering over the Button. Currently the only option is 'Logout'.
 
 # Web Component Helpful window events:
-
-Login = 'onSkillwalletLogin',
-SkillWalletActivated = 'onSkillWalletActivated',
-Init = 'initSkillwalletAuth',
 
 1. `onSkillwalletLogin`
    Dispatched when the user has 'Logged in'. This means that their skillWallet has been successfully retreived and stored in the session storage (key is skillWallet).
