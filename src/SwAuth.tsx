@@ -46,7 +46,7 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   );
 });
 
-export const SwAuthButton = ({ sxProps, attributes, container, setAttrCallback }: SwAuthButtonProps) => {
+export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, container, setAttrCallback }: SwAuthButtonProps) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector(currentUserState);
@@ -178,52 +178,61 @@ export const SwAuthButton = ({ sxProps, attributes, container, setAttrCallback }
                   lineHeight: '25px',
                   fontWeight: '500',
                 },
+                '& .swButtonAvatar': { width: '36px', height: '36px' },
                 boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
                 '&:hover': {
                   background: '#FFFFFF',
                   borderColor: '#000000',
-                  '& .MuiTypography-root': {
+                  '& .swButtonText': {
                     color: '#000000',
+                    mt: '4px',
                   },
                 },
                 height: '47px',
                 width: '180px',
-                ...sxProps,
+                ...buttonStyles,
               }}
               onClick={handleButtonClick}
               onMouseEnter={handleMouseEnter}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', height: '100%' }}>
-                {currentUser.isLoggedIn && <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} />}
-                <Typography classes="swButtonName" sx={{ mt: '4px' }} variant="h2" color="#FFFFFF">
+                {currentUser.isLoggedIn && <Avatar className="swButtonAvatar" src={currentUser.profileImageUrl} />}
+                <Typography className="swButtonText" variant="h2" color="#FFFFFF">
                   {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
                 </Typography>
               </Box>
             </Button>
-            {/* <SwButton
-              sx={{
-                height: '57px',
-                width: '180px',
-              }}
-              mode="dark"
-              btnType="medium"
-              onClick={handleButtonClick}
-              onMouseEnter={handleMouseEnter}
-              label={currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
-              startIcon={
-                currentUser.isLoggedIn ? <Avatar sx={{ width: '36px', height: '36px' }} src={currentUser.profileImageUrl} /> : undefined
-              }
-            /> */}
             <Menu
               sx={{
                 '& .MuiMenu-list': {
                   padding: '0px',
                 },
-                '& .MuiPaper-root': {
-                  backgroundColor: 'transparent',
+                '& .swButtonOption': {
+                  cursor: 'pointer',
+                  background: '#000000',
+                  '& .swButtonOptionText': {
+                    textTransform: 'none',
+                    fontSize: '14px',
+                    lineHeight: '25px',
+                    fontWeight: '500',
+                  },
                   boxShadow:
                     'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
+                  '&:hover': {
+                    background: '#FFFFFF',
+                    borderColor: '#000000',
+                    '& .swButtonOptionText': {
+                      color: '#000000',
+                      mt: '4px',
+                    },
+                  },
+
+                  height: '40px',
+                  width: '180px',
+                  border: '0px',
                 },
+                boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
+                ...dropdownStyles,
               }}
               container={container}
               anchorEl={anchorEl}
@@ -232,17 +241,13 @@ export const SwAuthButton = ({ sxProps, attributes, container, setAttrCallback }
               MenuListProps={{ onMouseLeave: handleHideMenu }}
             >
               <MenuItem sx={{ p: '0px' }}>
-                <SwButton
-                  sx={{
-                    height: '40px',
-                    width: '180px',
-                    border: '0px',
-                  }}
-                  mode="dark"
-                  btnType="small"
-                  onClick={handleMenuButtonClicked}
-                  label="Logout"
-                />
+                <Button className="swButtonOption" onClick={handleMenuButtonClicked}>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
+                    <Typography className="swButtonOptionText" variant="h2" color="#FFFFFF">
+                      Logout
+                    </Typography>
+                  </Box>
+                </Button>
               </MenuItem>
             </Menu>
           </>

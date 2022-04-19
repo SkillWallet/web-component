@@ -48,11 +48,7 @@ const ScanQR: React.FunctionComponent = (props) => {
                     isLoggedIn: true,
                   })
                 );
-                // dispatch(setLoggedIn(true));
-                // dispatch(setUserName(sw.nickname));
-                // dispatch(setUserProfilePicture(sw.imageUrl));
                 dispatch(showDialog(false));
-                history.push('/');
                 dispatchSwEvent(OutputEventTypes.Login, true);
               } else {
                 setErrorData({

@@ -5,6 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { ReactComponent as PlusIcon } from '../assets/create-unsel.svg';
 import { ReactComponent as SwIcon } from '../assets/sw-logo-icon.svg';
+import { ReactComponent as WalletIcon } from '../assets/wallet.svg';
 import { swData } from '../store/sw-auth.reducer';
 
 const LoginWith: React.FunctionComponent = (props) => {
@@ -27,7 +28,9 @@ const LoginWith: React.FunctionComponent = (props) => {
           gap: '30px',
         }}
       >
-        <Box sx={{ width: '60px', height: '53px' }} component="img" src="https://dito-assets.s3.eu-west-1.amazonaws.com/wallet-white.svg" />
+        <Box sx={{ '& .walletIcon': { width: '60px', height: '53px' } }} component="div">
+          <WalletIcon className="walletIcon" />
+        </Box>
         <Typography variant="h1" sx={{ textDecorationLine: 'underline', my: 'auto', fontWeight: '400' }}>
           Login With
         </Typography>
