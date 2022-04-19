@@ -170,7 +170,7 @@ InitSwAuth();
 
 # Override button styles:
 
-You can override the all the styles of the button and the dropdown by providing CSSObjects to the InitSwAuth function.
+You can override all the styles of the button and the dropdown by providing CSSObjects to the InitSwAuth function.
 
 Here's the default button style as an override:
 
@@ -218,7 +218,6 @@ The optional dropdown (use-button-options) styles can also be overriden in the s
           lineHeight: '25px',
           fontWeight: '500',
         },
-        boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
         '&:hover': {
           background: '#FFFFFF',
           borderColor: '#000000',
