@@ -46,8 +46,12 @@ const UserRole: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data: any) => {
     dispatch(startLoading('Uploading user image.'));
+    const timeout = setTimeout(() => {
+      dispatch(startLoading('Uploading user image is taking longer than expected, please be patient.'));
+    }, 60 * 1000);
     await uploadFile(await base64toFile(swUserState.profileImageUrl, 'avatar'))
       .then(async (result) => {
+        clearTimeout(timeout);
         dispatch(setLoadingMessage('Joining community.'));
         await joinCommunity(community.address, swUserState.username, result, selectedRole, data.commitment, dispatch)
           .then(() => {
@@ -83,6 +87,7 @@ const UserRole: React.FunctionComponent = (props) => {
           });
       })
       .catch((e) => {
+        clearTimeout(timeout);
         console.log(e);
         setErrorData({
           errorMessage: e.message,
