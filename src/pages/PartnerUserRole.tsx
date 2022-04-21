@@ -68,8 +68,12 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
 
   const handleJoinClicked = async () => {
     dispatch(startLoading('Uploading user image.'));
+    const timeout = setTimeout(() => {
+      dispatch(startLoading('Uploading user image is taking longer than expected, please be patient.'));
+    }, 60 * 1000);
     await uploadFile(await base64toFile(userState.profileImageUrl, 'avatar'))
       .then(async (imageUrl) => {
+        clearTimeout(timeout);
         await joinCommunity(community.address, userState.username, imageUrl, selectedRole, 10, dispatch)
           .then(async (result) => {
             console.log('successful join');
@@ -105,6 +109,7 @@ const PartnerUserRole: React.FunctionComponent = (props) => {
           });
       })
       .catch((e) => {
+        clearTimeout(timeout);
         console.log(e);
         setErrorData({
           errorMessage: e.message,
