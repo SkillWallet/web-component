@@ -46,7 +46,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
             errorMessage: 'SkillWallet not found.',
             actionLabel: 'Go Back',
             action: () => {
-              dispatch(resetUIState);
+              setErrorData(undefined);
             },
           });
           dispatch(loadingFinished());
