@@ -1,5 +1,3 @@
-import { CSSObject } from '@emotion/react';
-import { SxProps, Theme } from '@mui/material';
 import { CamelCase } from './camel-case';
 
 export interface SwAuthConfig<CSSObject> {
@@ -31,7 +29,7 @@ export interface ShadowRootConfig<EmotionCache> {
 }
 
 export type AttributeCallbackFn = (name: string, value: string, newVal: string) => void;
-export interface SwAuthButtonProps {
+export interface SwAuthButtonProps<CSSObject> {
   attributes: SwAttributes;
   container: HTMLElement;
   buttonStyles?: CSSObject;
