@@ -1,9 +1,9 @@
 import { withRouter, useHistory } from 'react-router-dom';
-import { SwButton } from 'sw-web-shared';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Avatar, Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import Portal from '@mui/material/Portal';
+import { CSSObject } from '@emotion/react';
 import MainDialog from './components/MainDialog';
 import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
@@ -46,7 +46,7 @@ const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   );
 });
 
-export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, container, setAttrCallback }: SwAuthButtonProps) => {
+export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, container, setAttrCallback }: SwAuthButtonProps<CSSObject>) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currentUser = useSelector(currentUserState);
