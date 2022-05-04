@@ -133,9 +133,7 @@ const ScanQR: React.FunctionComponent = (props) => {
                 backgroundColor: '#FFFFFF',
               }}
             >
-              {qrData && (
-                <QRCode size={250} logoImage={community.image as string} logoWidth={70} logoHeight={70} value={JSON.stringify(qrData)} />
-              )}
+              {qrData && <QRCode size={250} value={JSON.stringify(qrData)} />}
             </Box>
           </Box>
 
