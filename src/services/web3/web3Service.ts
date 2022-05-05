@@ -223,6 +223,7 @@ export const fetchSkillWallet = async (dispatch?, checkIfExists?) => {
         nickname: jsonMetadata.properties.username,
         skills: jsonMetadata.properties.skills,
         community,
+        role: jsonMetadata.properties.roles[0]?.name,
         partnersAgreementKey,
         diToCredits: 0,
         tokenId: tokenId.toString(),
