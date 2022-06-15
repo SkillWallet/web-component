@@ -1,15 +1,20 @@
 import React from 'react';
-import { SwButton } from 'sw-web-shared';
-import { Link } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { ReactComponent as PlusIcon } from '../assets/create-unsel.svg';
-import { ReactComponent as SwIcon } from '../assets/sw-logo-icon.svg';
-import { ReactComponent as WalletIcon } from '../assets/wallet.svg';
+import { useHistory } from 'react-router-dom';
 import { swData } from '../store/sw-auth.reducer';
 
 const LoginWith: React.FunctionComponent = (props) => {
-  const swState = useSelector(swData);
+  const history = useHistory();
+
+  const handleAutIdClicked = () => {
+    history.push('autid');
+  };
+
+  const handleNewUserClicked = () => {
+    history.push('newuser');
+  };
+
   return (
     <Box
       sx={{
@@ -28,12 +33,7 @@ const LoginWith: React.FunctionComponent = (props) => {
           gap: '30px',
         }}
       >
-        <Box sx={{ '& .walletIcon': { width: '60px', height: '53px' } }} component="div">
-          <WalletIcon className="walletIcon" />
-        </Box>
-        <Typography variant="h1" sx={{ textDecorationLine: 'underline', my: 'auto', fontWeight: '400' }}>
-          Login With
-        </Typography>
+        <Typography variant="h1">Login With</Typography>
       </Box>
       <Box
         sx={{
@@ -42,33 +42,10 @@ const LoginWith: React.FunctionComponent = (props) => {
           justifyContent: 'center',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '30px',
         }}
       >
-        <SwButton
-          sx={{
-            borderColor: 'primary.main',
-          }}
-          btnType="large"
-          startIcon={<SwIcon />}
-          mode="dark"
-          component={Link}
-          disabled={swState.partnerMode}
-          to="/skillwallet"
-          label={swState.partnerMode ? 'Existing Partner' : 'SkillWallet'}
-        />
-        <SwButton
-          sx={{
-            borderColor: 'primary.main',
-          }}
-          btnType="large"
-          startIcon={<PlusIcon />}
-          mode="dark"
-          disabled={swState.disableCreateNewUser}
-          component={Link}
-          to="/newuser"
-          label={swState.isPartner ? 'New Partner' : 'New User'}
-        />
+        <Button onClick={handleAutIdClicked}>Aut</Button>
+        <Button onClick={handleNewUserClicked}>NewUser</Button>
       </Box>
     </Box>
   );

@@ -17,7 +17,7 @@ import {
 } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
-import { validateDomain } from './services/web3/web3Service';
+// import { validateDomain } from './services/web3/web3Service';
 import { AttributeNames, checkIfAttributeHasChanged, dispatchSwEvent, parseAttributeValue } from './utils/utils';
 import { SwAuthButtonProps } from './types/sw-auth-config';
 import { OutputEventTypes } from './types/event-types';
@@ -68,17 +68,17 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
     if (useDev) {
       setUseDev(attributes.useDev);
     } else {
-      dispatch(startValidatingDomain());
-      try {
-        const isValid = await validateDomain(attributes.partnerKey);
-        if (!isValid) {
-          dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
-        }
-      } catch (e) {
-        dispatch(showGlobalError('Failed to validate domain.'));
-      } finally {
-        dispatch(finishValidatingDomain());
-      }
+      // dispatch(startValidatingDomain());
+      // try {
+      //   const isValid = await validateDomain(attributes.partnerKey);
+      //   if (!isValid) {
+      //     dispatch(showGlobalError('Invalid domain. Please add the URL throught the dashboard.'));
+      //   }
+      // } catch (e) {
+      //   dispatch(showGlobalError('Failed to validate domain.'));
+      // } finally {
+      //   dispatch(finishValidatingDomain());
+      // }
     }
   };
 

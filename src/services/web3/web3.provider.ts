@@ -15,7 +15,7 @@ export const changeNetwork = async () => {
     await window.ethereum.request({ method: 'eth_requestAccounts' });
   }
   // try {
-  await window.ethereum.request(env.CHANGE_NETWORK_METADATA);
+  // await window.ethereum.request(env.CHANGE_NETWORK_METADATA);
   // } catch (switchError) {
   //   // This error code indicates that the chain has not been added to MetaMask.
   //   if (switchError.code === 4902) {
@@ -29,32 +29,32 @@ export const changeNetwork = async () => {
   // }
 };
 
-export const SkillWalletContractProvier: typeof Web3SkillWalletProvider = (
-  address: string,
-  extras?: Web3ProviderExtras<SkillWalletContractEventType>
-) => {
-  return Web3SkillWalletProvider(address, {
-    beforeRequest: () => changeNetwork(),
-    ...(extras || {}),
-  });
-};
+// export const SkillWalletContractProvier: typeof Web3SkillWalletProvider = (
+//   address: string,
+//   extras?: Web3ProviderExtras<SkillWalletContractEventType>
+// ) => {
+//   return Web3SkillWalletProvider(address, {
+//     beforeRequest: () => changeNetwork(),
+//     ...(extras || {}),
+//   });
+// };
 
-export const SkillWalletCommunityContractProvier: typeof Web3SkillWalletCommunityProvider = (
-  address: string,
-  extras?: Web3ProviderExtras<SkillWalletCommunityContractEventType>
-) => {
-  return Web3SkillWalletCommunityProvider(address, {
-    beforeRequest: () => changeNetwork(),
-    ...(extras || {}),
-  });
-};
+// export const SkillWalletCommunityContractProvier: typeof Web3SkillWalletCommunityProvider = (
+//   address: string,
+//   extras?: Web3ProviderExtras<SkillWalletCommunityContractEventType>
+// ) => {
+//   return Web3SkillWalletCommunityProvider(address, {
+//     beforeRequest: () => changeNetwork(),
+//     ...(extras || {}),
+//   });
+// };
 
-export const PartnersAgreementContractProvier: typeof Web3PartnersAgreementProvider = (
-  address: string,
-  extras?: Web3ProviderExtras<PartnersAgreementContractEventType>
-) => {
-  return Web3PartnersAgreementProvider(address, {
-    beforeRequest: () => changeNetwork(),
-    ...(extras || {}),
-  });
-};
+// export const PartnersAgreementContractProvier: typeof Web3PartnersAgreementProvider = (
+//   address: string,
+//   extras?: Web3ProviderExtras<PartnersAgreementContractEventType>
+// ) => {
+//   return Web3PartnersAgreementProvider(address, {
+//     beforeRequest: () => changeNetwork(),
+//     ...(extras || {}),
+//   });
+// };

@@ -1,11 +1,10 @@
 import IRoute from '../interfaces/route';
 import LoginWith from '../pages/LoginWith';
-import LoginWithSkillWallet from '../pages/LoginWithSkillWallet';
+import LoginWithSkillWallet from '../pages/LoginWithAut';
 import NewUser from '../pages/NewUser';
-import PartnerUserRole from '../pages/PartnerUserRole';
-import ScanQR from '../pages/ScanQR';
 import UserDetails from '../pages/UserDetails';
 import UserRole from '../pages/UserRole';
+import Commitment from '../pages/Commitment';
 
 const routes: IRoute[] = [
   {
@@ -15,8 +14,8 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/skillwallet',
-    name: 'Skill Wallet',
+    path: '/autid',
+    name: 'Aut Id',
     component: LoginWithSkillWallet,
     exact: true,
   },
@@ -39,15 +38,9 @@ const routes: IRoute[] = [
     exact: true,
   },
   {
-    path: '/partnerRole',
-    name: 'Partner Role',
-    component: PartnerUserRole,
-    exact: true,
-  },
-  {
-    path: '/qr',
-    name: 'Scan QR',
-    component: ScanQR,
+    path: '/commitment',
+    name: 'Commitment',
+    component: Commitment,
     exact: true,
   },
 ];

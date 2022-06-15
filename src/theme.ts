@@ -11,7 +11,7 @@ const palette = {
   },
   text: {
     secondary: '#D8D8D8',
-    primary: '#FFFFFF',
+    primary: '#000000',
     disabled: '#CCCCCC',
   },
   primary: {
@@ -29,97 +29,96 @@ const palette = {
 export const SwTheme = () =>
   createTheme({
     components: {
-      MuiCssBaseline: {
-        styleOverrides: `
-          .Mui-disabled {
-            color: ${palette.text.disabled};
-          }
-        `,
-      },
-      MuiButtonBase: {
-        defaultProps: {
-          // The props to apply
-          disableRipple: true, // No more ripple, on the whole application 💣!
-        },
-      },
-      MuiTooltip: {
-        defaultProps: {
-          TransitionComponent: Fade,
-        },
-        styleOverrides: {
-          tooltip: {
-            border: '3px solid',
-            borderColor: palette.text.primary,
-            borderRadius: '4px',
-            backgroundColor: palette.background.default,
-            boxSizing: 'border-box',
-          },
-        },
-      },
-      MuiUseMediaQuery: {
-        defaultProps: {
-          noSsr: true,
-        },
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            minWidth: '480px',
-            borderStyle: 'solid',
-            borderWidth: '1px',
-            borderColor: palette.secondary.main,
-            backgroundColor: palette.primary.main,
-          },
-        },
-      },
-      MuiSlider: {
-        styleOverrides: {
-          root: {
-            borderStyle: 'solid',
-            borderRadius: 0,
-            border: 2,
-            borderColor: '#000000',
-          },
-          rail: {
-            height: '26px',
-            borderRadius: 0,
-            color: '#FFFFFF',
-          },
-          track: {
-            height: '25px',
-            borderRadius: 0,
-          },
-          thumb: {
-            display: 'none',
-          },
-        },
-      },
-
-      // MuiInput: {
+      // MuiCssBaseline: {
+      //   styleOverrides: `
+      //     .Mui-disabled {
+      //       color: ${palette.text.disabled};
+      //     }
+      //   `,
+      // },
+      // MuiButtonBase: {
+      //   defaultProps: {
+      //     // The props to apply
+      //     disableRipple: true, // No more ripple, on the whole application 💣!
+      //   },
+      // },
+      // MuiTooltip: {
+      //   defaultProps: {
+      //     TransitionComponent: Fade,
+      //   },
       //   styleOverrides: {
-      //     underline: {
-      //       // Remove the ripple effect on input
-      //       ':after': {
-      //         borderBottom: '2px solid var(--border)',
-      //       },
-      //       ':before': {
-      //         borderBottom: '2px solid var(--border)',
-      //         transition: 'none',
-      //       },
-      //       ':hover': { borderBottom: `2px solid var(--border)` },
+      //     tooltip: {
+      //       border: '3px solid',
+      //       borderColor: palette.text.primary,
+      //       borderRadius: '4px',
+      //       backgroundColor: palette.background.default,
+      //       boxSizing: 'border-box',
       //     },
       //   },
       // },
-      MuiInputBase: {
-        styleOverrides: {
-          // underline: {
-          //   // Remove the ripple effect on input
-          //   ':after': {
-          //     borderBottom: 'initial',
-          //   },
-          // },
-        },
-      },
+      // MuiUseMediaQuery: {
+      //   defaultProps: {
+      //     noSsr: true,
+      //   },
+      // },
+      // MuiPaper: {
+      //   styleOverrides: {
+      //     root: {
+      //       minWidth: '480px',
+      //       borderStyle: 'solid',
+      //       borderWidth: '1px',
+      //       borderColor: palette.secondary.main,
+      //       backgroundColor: palette.primary.main,
+      //     },
+      //   },
+      // },
+      // MuiSlider: {
+      //   styleOverrides: {
+      //     root: {
+      //       borderStyle: 'solid',
+      //       borderRadius: 0,
+      //       border: 2,
+      //       borderColor: '#000000',
+      //     },
+      //     rail: {
+      //       height: '26px',
+      //       borderRadius: 0,
+      //       color: '#FFFFFF',
+      //     },
+      //     track: {
+      //       height: '25px',
+      //       borderRadius: 0,
+      //     },
+      //     thumb: {
+      //       display: 'none',
+      //     },
+      //   },
+      // },
+      // // MuiInput: {
+      // //   styleOverrides: {
+      // //     underline: {
+      // //       // Remove the ripple effect on input
+      // //       ':after': {
+      // //         borderBottom: '2px solid var(--border)',
+      // //       },
+      // //       ':before': {
+      // //         borderBottom: '2px solid var(--border)',
+      // //         transition: 'none',
+      // //       },
+      // //       ':hover': { borderBottom: `2px solid var(--border)` },
+      // //     },
+      // //   },
+      // // },
+      // MuiInputBase: {
+      //   styleOverrides: {
+      //     // underline: {
+      //     //   // Remove the ripple effect on input
+      //     //   ':after': {
+      //     //     borderBottom: 'initial',
+      //     //   },
+      //     // },
+      //   },
+      // },
     },
     breakpoints: {
       values: {

@@ -38,15 +38,15 @@ const UserDetails: React.FunctionComponent = (props) => {
 
   const onSubmit = async (data) => {
     dispatch(setUserData(data));
-    if (swState.partnerMode) {
-      history.push('/partnerRole');
-    } else {
-      history.push('/role');
-    }
+    history.push('/role');
   };
 
   const handleBackClick = async () => {
     history.goBack();
+  };
+
+  const goToRole = () => {
+    history.push('/role');
   };
 
   return (
@@ -70,40 +70,6 @@ const UserDetails: React.FunctionComponent = (props) => {
           }}
         >
           <BackButton handleClick={handleBackClick} />
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {swState.isPartner ? (
-              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                Great! Now let's start - tell us about yourself
-              </Typography>
-            ) : (
-              <Typography align="center" variant="h2" sx={{ fontWeight: '400', maxWidth: '320px', mb: '15px' }}>
-                Welcome to{' '}
-                <Typography variant="h2" component="span" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                  {swState.community.name}
-                </Typography>
-                !
-              </Typography>
-            )}
-
-            <Typography align="center" variant="h3" sx={{ fontWeight: '400', maxWidth: '320px' }}>
-              Tell us about you
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              width: '45px',
-              height: '45px',
-            }}
-          />
         </Box>
         <Box
           sx={{
@@ -124,41 +90,8 @@ const UserDetails: React.FunctionComponent = (props) => {
                 alignItems: 'center',
               }}
             >
-              <Box sx={{ width: '382px', mb: '18px' }}>
-                <Typography variant="h4" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                  Nickname
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  position: 'relative',
-                  height: '68px',
-                  display: 'flex',
-                  alignContent: 'center',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#FFFFFF',
-                  mb: '18px',
-                  px: '16px',
-                }}
-              >
-                <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                  How do you want your community to call you?
-                </Typography>
-                <CustomInput
-                  maxLength={12}
-                  name="username"
-                  control={control}
-                  setValue={setValue}
-                  rules={{ required: true }}
-                  defaultValue={swUserState.username}
-                />
-              </Box>
-              <Box sx={{ width: '382px', mb: '18px' }}>
-                <Typography variant="h3" sx={{ fontWeight: '400', textDecorationLine: 'underline' }}>
-                  Avatar
-                </Typography>
-              </Box>
+              <Input type="text" placeholder="nickname" />
+
               <Box
                 sx={{
                   height: '96px',
@@ -170,64 +103,6 @@ const UserDetails: React.FunctionComponent = (props) => {
                   px: '16px',
                 }}
               >
-                <Typography sx={{ color: '#707070', flex: 1, my: 'auto' }} variant="h4">
-                  A public image - that’s how others will see you.
-                </Typography>
-                {/* <Button
-                    disableElevation
-                    sx={{
-                      ':hover': {
-                        backgroundColor: 'transparent',
-                      },
-                      backgroundColor: 'transparent',
-                      my: 'auto',
-                      flex: 1,
-                      width: '70px',
-                      height: '70px',
-                    }}
-                    variant="contained"
-                    component="label"
-                  >
-                    <Box
-                      sx={{
-                        backgroundColor: 'transparent',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '100%',
-                        height: '100%',
-                        ml: '70px',
-                      }}
-                    >
-                      {image ? (
-                        <Avatar
-                          sx={{ border: 2, borderColor: '#000000', borderRadius: '100px', width: '51px', height: '51px' }}
-                          src={image}
-                        />
-                      ) : (
-                        <>
-                          <Upload />
-                          <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
-                            .png or .jpg
-                          </Typography>
-                        </>
-                      )}
-                    </Box>
-                    <Input
-                      sx={{
-                        display: 'none',
-                      }}
-                      {...register('picture', {
-                        required: true,
-                        onChange: (e) => {
-                          parseImage(e);
-                        },
-                      })}
-                      type="file"
-                      inputProps={{ accept: '.png, .jpg' }}
-                    />
-                  </Button> */}
                 <Controller
                   name="profileImageUrl"
                   control={control}
@@ -265,18 +140,13 @@ const UserDetails: React.FunctionComponent = (props) => {
                   }}
                 />
               </Box>
-              <SwButton
-                sx={{
-                  borderColor: 'primary.main',
-                  height: '75px',
-                  maxWidth: '320px',
-                }}
-                mode="dark"
-                component={Button}
+              <Button
                 type="submit"
-                disabled={!isValid}
-                label="Next: Pick your Role"
-              />
+                onClick={goToRole}
+                // disabled={!isValid}
+              >
+                Next: Role
+              </Button>
             </Box>
           </form>
         </Box>

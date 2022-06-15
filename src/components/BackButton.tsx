@@ -13,9 +13,9 @@ const BackButton = ({ handleClick }) => {
       sx={{
         borderRadius: '30px',
         '&:hover': {
-          background: '#FFFFFF',
+          background: '#000',
           '& .backIcon': {
-            color: '#000000',
+            color: '#FFF',
           },
         },
         width: '45px',
@@ -23,7 +23,7 @@ const BackButton = ({ handleClick }) => {
       }}
     >
       <ArrowBackIos
-        color="secondary"
+        color="primary"
         className="backIcon"
         sx={{
           pl: '8px',

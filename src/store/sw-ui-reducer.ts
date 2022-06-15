@@ -9,6 +9,7 @@ export interface SwUIState {
   loading: boolean;
   loadingMessage: string;
   globalErrorMessage: string;
+  transactionState: string;
   showGlobalError: boolean;
   validatingDomain: boolean;
 }
@@ -23,6 +24,7 @@ export const initialState: SwUIState = {
   disableCreateNewUser: false,
   loading: false,
   loadingMessage: undefined,
+  transactionState: null,
   globalErrorMessage: null,
   showGlobalError: false,
   validatingDomain: false,
@@ -69,6 +71,9 @@ export const swUIlice = createSlice({
       state.globalErrorMessage = action.payload;
       state.showGlobalError = true;
     },
+    updateTransactionState(state, action) {
+      state.transactionState = action.payload;
+    },
   },
 });
 
@@ -84,6 +89,7 @@ export const {
   startValidatingDomain,
   showGlobalError,
   finishValidatingDomain,
+  updateTransactionState,
 } = swUIlice.actions;
 
 export const isOpen = createSelector(
