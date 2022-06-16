@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { swData } from '../store/sw-auth.reducer';
 
 const LoginWith: React.FunctionComponent = (props) => {
   const history = useHistory();

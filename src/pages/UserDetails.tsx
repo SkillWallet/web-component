@@ -1,17 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { SwButton, SwUploadFile, toBase64 } from 'sw-web-shared';
-import { Link, useHistory } from 'react-router-dom';
-import { Avatar, Box, Button, Input, TextField, Typography } from '@mui/material';
-import { ethers } from 'ethers';
+import { SwUploadFile, toBase64 } from 'sw-web-shared';
+import { useHistory } from 'react-router-dom';
+import { Box, Button, Input, TextField, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { currentCommunity, partnerMode, swData } from '../store/sw-auth.reducer';
-import { setLoading, loadingFinished, startLoading } from '../store/sw-ui-reducer';
 import { currentUserState, setUserData } from '../store/sw-user-data.reducer';
-import { uploadFile } from '../services/textile/textile.hub';
 import { ReactComponent as Upload } from '../assets/upload.svg';
-import { CustomInput } from '../components/CustomInput';
-import ErrorBox from '../components/ErrorBox';
 import BackButton from '../components/BackButton';
 
 interface Values {
@@ -20,23 +14,21 @@ interface Values {
 }
 
 const UserDetails: React.FunctionComponent = (props) => {
-  const swState = useSelector(swData);
   const [swUserState] = useState(useSelector(currentUserState));
   const [errorData, setErrorData] = useState(undefined);
   const history = useHistory();
   const dispatch = useDispatch();
-  console.log(swUserState);
   const {
     handleSubmit,
     control,
-    setValue,
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
-    defaultValues: swUserState,
+    defaultValues: { username: '', profileImageUrl: null },
   });
 
   const onSubmit = async (data) => {
+    console.log(data);
     dispatch(setUserData(data));
     history.push('/role');
   };
@@ -90,8 +82,12 @@ const UserDetails: React.FunctionComponent = (props) => {
                 alignItems: 'center',
               }}
             >
-              <Input type="text" placeholder="nickname" />
-
+              <Controller
+                name="username"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => <TextField onChange={onChange} value={value} label="username" />}
+              />
               <Box
                 sx={{
                   height: '96px',
@@ -140,9 +136,9 @@ const UserDetails: React.FunctionComponent = (props) => {
                   }}
                 />
               </Box>
+              {console.log(isValid)}
               <Button
                 type="submit"
-                onClick={goToRole}
                 // disabled={!isValid}
               >
                 Next: Role

@@ -1,6 +1,6 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
 import { updateTransactionState } from '../../store/sw-ui-reducer';
-import { ParseSWErrorMessage } from './../../utils/error-parser'; 
+import { ParseSWErrorMessage } from '../../utils/error-parser';
 import { EnableAndChangeNetwork } from './web3.network';
 import { BaseThunkArgs, ThunkArgs, GetThunkAPI, AsyncThunkConfig, ProviderEvent, AsyncThunkPayloadCreator } from './web3.thunk.type';
 
@@ -10,14 +10,14 @@ const DefaultProviders: Partial<BaseThunkArgs<any, any>> = {
   },
 };
 
-export const Web3ThunkProviderFactory = <SWContractFunctions = any, SWContractEventTypes = any>(
+export const Web3ThunkProviderFactory = <AutContractFunctions = any, AutContractEventTypes = any>(
   type: string,
-  stateActions: BaseThunkArgs<SWContractFunctions, SWContractEventTypes>
+  stateActions: BaseThunkArgs<AutContractFunctions, AutContractEventTypes>
 ) => {
   return <Returned, ThunkArg = any>(
-    args: ThunkArgs<SWContractEventTypes>,
+    args: ThunkArgs<AutContractEventTypes>,
     contractAddress: (thunkAPI: GetThunkAPI<AsyncThunkConfig>) => Promise<string>,
-    thunk: AsyncThunkPayloadCreator<SWContractFunctions, Returned, ThunkArg, AsyncThunkConfig>
+    thunk: AsyncThunkPayloadCreator<AutContractFunctions, Returned, ThunkArg, AsyncThunkConfig>
   ): AsyncThunk<Returned, ThunkArg, AsyncThunkConfig> => {
     stateActions = {
       ...DefaultProviders,
@@ -31,7 +31,7 @@ export const Web3ThunkProviderFactory = <SWContractFunctions = any, SWContractEv
           throw new Error(`Could not find addressOrName for ${type}`);
         }
         const contractProvider = await stateActions.provider(addressOrName, {
-          event: (args as ProviderEvent<SWContractEventTypes>).event,
+          event: (args as ProviderEvent<AutContractEventTypes>).event,
           beforeRequest: () => EnableAndChangeNetwork(),
           transactionState: (state) => {
             if (stateActions.updateTransactionStateAction) {

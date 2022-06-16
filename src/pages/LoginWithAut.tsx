@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { resetUIState } from '../store/store';
-import { showDialog, setLoading, loadingFinished } from '../store/sw-ui-reducer';
-import { setUserData } from '../store/sw-user-data.reducer';
 import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
-import { ReactComponent as PortisIcon } from '../assets/portis_icon.svg';
 
-import ErrorBox from '../components/ErrorBox';
-import { ErrorTypes } from '../types/error-types';
 import BackButton from '../components/BackButton';
-import { dispatchSwEvent } from '../utils/utils';
-import { OutputEventTypes } from '../types/event-types';
 import { useAppDispatch } from '../store/store.model';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {

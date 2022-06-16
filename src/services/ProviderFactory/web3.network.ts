@@ -1,5 +1,5 @@
 // import { environment, EnvMode } from '@api/environment';
-import { env } from './../../services/web3/env';
+import { env } from '../web3/env';
 
 const nativeCurrency = {
   name: 'Matic',

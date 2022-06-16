@@ -5,7 +5,6 @@ import { Avatar, Box, Button, Menu, MenuItem, Typography } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import { CSSObject } from '@emotion/react';
 import MainDialog from './components/MainDialog';
-import { setPartnerKey, swData } from './store/sw-auth.reducer';
 import { resetUIState } from './store/store';
 import {
   isOpen,
@@ -24,11 +23,10 @@ import { OutputEventTypes } from './types/event-types';
 
 const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useDispatch();
-  const swState = useSelector(swData);
   const open = useSelector(isOpen);
 
   const handleClose = (event, reason) => {
-    if (swState.partnerMode && reason && reason === 'backdropClick') return;
+    if (reason && reason === 'backdropClick') return;
     dispatch(showDialog(false));
   };
 
@@ -57,7 +55,7 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   const onSetParnersKey = (partnerKey: string) => {
     if (partnerKey) {
       console.log('PK', attributes.partnerKey);
-      dispatch(setPartnerKey(attributes.partnerKey as string));
+      // dispatch(setPartnerKey(attributes.partnerKey as string));
       dispatchSwEvent(OutputEventTypes.Init);
     } else {
       dispatch(showGlobalError('Partner key attribute is missing.'));
