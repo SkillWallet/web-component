@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Slider } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
 import { setCommitment } from '../store/sw-user-data.reducer';
 import BackButton from '../components/BackButton';
+import { setUserData, userData } from '../store/user-data.reducer';
+import { useAppDispatch } from '../store/store.model';
+import { mintMembership } from '../services/web3/api';
 
 interface Role {
   roleId: number;
@@ -13,7 +16,8 @@ interface Role {
 
 const Commitment: React.FunctionComponent = (props) => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const userInput = useSelector(userData);
+  const dispatch = useAppDispatch();
 
   const {
     handleSubmit,
@@ -26,19 +30,15 @@ const Commitment: React.FunctionComponent = (props) => {
   });
 
   const onSubmit = async (data: any) => {
-    console.log('submit');
+    dispatch(mintMembership({ userData: userInput, commitment: data.commitment }));
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      console.log('fetchData');
-    };
-    fetchData();
-  }, []);
+    console.log(userInput);
+  }, [userInput]);
 
   const handleSliderChange = (value) => {
     console.log(value);
-    dispatch(setCommitment(value));
   };
 
   const handleBackClick = async () => {
@@ -65,11 +65,11 @@ const Commitment: React.FunctionComponent = (props) => {
           <Controller
             name="commitment"
             control={control}
-            rules={{ required: true, min: 1, max: 100 }}
+            rules={{ required: true, min: 1, max: 10 }}
             render={({ field: { onChange, value } }) => (
               <Slider
                 min={0}
-                max={100}
+                max={10}
                 onChange={(e, v) => {
                   console.log(v);
                   return onChange(v);

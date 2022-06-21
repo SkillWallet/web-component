@@ -3,44 +3,34 @@ import { Interface } from 'ethers/lib/utils';
 import { createSelector } from 'reselect';
 import { ActionPayload } from './action-payload';
 
-export interface SwUserData {
+export interface UserData {
   username?: string;
-  profileImageUrl?: string;
-  role?: string;
+  picture?: string;
+  role?: number;
   commitment: number;
   isLoggedIn: boolean;
 }
 
-export const initialState: SwUserData = {
+export const initialState: UserData = {
   username: '',
-  profileImageUrl: undefined,
+  picture: undefined,
   role: undefined,
   commitment: 0,
   isLoggedIn: false,
 };
 
 export interface UserState {
-  username: string;
+  username?: string;
   commitment?: number;
   role?: number;
-  profileImageUrl: string;
+  picture?: string;
   isLoggedIn?: boolean;
 }
 
-export const swUserDataSlice = createSlice({
-  name: 'swUserData',
+export const userDataSlice = createSlice({
+  name: 'userData',
   initialState,
   reducers: {
-    setLoggedIn(state, action: ActionPayload<boolean>) {
-      state.isLoggedIn = action.payload;
-    },
-    setCommitment(state, action: ActionPayload<number>) {
-      console.log(action.payload);
-      state.commitment = action.payload;
-    },
-    setRole(state, action: ActionPayload<string>) {
-      state.role = action.payload;
-    },
     setUserData(state, action: ActionPayload<UserState>) {
       Object.keys(action.payload).forEach((key) => {
         state[key] = action.payload[key];
@@ -49,7 +39,7 @@ export const swUserDataSlice = createSlice({
   },
 });
 
-export const { setUserData, setLoggedIn, setRole, setCommitment } = swUserDataSlice.actions;
+export const { setUserData } = userDataSlice.actions;
 
 // export const currentUserState = createSelector(
 //   (state) => {
@@ -62,6 +52,6 @@ export const { setUserData, setLoggedIn, setRole, setCommitment } = swUserDataSl
 //   (userState) => userState
 // );
 
-export const currentUserState = (state) => state.swUserData as typeof initialState;
+export const userData = (state) => state.userData as typeof initialState;
 
-export default swUserDataSlice.reducer;
+export default userDataSlice.reducer;

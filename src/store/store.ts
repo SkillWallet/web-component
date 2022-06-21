@@ -5,9 +5,11 @@ import { combineReducers } from 'redux';
 import autSliceReducer, { initialState as initAuthState } from './aut.reducer';
 import swUserDataReducer, { initialState as initUserDataState } from './sw-user-data.reducer';
 import swUIReducer, { initialState as initUIState } from './sw-ui-reducer';
+import userDataReducer from './user-data.reducer';
 
 const appReducer = combineReducers({
   aut: autSliceReducer,
+  userData: userDataReducer,
   swUserData: swUserDataReducer,
   swUI: swUIReducer,
 });

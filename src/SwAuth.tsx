@@ -81,29 +81,29 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   };
 
   const initializeSW = async () => {
-    const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
-    if (sw) {
-      const currentTime = new Date().getTime();
-      // 8 Hours
-      const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
-      if (currentTime < sessionLength) {
-        const isLoggedIn = true;
-        dispatch(
-          setUserData({
-            username: sw.nickname,
-            profileImageUrl: sw.imageUrl,
-            isLoggedIn,
-          })
-        );
-        dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
-      } else {
-        const isLoggedIn = false;
-        window.sessionStorage.removeItem('skillWallet');
-        dispatch(resetUIState);
-        dispatch(setLoggedIn(isLoggedIn));
-        dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
-      }
-    }
+    // const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+    // if (sw) {
+    //   const currentTime = new Date().getTime();
+    //   // 8 Hours
+    //   const sessionLength = new Date(8 * 60 * 60 * 1000 + sw.timestamp).getTime();
+    //   if (currentTime < sessionLength) {
+    //     const isLoggedIn = true;
+    //     dispatch(
+    //       setUserData({
+    //         username: sw.nickname,
+    //         profileImageUrl: sw.imageUrl,
+    //         isLoggedIn,
+    //       })
+    //     );
+    //     dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
+    //   } else {
+    //     const isLoggedIn = false;
+    //     window.sessionStorage.removeItem('skillWallet');
+    //     dispatch(resetUIState);
+    //     dispatch(setLoggedIn(isLoggedIn));
+    //     dispatchSwEvent(OutputEventTypes.Login, isLoggedIn);
+    //   }
+    // }
   };
 
   const handleButtonClick = () => {

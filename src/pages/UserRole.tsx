@@ -6,6 +6,7 @@ import { community } from '../store/aut.reducer';
 import BackButton from '../components/BackButton';
 import { useAppDispatch } from '../store/store.model';
 import { fetchCommunity } from '../services/web3/api';
+import { setUserData } from '../store/user-data.reducer';
 
 const UserRole: React.FunctionComponent = (props) => {
   const dipsatch = useAppDispatch();
@@ -21,6 +22,10 @@ const UserRole: React.FunctionComponent = (props) => {
     };
     fetchData();
   }, []);
+
+  const handleRoleSelect = (roleId) => {
+    dipsatch(setUserData({ role: roleId }));
+  };
 
   const handleBackClick = async () => {
     history.goBack();
@@ -60,7 +65,11 @@ const UserRole: React.FunctionComponent = (props) => {
         {communityData &&
           communityData.roles &&
           communityData.roles.map((role, n) => {
-            return <Button key={n}>{role.roleName}</Button>;
+            return (
+              <Button onClick={() => handleRoleSelect(role.id)} key={n}>
+                {role.roleName}
+              </Button>
+            );
           })}
 
         <Button onClick={goToCommitment}>Next: Commitment</Button>

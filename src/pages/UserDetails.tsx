@@ -4,9 +4,9 @@ import { SwUploadFile, toBase64 } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Input, TextField, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { currentUserState, setUserData } from '../store/sw-user-data.reducer';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import BackButton from '../components/BackButton';
+import { setUserData } from '../store/user-data.reducer';
 
 interface Values {
   picture?: File;
@@ -14,8 +14,6 @@ interface Values {
 }
 
 const UserDetails: React.FunctionComponent = (props) => {
-  const [swUserState] = useState(useSelector(currentUserState));
-  const [errorData, setErrorData] = useState(undefined);
   const history = useHistory();
   const dispatch = useDispatch();
   const {
@@ -24,7 +22,7 @@ const UserDetails: React.FunctionComponent = (props) => {
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
-    defaultValues: { username: '', profileImageUrl: null },
+    defaultValues: { username: '', picture: null },
   });
 
   const onSubmit = async (data) => {
@@ -100,7 +98,7 @@ const UserDetails: React.FunctionComponent = (props) => {
                 }}
               >
                 <Controller
-                  name="profileImageUrl"
+                  name="picture"
                   control={control}
                   rules={{ required: true }}
                   render={({ field: { name, value, onChange }, fieldState, formState }) => {
@@ -137,10 +135,7 @@ const UserDetails: React.FunctionComponent = (props) => {
                 />
               </Box>
               {console.log(isValid)}
-              <Button
-                type="submit"
-                // disabled={!isValid}
-              >
+              <Button type="submit" disabled={!isValid}>
                 Next: Role
               </Button>
             </Box>
