@@ -158,11 +158,12 @@ export const AutTheme = () =>
         fontSize: '20px', // 1.25rem
       },
       h3: {
-        letterSpacing: '2px',
+        letterSpacing: '2.5px',
         fontSize: '18px', // 1.125rem
       },
       h4: {
-        fontSize: '14px', // 0.875rem
+        letterSpacing: '2.5px',
+        fontSize: '16px', // 0.875rem
       },
       h5: {
         fontSize: '12px', // 0.75rem

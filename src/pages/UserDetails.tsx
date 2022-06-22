@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import BackButton from '../components/BackButton';
 import { setUserData } from '../store/user-data.reducer';
+import { AutTextField, FormHelperText } from '../components/Fields';
 
 interface Values {
   picture?: File;
@@ -43,106 +44,134 @@ const UserDetails: React.FunctionComponent = (props) => {
     <Box
       sx={{
         width: '100%',
-        minHeight: '460px',
+        height: '100%',
         display: 'flex',
-        justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           sx={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignContent: 'center',
-          }}
-        >
-          <BackButton handleClick={handleBackClick} />
-        </Box>
-        <Box
-          sx={{
-            width: '100%',
+            maxWidth: '382px',
             display: 'flex',
             justifyContent: 'center',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Box
-              sx={{
-                maxWidth: '382px',
-                display: 'flex',
-                justifyContent: 'center',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <Controller
-                name="username"
-                control={control}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => <TextField onChange={onChange} value={value} label="username" />}
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { name, value, onChange } }) => (
+              // <TextField onChange={onChange} value={value} label="username" />
+              <AutTextField
+                width="330"
+                variant="standard"
+                required
+                autoFocus
+                name={name}
+                value={value || ''}
+                onChange={onChange}
+                placeholder="Nickname"
+                // helperText={
+                //   <FormHelperText errorTypes={errorTypes} value={value} name={name} errors={formState.errors}>
+                //     <span>{3 - countWords(value)} Words left</span>
+                //   </FormHelperText>
+                // }
               />
-              <Box
-                sx={{
-                  height: '96px',
-                  alignContent: 'center',
-                  justifyContent: 'center',
-                  display: 'flex',
-                  backgroundColor: '#FFFFFF',
-                  mb: '24px',
-                  px: '16px',
-                }}
-              >
-                <Controller
-                  name="picture"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field: { name, value, onChange }, fieldState, formState }) => {
-                    return (
-                      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '75px' }}>
-                        <SwUploadFile
-                          mode="dark"
-                          variant="rounded"
-                          name={name}
-                          initialPreviewUrl={value}
-                          fileChange={async (file) => {
-                            if (file) {
-                              onChange(await toBase64(file));
-                            } else {
-                              onChange(null);
-                            }
-                          }}
-                          defaulUploadIcon={<Upload style={{ fontSize: 30, fill: 'black' }} />}
-                          sx={{
-                            width: '50px',
-                            height: '50px',
-                          }}
-                        />
-                        {!value ? (
-                          <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
-                            .png or .jpg
-                          </Typography>
-                        ) : (
-                          ''
-                        )}
-                      </Box>
-                    );
-                  }}
-                />
-              </Box>
-              {console.log(isValid)}
-              <Button type="submit" disabled={!isValid}>
-                Next: Role
-              </Button>
-            </Box>
-          </form>
+            )}
+          />
+          <Box
+            sx={{
+              height: '96px',
+              alignContent: 'center',
+              justifyContent: 'center',
+              display: 'flex',
+              backgroundColor: '#FFFFFF',
+              mb: '24px',
+              px: '16px',
+            }}
+          >
+            <Controller
+              name="picture"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { name, value, onChange }, fieldState, formState }) => {
+                return (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '75px' }}>
+                    <SwUploadFile
+                      mode="dark"
+                      variant="rounded"
+                      name={name}
+                      initialPreviewUrl={value}
+                      fileChange={async (file) => {
+                        if (file) {
+                          onChange(await toBase64(file));
+                        } else {
+                          onChange(null);
+                        }
+                      }}
+                      defaulUploadIcon={<Upload style={{ fontSize: 30, fill: 'black' }} />}
+                      sx={{
+                        width: '50px',
+                        height: '50px',
+                      }}
+                    />
+                    {!value ? (
+                      <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
+                        .png or .jpg
+                      </Typography>
+                    ) : (
+                      ''
+                    )}
+                  </Box>
+                );
+              }}
+            />
+          </Box>
+          {console.log(isValid)}
+          <Button type="submit" disabled={!isValid}>
+            Next: Role
+          </Button>
         </Box>
-      </>
+      </form>
     </Box>
+    // <Box
+    //   sx={{
+    //     width: '100%',
+    //     minHeight: '460px',
+    //     display: 'flex',
+    //     justifyContent: 'space-around',
+    //     flexDirection: 'column',
+    //     alignItems: 'center',
+    //   }}
+    // >
+    //   <>
+    //     <Box
+    //       sx={{
+    //         width: '100%',
+    //         display: 'flex',
+    //         justifyContent: 'space-between',
+    //         alignContent: 'center',
+    //       }}
+    //     >
+    //       <BackButton handleClick={handleBackClick} />
+    //     </Box>
+    //     <Box
+    //       sx={{
+    //         width: '100%',
+    //         display: 'flex',
+    //         justifyContent: 'center',
+    //         flexDirection: 'column',
+    //         alignItems: 'center',
+    //       }}
+    //     >
+
+    //     </Box>
+    //   </>
+    // </Box>
   );
 };
 
