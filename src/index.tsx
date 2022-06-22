@@ -4,7 +4,8 @@ import { create } from 'jss';
 import { StylesProvider, jssPreset } from '@mui/styles';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { SwTheme } from './theme';
+import { StyledEngineProvider } from '@mui/material';
+import { AutTheme } from './theme';
 import store from './store/store';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
 import SwAuthModal, { SwAuthButton } from './SwAuth';
@@ -94,15 +95,17 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
         }
 
         ReactDOM.render(
-          <ThemeProvider theme={SwTheme()}>
-            <Provider store={store}>
-              <Router initialEntries={['/']}>
-                <EventsHandlerWrapper>
-                  <StylesProvider jss={jss}>{content}</StylesProvider>
-                </EventsHandlerWrapper>
-              </Router>
-            </Provider>
-          </ThemeProvider>,
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={AutTheme()}>
+              <Provider store={store}>
+                <Router initialEntries={['/']}>
+                  <EventsHandlerWrapper>
+                    <StylesProvider jss={jss}>{content}</StylesProvider>
+                  </EventsHandlerWrapper>
+                </Router>
+              </Provider>
+            </ThemeProvider>
+          </StyledEngineProvider>,
           mountPoint
         );
       }

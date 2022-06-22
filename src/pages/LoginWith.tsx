@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import AutLogo from '../components/AutLogo';
+import { AutButton } from '../components/AutButton';
 
 const LoginWith: React.FunctionComponent = (props) => {
   const history = useHistory();
@@ -18,22 +20,18 @@ const LoginWith: React.FunctionComponent = (props) => {
     <Box
       sx={{
         width: '100%',
-        minHeight: '460px',
+        height: '100%',
         display: 'flex',
-        justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '30px',
-        }}
-      >
-        <Typography variant="h1">Login With</Typography>
+      <Box sx={{ mt: '76px' }}>
+        <AutLogo />
       </Box>
+      <Typography sx={{ mt: '25px' }} variant="h3">
+        LOGIN OR SIGN-UP
+      </Typography>
       <Box
         sx={{
           width: '100%',
@@ -43,8 +41,12 @@ const LoginWith: React.FunctionComponent = (props) => {
           alignItems: 'center',
         }}
       >
-        <Button onClick={handleAutIdClicked}>Aut</Button>
-        <Button onClick={handleNewUserClicked}>NewUser</Button>
+        <AutButton sx={{ mt: '48px' }} onClick={handleAutIdClicked}>
+          Connect with āut
+        </AutButton>
+        <AutButton sx={{ mt: '30px' }} onClick={handleNewUserClicked}>
+          New User
+        </AutButton>
       </Box>
     </Box>
   );

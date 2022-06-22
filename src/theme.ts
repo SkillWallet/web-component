@@ -11,7 +11,7 @@ const palette = {
   },
   text: {
     secondary: '#D8D8D8',
-    primary: '#000000',
+    primary: '#FFF',
     disabled: '#CCCCCC',
   },
   primary: {
@@ -26,7 +26,7 @@ const palette = {
   },
 };
 
-export const SwTheme = () =>
+export const AutTheme = () =>
   createTheme({
     components: {
       // MuiCssBaseline: {
@@ -136,7 +136,8 @@ export const SwTheme = () =>
     typography: {
       fontSize: 16,
       button: {
-        fontSize: '20px', // 1.25rem
+        textTransform: 'none',
+        fontSize: '14px', // 1.25rem
       },
       body1: {
         fontSize: '14px', // 0.875rem
@@ -157,6 +158,7 @@ export const SwTheme = () =>
         fontSize: '20px', // 1.25rem
       },
       h3: {
+        letterSpacing: '2px',
         fontSize: '18px', // 1.125rem
       },
       h4: {
@@ -174,7 +176,7 @@ export const SwTheme = () =>
       xxl: {
         fontSize: '60px',
       },
-      fontFamily: ['Josefin Sans', ' sans-serif'].join(','),
+      fontFamily: ['Manrope', ' sans-serif'].join(','),
     },
   });
 
