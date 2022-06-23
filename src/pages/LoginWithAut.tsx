@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { SwButton } from 'sw-web-shared';
 import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
-import { ReactComponent as MetaMaskIcon } from '../assets/metamask.svg';
-
-import BackButton from '../components/BackButton';
+import { ReactComponent as Metamask } from '../assets/metamask.svg';
+import { ReactComponent as WalletConnect } from '../assets/wallet-connect.svg';
 import { useAppDispatch } from '../store/store.model';
+import AutLogo from '../components/AutLogo';
+import { AutButton, ButtonIcon } from '../components/AutButton';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useAppDispatch();
@@ -26,74 +27,50 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
     <Box
       sx={{
         width: '100%',
-        minHeight: '460px',
+        height: '100%',
         display: 'flex',
-        justifyContent: 'space-around',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <>
-        <Box
-          sx={{
-            display: 'flex',
-            width: '100%',
-            mx: '2px',
-          }}
+      <Box sx={{ mt: '76px' }}>
+        <AutLogo />
+      </Box>
+      <Typography sx={{ mt: '25px' }} variant="h3">
+        WELCOME BACK
+      </Typography>
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <AutButton
+          startIcon={
+            <ButtonIcon>
+              <Metamask />
+            </ButtonIcon>
+          }
+          sx={{ mt: '29px' }}
+          onClick={handleMetamaskClick}
         >
-          <BackButton handleClick={handleBackClick} />
-          <Box
-            sx={{
-              flexGrow: 1,
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '30px',
-            }}
-          >
-            <Typography align="center" variant="h1" sx={{ my: 'auto', fontWeight: '400' }}>
-              Welcome back! 🙌
-            </Typography>
-          </Box>
-          <Box
-            sx={{
-              width: '45px',
-              height: '45px',
-            }}
-          />
-        </Box>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '30px',
-          }}
+          Login with MetaMask
+        </AutButton>
+        <AutButton
+          startIcon={
+            <ButtonIcon>
+              <WalletConnect />
+            </ButtonIcon>
+          }
+          disabled
+          sx={{ mt: '30px' }}
         >
-          <SwButton
-            sx={{
-              borderColor: 'primary.main',
-            }}
-            btnType="large"
-            startIcon={<MetaMaskIcon />}
-            mode="dark"
-            onClick={handleMetamaskClick}
-            label="Login with Metamask"
-          />
-          <SwButton
-            sx={{
-              borderColor: 'primary.main',
-            }}
-            btnType="large"
-            disabled
-            mode="dark"
-            component={Link}
-            to="/qr"
-            label="Scan QR Code"
-          />
-        </Box>
-      </>
+          Use your password
+        </AutButton>
+      </Box>
     </Box>
   );
 };

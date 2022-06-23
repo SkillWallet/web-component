@@ -51,6 +51,7 @@ export function CommitmentMessage({ value, children = null }) {
 const StyledSlider = styled(Slider)({
   width: pxToRem(400),
   height: pxToRem(40),
+  color: '#439EDD',
   borderRadius: '0',
   borderWidth: '2px',
   borderStyle: 'solid',

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/no-unstable-nested-components */
-import { Avatar } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { useState } from 'react';
@@ -96,6 +96,7 @@ const AutFileUpload = ({ fileChange = (file: File) => null, initialPreviewUrl = 
           height: '100%',
           width: '100%',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
         }}
       >
