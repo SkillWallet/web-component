@@ -4,10 +4,13 @@ import { SwUploadFile, toBase64 } from 'sw-web-shared';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Input, TextField, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
+import AutFileUpload from '../components/AutFileUpload';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import BackButton from '../components/BackButton';
 import { setUserData } from '../store/user-data.reducer';
 import { AutTextField, FormHelperText } from '../components/Fields';
+import AutLogo from '../components/AutLogo';
+import { AutButton } from '../components/AutButton';
 
 interface Values {
   picture?: File;
@@ -50,6 +53,12 @@ const UserDetails: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
+      <Box sx={{ mt: '41px' }}>
+        <AutLogo />
+      </Box>
+      <Typography sx={{ mt: '25px' }} variant="h3">
+        TELL US ABOUT YOU
+      </Typography>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Box
           sx={{
@@ -61,10 +70,40 @@ const UserDetails: React.FunctionComponent = (props) => {
           }}
         >
           <Controller
+            name="picture"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { name, value, onChange }, fieldState, formState }) => {
+              return (
+                <Box
+                  sx={{
+                    mt: '45px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '75px',
+                  }}
+                >
+                  <AutFileUpload
+                    initialPreviewUrl={value}
+                    fileChange={async (file) => {
+                      if (file) {
+                        onChange(await toBase64(file));
+                      } else {
+                        onChange(null);
+                      }
+                    }}
+                  />
+                </Box>
+              );
+            }}
+          />
+          <Controller
             name="username"
             control={control}
             rules={{ required: true }}
-            render={({ field: { name, value, onChange } }) => (
+            render={({ field: { name, value, onChange }, formState }) => (
               // <TextField onChange={onChange} value={value} label="username" />
               <AutTextField
                 width="330"
@@ -75,66 +114,13 @@ const UserDetails: React.FunctionComponent = (props) => {
                 value={value || ''}
                 onChange={onChange}
                 placeholder="Nickname"
-                // helperText={
-                //   <FormHelperText errorTypes={errorTypes} value={value} name={name} errors={formState.errors}>
-                //     <span>{3 - countWords(value)} Words left</span>
-                //   </FormHelperText>
-                // }
+                helperText={<FormHelperText value={value} name={name} errors={formState.errors} />}
               />
             )}
           />
-          <Box
-            sx={{
-              height: '96px',
-              alignContent: 'center',
-              justifyContent: 'center',
-              display: 'flex',
-              backgroundColor: '#FFFFFF',
-              mb: '24px',
-              px: '16px',
-            }}
-          >
-            <Controller
-              name="picture"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { name, value, onChange }, fieldState, formState }) => {
-                return (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '75px' }}>
-                    <SwUploadFile
-                      mode="dark"
-                      variant="rounded"
-                      name={name}
-                      initialPreviewUrl={value}
-                      fileChange={async (file) => {
-                        if (file) {
-                          onChange(await toBase64(file));
-                        } else {
-                          onChange(null);
-                        }
-                      }}
-                      defaulUploadIcon={<Upload style={{ fontSize: 30, fill: 'black' }} />}
-                      sx={{
-                        width: '50px',
-                        height: '50px',
-                      }}
-                    />
-                    {!value ? (
-                      <Typography variant="h4" sx={{ textTransform: 'none', mt: '10px', color: '#454A4D' }}>
-                        .png or .jpg
-                      </Typography>
-                    ) : (
-                      ''
-                    )}
-                  </Box>
-                );
-              }}
-            />
-          </Box>
-          {console.log(isValid)}
-          <Button type="submit" disabled={!isValid}>
-            Next: Role
-          </Button>
+          <AutButton sx={{ mt: '40px' }} type="submit" disabled={!isValid}>
+            Next
+          </AutButton>
         </Box>
       </form>
     </Box>

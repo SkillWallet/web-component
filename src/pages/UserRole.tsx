@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { community } from '../store/aut.reducer';
 import BackButton from '../components/BackButton';
 import { useAppDispatch } from '../store/store.model';
 import { fetchCommunity } from '../services/web3/api';
 import { setUserData } from '../store/user-data.reducer';
+import AutLogo from '../components/AutLogo';
+import { AutButton } from '../components/AutButton';
 
 const UserRole: React.FunctionComponent = (props) => {
   const dipsatch = useAppDispatch();
@@ -23,35 +25,35 @@ const UserRole: React.FunctionComponent = (props) => {
     fetchData();
   }, []);
 
-  const handleRoleSelect = (roleId) => {
-    dipsatch(setUserData({ role: roleId }));
+  const handleRoleSelect = (role) => {
+    dipsatch(setUserData({ role: role.id, roleName: role.roleName }));
+    history.push('commitment');
   };
 
   const handleBackClick = async () => {
     history.goBack();
   };
 
-  const goToCommitment = () => {
-    history.push('commitment');
-  };
-
   return (
     <Box
       sx={{
-        minHeight: '462px',
         width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
-      <Box
-        sx={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignContent: 'center',
-        }}
-      >
-        <BackButton handleClick={handleBackClick} />
+      <Box sx={{ mt: '40px' }}>
+        <AutLogo />
       </Box>
+      <Typography sx={{ mt: '25px' }} variant="h3">
+        WELCOME
+      </Typography>
+      <Typography sx={{ mt: '25px' }} variant="h4">
+        Pick what you’re the best at,
+      </Typography>
+      <Typography variant="h4">& be rewarded for it!</Typography>
       <Box
         sx={{
           width: '100%',
@@ -66,13 +68,11 @@ const UserRole: React.FunctionComponent = (props) => {
           communityData.roles &&
           communityData.roles.map((role, n) => {
             return (
-              <Button onClick={() => handleRoleSelect(role.id)} key={n}>
+              <AutButton sx={{ mt: '30px' }} onClick={() => handleRoleSelect(role)} key={n}>
                 {role.roleName}
-              </Button>
+              </AutButton>
             );
           })}
-
-        <Button onClick={goToCommitment}>Next: Commitment</Button>
         {/* <SwButton
           sx={{
             borderColor: 'primary.main',

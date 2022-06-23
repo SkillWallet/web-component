@@ -7,6 +7,7 @@ export interface UserData {
   username?: string;
   picture?: string;
   role?: number;
+  roleName?: string;
   commitment: number;
   isLoggedIn: boolean;
 }
@@ -15,6 +16,7 @@ export const initialState: UserData = {
   username: '',
   picture: undefined,
   role: undefined,
+  roleName: undefined,
   commitment: 0,
   isLoggedIn: false,
 };
@@ -23,6 +25,7 @@ export interface UserState {
   username?: string;
   commitment?: number;
   role?: number;
+  roleName?: string;
   picture?: string;
   isLoggedIn?: boolean;
 }

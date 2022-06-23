@@ -1,9 +1,12 @@
 import { Web3AutIDProvider, Web3CommunityExtensionProvider } from '@skill-wallet/sw-abi-types';
 import { ConstructorFragment } from 'ethers/lib/utils';
 import dateFormat from 'dateformat';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 import { UserData } from '../../store/user-data.reducer';
 import { Web3ThunkProviderFactory } from '../ProviderFactory/web3-thunk.provider';
 import { storeMetadata, uploadFile } from '../textile/textile.hub';
+import { EnableAndChangeNetwork } from '../ProviderFactory/web3.network';
+import { ParseSWErrorMessage } from './utils';
 
 export function ipfsCIDToHttpUrl(url: string, isJson = false) {
   return `${url.replace('https://hub.textile.io/', 'https://ipfs.io/')}`;
@@ -99,6 +102,16 @@ export const mintMembership = autIdProvider(
     console.log(response);
   }
 );
+
+export const injectMetamask = createAsyncThunk('metamask/inject', async (address: string, { dispatch }) => {
+  try {
+    await EnableAndChangeNetwork();
+    console.log('NO ERROR');
+  } catch (error) {
+    console.log('ERROR');
+    return ParseSWErrorMessage(error);
+  }
+});
 
 export const getAutId = autIdProvider(
   {

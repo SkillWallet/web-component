@@ -89,5 +89,8 @@
     "sw-web-shared": "github:DistributedTown/sw-web-shared#master",
     "typescript": "~4.5.3",
     "webpack": "^5.0.0"
+  },
+  "dependencies": {
+    "react-dropzone": "^14.2.1"
   }
 }

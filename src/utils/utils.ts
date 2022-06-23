@@ -7,7 +7,7 @@ export const createShadowElement = ({ container, className }): ShadowRootConfig<
   const emotionRoot = document.createElement('style');
 
   const fontLink = document.createElement('link');
-  fontLink.href = 'https://fonts.googleapis.com/css?family=Josefin+Sans';
+  fontLink.href = 'https://fonts.googleapis.com/css?family=Manrope';
   fontLink.rel = 'stylesheet';
   fontLink.type = 'text/css';
 

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
-import { fetchCommunity } from '../services/web3/api';
+import { fetchCommunity, injectMetamask } from '../services/web3/api';
 import { ActionPayload } from './action-payload';
 
 export interface Community {
