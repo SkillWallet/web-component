@@ -32,7 +32,7 @@ export const createShadowElement = ({ container, className }): ShadowRootConfig<
   };
 };
 
-export const dispatchSwEvent = <T = any>(name: OutputEventTypes, payload: T = null): void => {
+export const dispatchEvent = <T = any>(name: OutputEventTypes, payload: T = null): void => {
   const event = new CustomEvent(name, {
     composed: true,
     cancelable: true,

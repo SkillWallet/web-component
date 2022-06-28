@@ -9,6 +9,7 @@ import { AutButton, ButtonIcon } from '../components/AutButton';
 import { useAppDispatch } from '../store/store.model';
 import { injectMetamask } from '../services/web3/api';
 import { EnableAndChangeNetwork } from '../services/ProviderFactory/web3.network';
+import { AutBackButton } from '../components/AutBackButton';
 
 const NewUser: React.FunctionComponent = (props) => {
   const dispatch = useAppDispatch();
@@ -29,14 +30,6 @@ const NewUser: React.FunctionComponent = (props) => {
     }
   };
 
-  const handleNextClick = () => {
-    history.push('userdetails');
-  };
-
-  const handleBackClick = async () => {
-    history.goBack();
-  };
-
   return (
     <Box
       sx={{
@@ -47,7 +40,8 @@ const NewUser: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box sx={{ mt: '76px' }}>
+      <AutBackButton />
+      <Box sx={{ mt: '16px' }}>
         <AutLogo />
       </Box>
       <Typography sx={{ mt: '25px' }} variant="h3">

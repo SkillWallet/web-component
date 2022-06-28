@@ -91,6 +91,7 @@
     "webpack": "^5.0.0"
   },
   "dependencies": {
+    "@lottiefiles/lottie-player": "^1.5.7",
     "react-dropzone": "^14.2.1"
   }
 }

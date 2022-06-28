@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
+import { AutBackButton } from '../components/AutBackButton';
 
 const LoginWith: React.FunctionComponent = (props) => {
   const history = useHistory();

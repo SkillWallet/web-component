@@ -9,6 +9,7 @@ import { fetchCommunity } from '../services/web3/api';
 import { setUserData } from '../store/user-data.reducer';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
+import { AutBackButton } from '../components/AutBackButton';
 
 const UserRole: React.FunctionComponent = (props) => {
   const dipsatch = useAppDispatch();
@@ -44,7 +45,8 @@ const UserRole: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box sx={{ mt: '40px' }}>
+      <AutBackButton />
+      <Box>
         <AutLogo />
       </Box>
       <Typography sx={{ mt: '25px' }} variant="h3">

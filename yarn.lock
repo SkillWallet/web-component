@@ -2157,6 +2157,22 @@
   "resolved" "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.3.1.tgz"
   "version" "3.3.1"
 
+"@lit/reactive-element@^1.3.0":
+  "integrity" "sha512-A2e18XzPMrIh35nhIdE4uoqRzoIpEU5vZYuQN4S3Ee1zkGdYC27DP12pewbw/RLgPHzaE4kx/YqxMzebOpm0dA=="
+  "resolved" "https://registry.npmjs.org/@lit/reactive-element/-/reactive-element-1.3.2.tgz"
+  "version" "1.3.2"
+
+"@lottiefiles/lottie-player@^1.5.7":
+  "integrity" "sha512-G9rBnH3GJv7ADPLGhwvauWf5IhHja5615N9ROjVE7O384nkHccJ2C/v0AZ9ybx63QTGojN7NaKYdTKq6NMcNrg=="
+  "resolved" "https://registry.npmjs.org/@lottiefiles/lottie-player/-/lottie-player-1.5.7.tgz"
+  "version" "1.5.7"
+  dependencies:
+    "@types/pako" "^1.0.1"
+    "lit" "^2.1.2"
+    "lottie-web" "^5.8.1"
+    "pako" "^2.0.4"
+    "resize-observer-polyfill" "^1.5.1"
+
 "@mui/base@5.0.0-alpha.64":
   "integrity" "sha512-lqUFbAyYPl3uDaTxGWIUWx9Zin5APv5Rrn/oUcnm/71Isd5dJ94zoGHCTdNy2sxhDRcXRshsdC2dfdwIWxhkZA=="
   "resolved" "https://registry.npmjs.org/@mui/base/-/base-5.0.0-alpha.64.tgz"
@@ -2773,6 +2789,11 @@
   "integrity" "sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw=="
   "resolved" "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz"
   "version" "2.4.1"
+
+"@types/pako@^1.0.1":
+  "integrity" "sha512-Z+5bJSm28EXBSUJEgx29ioWeEEHUh6TiMkZHDhLwjc9wVFH+ressbkmX6waUZc5R3Gobn4Qu5llGxaoflZ+yhA=="
+  "resolved" "https://registry.npmjs.org/@types/pako/-/pako-1.0.4.tgz"
+  "version" "1.0.4"
 
 "@types/parse-json@^4.0.0":
   "integrity" "sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA=="
@@ -7859,6 +7880,30 @@
   "resolved" "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.2.4.tgz"
   "version" "1.2.4"
 
+"lit-element@^3.2.0":
+  "integrity" "sha512-HbE7yt2SnUtg5DCrWt028oaU4D5F4k/1cntAFHTkzY8ZIa8N0Wmu92PxSxucsQSOXlODFrICkQ5x/tEshKi13g=="
+  "resolved" "https://registry.npmjs.org/lit-element/-/lit-element-3.2.0.tgz"
+  "version" "3.2.0"
+  dependencies:
+    "@lit/reactive-element" "^1.3.0"
+    "lit-html" "^2.2.0"
+
+"lit-html@^2.2.0":
+  "integrity" "sha512-xOKsPmq/RAKJ6dUeOxhmOYFjcjf0Q7aSdfBJgdJkOfCUnkmmJPxNrlZpRBeVe1Gg50oYWMlgm6ccAE/SpJgSdw=="
+  "resolved" "https://registry.npmjs.org/lit-html/-/lit-html-2.2.6.tgz"
+  "version" "2.2.6"
+  dependencies:
+    "@types/trusted-types" "^2.0.2"
+
+"lit@^2.1.2":
+  "integrity" "sha512-K2vkeGABfSJSfkhqHy86ujchJs3NR9nW1bEEiV+bXDkbiQ60Tv5GUausYN2mXigZn8lC1qXuc46ArQRKYmumZw=="
+  "resolved" "https://registry.npmjs.org/lit/-/lit-2.2.6.tgz"
+  "version" "2.2.6"
+  dependencies:
+    "@lit/reactive-element" "^1.3.0"
+    "lit-element" "^3.2.0"
+    "lit-html" "^2.2.0"
+
 "loader-runner@^4.2.0":
   "integrity" "sha512-92+huvxMvYlMzMt0iIOukcwYBFpkYJdpl2xsZ7LrlayO7E8SOv+JJUEK17B/dJIHAOLMfh2dZZ/Y18WgmGtYNw=="
   "resolved" "https://registry.npmjs.org/loader-runner/-/loader-runner-4.2.0.tgz"
@@ -7973,6 +8018,11 @@
   "version" "1.4.0"
   dependencies:
     "js-tokens" "^3.0.0 || ^4.0.0"
+
+"lottie-web@^5.8.1":
+  "integrity" "sha512-4GI1jC2+YV9DyTXEz4HnAuaoOMT6yBs9KxG50rsmM7eRjUhyBpbETSVuzHAkamfP+nyNuQ84jhQxDnfjBrJdQg=="
+  "resolved" "https://registry.npmjs.org/lottie-web/-/lottie-web-5.9.5.tgz"
+  "version" "5.9.5"
 
 "lower-case@^2.0.2":
   "integrity" "sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg=="
@@ -8660,6 +8710,11 @@
   "integrity" "sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ=="
   "resolved" "https://registry.npmjs.org/p-try/-/p-try-2.2.0.tgz"
   "version" "2.2.0"
+
+"pako@^2.0.4":
+  "integrity" "sha512-v8tweI900AUkZN6heMU/4Uy4cXRc2AYNRggVmTR+dEncawDJgCdLMximOVA2p4qO57WMynangsfGRb5WD6L1Bg=="
+  "resolved" "https://registry.npmjs.org/pako/-/pako-2.0.4.tgz"
+  "version" "2.0.4"
 
 "param-case@^3.0.4":
   "integrity" "sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A=="
@@ -9984,6 +10039,11 @@
   "integrity" "sha512-uVdlz8J7OO+ASpBYoz1Zypgx0KasCY20H+N8JD13oUMtPvSHQuscrHop4KbXrbsBcdB9Ds7lVK7eRkBIfO43vQ=="
   "resolved" "https://registry.npmjs.org/reselect/-/reselect-4.1.5.tgz"
   "version" "4.1.5"
+
+"resize-observer-polyfill@^1.5.1":
+  "integrity" "sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg=="
+  "resolved" "https://registry.npmjs.org/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz"
+  "version" "1.5.1"
 
 "resolve-cwd@^3.0.0":
   "integrity" "sha512-OrZaX2Mb+rJCpH/6CpSqt9xFVpN++x01XnN2ie9g6P5/3xelLAkXWVADpdz1IHD/KFfEXyE6V0U01OQ3UO2rEg=="

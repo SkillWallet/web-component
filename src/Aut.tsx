@@ -6,64 +6,50 @@ import Portal from '@mui/material/Portal';
 import { CSSObject } from '@emotion/react';
 import MainDialog from './components/MainDialog';
 import { resetUIState } from './store/store';
-import {
-  isOpen,
-  showDialog,
-  setDisableCreateNewUser,
-  showGlobalError,
-  startValidatingDomain,
-  finishValidatingDomain,
-} from './store/sw-ui-reducer';
+import { isOpen, setDisableCreateNewUser, showGlobalError, startValidatingDomain, finishValidatingDomain } from './store/sw-ui-reducer';
 import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 // import { validateDomain } from './services/web3/web3Service';
-import { AttributeNames, checkIfAttributeHasChanged, dispatchSwEvent, parseAttributeValue } from './utils/utils';
-import { SwAuthButtonProps } from './types/sw-auth-config';
+import { AttributeNames, checkIfAttributeHasChanged, dispatchEvent, parseAttributeValue } from './utils/utils';
+import { AutButtonProps } from './types/sw-auth-config';
 import { OutputEventTypes } from './types/event-types';
+import { autUiState, setCommunityExtesnionAddress, showDialog } from './store/aut.reducer';
+import { useAppDispatch } from './store/store.model';
 
-const SwAuthModal = withRouter(({ container, rootContainer = null }: any) => {
-  const dispatch = useDispatch();
-  const open = useSelector(isOpen);
+const AutModal = withRouter(({ container, rootContainer = null }: any) => {
+  const dispatch = useAppDispatch();
+  const uiState = useSelector(autUiState);
 
   const handleClose = (event, reason) => {
-    if (reason && reason === 'backdropClick') return;
+    // if (reason && reason === 'backdropClick') return;
     dispatch(showDialog(false));
   };
 
   useEffect(() => {
     // increase zIndex for the custom container so that the button is under modal
     if (rootContainer) {
-      (rootContainer as HTMLElement).style.zIndex = open ? '999999' : '0';
+      (rootContainer as HTMLElement).style.zIndex = uiState.showDialog ? '999999' : '0';
     }
-  }, [open, rootContainer]);
+  }, [uiState, rootContainer]);
 
   return (
     <>
-      <MainDialog open={open} handleClose={handleClose} container={container} />
+      <MainDialog open={uiState.showDialog} handleClose={handleClose} container={container} />
     </>
   );
 });
 
-export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, container, setAttrCallback }: SwAuthButtonProps<CSSObject>) => {
+export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container, setAttrCallback }: AutButtonProps<CSSObject>) => {
   const history = useHistory();
-  const dispatch = useDispatch();
-  const currentUser = useSelector(currentUserState);
+  const dispatch = useAppDispatch();
+  const uiState = useSelector(autUiState);
+  // const currentUser = useSelector(currentUserState);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [buttonHidden, setButtonHidden] = useState(false);
 
-  const onSetParnersKey = (partnerKey: string) => {
-    if (partnerKey) {
-      console.log('PK', attributes.partnerKey);
-      // dispatch(setPartnerKey(attributes.partnerKey as string));
-      dispatchSwEvent(OutputEventTypes.Init);
-    } else {
-      dispatch(showGlobalError('Partner key attribute is missing.'));
-    }
-  };
-
-  const onUseEnv = async (useDev: boolean) => {
-    if (useDev) {
+  const selectEnvironment = () => {
+    if (attributes.useDev) {
       setUseDev(attributes.useDev);
     } else {
       // dispatch(startValidatingDomain());
@@ -80,7 +66,17 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
     }
   };
 
-  const initializeSW = async () => {
+  const setAttributes = () => {
+    if (attributes.communityAddress) {
+      dispatch(setCommunityExtesnionAddress(attributes.communityAddress as string));
+    } else {
+      // Probably throw error cause we can't do anything without it
+      dispatch(showGlobalError('Community address attribute is missing.'));
+    }
+    selectEnvironment();
+  };
+
+  const initializeAut = async () => {
     // const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
     // if (sw) {
     //   const currentTime = new Date().getTime();
@@ -107,12 +103,13 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   };
 
   const handleButtonClick = () => {
-    if (currentUser.isLoggedIn) {
-      if (!attributes.useButtonOptions) {
-        window.sessionStorage.removeItem('skillWallet');
-        dispatch(resetUIState);
-        dispatchSwEvent(OutputEventTypes.Login, false);
-      }
+    // if (currentUser.isLoggedIn) {
+
+    if (uiState.isConnected) {
+      // if (!attributes.useButtonOptions) {
+      window.sessionStorage.removeItem('aut-data');
+      dispatch(resetUIState);
+      dispatchEvent(OutputEventTypes.Disconnected, false);
     } else {
       history.push('/');
       dispatch(resetUIState);
@@ -121,7 +118,7 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   };
 
   const handleMouseEnter = (event) => {
-    if (anchorEl !== event.currentTarget && attributes.useButtonOptions && currentUser.isLoggedIn) {
+    if (anchorEl !== event.currentTarget && attributes.useButtonOptions && false) {
       setAnchorEl(container);
     }
   };
@@ -129,7 +126,7 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   const handleMenuButtonClicked = () => {
     window.sessionStorage.removeItem('skillWallet');
     dispatch(resetUIState);
-    dispatchSwEvent(OutputEventTypes.Login, false);
+    // dispatchEvent(OutputEventTypes.Connected, false);
     setAnchorEl(null);
   };
 
@@ -138,27 +135,26 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   };
 
   useEffect(() => {
-    setButtonHidden(attributes.hideButton as boolean);
-    onSetParnersKey(attributes.partnerKey as string);
-    onUseEnv(attributes.useDev as boolean);
-    dispatch(setDisableCreateNewUser(attributes.disableCreateNewUser as boolean));
+    setAttributes();
+    // setButtonHidden(attributes.hideButton as boolean);
+    // dispatch(setDisableCreateNewUser(attributes.disableCreateNewUser as boolean));
 
-    setAttrCallback((name: string, prevValue: string, currVal: string) => {
-      const notChanged = !checkIfAttributeHasChanged(prevValue, currVal);
-      if (notChanged) {
-        return; // do nothing if its the same
-      }
-      const value = parseAttributeValue(name, currVal);
-      if (name === AttributeNames.hideButton) {
-        setButtonHidden(value);
-      } else if (name === AttributeNames.disableCreateNewUser) {
-        dispatch(setDisableCreateNewUser(value));
-      }
-    });
+    // setAttrCallback((name: string, prevValue: string, currVal: string) => {
+    //   const notChanged = !checkIfAttributeHasChanged(prevValue, currVal);
+    //   if (notChanged) {
+    //     return; // do nothing if its the same
+    //   }
+    //   const value = parseAttributeValue(name, currVal);
+    //   if (name === AttributeNames.hideButton) {
+    //     setButtonHidden(value);
+    //   } else if (name === AttributeNames.disableCreateNewUser) {
+    //     dispatch(setDisableCreateNewUser(value));
+    //   }
+    // });
   }, []);
 
   useEffect(() => {
-    initializeSW();
+    initializeAut();
   }, []);
 
   return (
@@ -194,9 +190,18 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
               onMouseEnter={handleMouseEnter}
             >
               <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', height: '100%' }}>
-                {currentUser.isLoggedIn && <Avatar className="swButtonAvatar" src={currentUser.profileImageUrl} />}
+                {false && (
+                  <Avatar
+                    className="swButtonAvatar"
+                    src={
+                      // currentUser.profileImageUrl
+                      null
+                    }
+                  />
+                )}
                 <Typography className="swButtonText" variant="h2" color="#FFFFFF">
-                  {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'}
+                  {/* {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'} */}
+                  {uiState.isConnected ? 'Connected' : 'Connect with āut'}
                 </Typography>
               </Box>
             </Button>
@@ -253,4 +258,4 @@ export const SwAuthButton = ({ buttonStyles, dropdownStyles, attributes, contain
   );
 };
 
-export default SwAuthModal;
+export default AutModal;

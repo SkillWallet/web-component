@@ -11,6 +11,7 @@ export enum AttributesDefinitions {
   'use-button-options' = 'boolean',
   'disable-create-new-user' = 'boolean',
   'partner-key' = 'string',
+  'community-address' = 'string',
   'use-dev' = 'boolean',
   'hide-button' = 'boolean',
 }
@@ -29,7 +30,7 @@ export interface ShadowRootConfig<EmotionCache> {
 }
 
 export type AttributeCallbackFn = (name: string, value: string, newVal: string) => void;
-export interface SwAuthButtonProps<CSSObject> {
+export interface AutButtonProps<CSSObject> {
   attributes: SwAttributes;
   container: HTMLElement;
   buttonStyles?: CSSObject;

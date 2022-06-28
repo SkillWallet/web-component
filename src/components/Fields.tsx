@@ -76,9 +76,15 @@ export const AutTextField = styled((props: TextFieldProps & { width: string }) =
       position: 'relative',
     },
     '.MuiInput-underline': {
+      '&:before': {
+        borderWidth: '2px',
+        borderColor: '#439EDD',
+      },
       '&:after': {
-        borderWidth: '1px',
-        transform: 'scaleX(1)',
+        color: '#439EDD',
+        borderWidth: '2px',
+        borderColor: '#439EDD',
+        // transform: 'scaleX(1)',
       },
     },
     '.MuiOutlinedInput-root, .MuiInput-underline': {

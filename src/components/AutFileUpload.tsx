@@ -126,6 +126,7 @@ const AutFileUpload = ({ fileChange = (file: File) => null, initialPreviewUrl = 
         <Action className={`${showAction ? 'show' : ''}`}>{preview ? <HighlightOffIcon className="remove" /> : null}</Action>
       </div>
     </UploadWrapper>
+    // TODO: ADD Avatar text
   );
 };
 

@@ -7,10 +7,11 @@ import { Controller, useForm } from 'react-hook-form';
 import AutFileUpload from '../components/AutFileUpload';
 import { ReactComponent as Upload } from '../assets/upload.svg';
 import BackButton from '../components/BackButton';
-import { setUserData } from '../store/user-data.reducer';
+import { setUserData, userData } from '../store/user-data.reducer';
 import { AutTextField, FormHelperText } from '../components/Fields';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
+import { AutBackButton } from '../components/AutBackButton';
 
 interface Values {
   picture?: File;
@@ -19,6 +20,7 @@ interface Values {
 
 const UserDetails: React.FunctionComponent = (props) => {
   const history = useHistory();
+  const userInput = useSelector(userData);
   const dispatch = useDispatch();
   const {
     handleSubmit,
@@ -26,20 +28,12 @@ const UserDetails: React.FunctionComponent = (props) => {
     formState: { isValid },
   } = useForm({
     mode: 'onChange',
-    defaultValues: { username: '', picture: null },
+    defaultValues: userInput,
   });
 
   const onSubmit = async (data) => {
     console.log(data);
     dispatch(setUserData(data));
-    history.push('/role');
-  };
-
-  const handleBackClick = async () => {
-    history.goBack();
-  };
-
-  const goToRole = () => {
     history.push('/role');
   };
 
@@ -53,7 +47,8 @@ const UserDetails: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box sx={{ mt: '41px' }}>
+      <AutBackButton />
+      <Box>
         <AutLogo />
       </Box>
       <Typography sx={{ mt: '25px' }} variant="h3">

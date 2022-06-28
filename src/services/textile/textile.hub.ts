@@ -16,10 +16,12 @@ export function ipfsCIDToHttpUrl(url: string, isJson = false) {
 
 export async function uploadFile(file) {
   const cid = await client.storeBlob(file);
-  return cid;
+  // const trimmedCid = cid.replace('ipfs://', '');
+  return `ipfs://${cid}`;
 }
 
 export async function storeMetadata(json) {
   const metadata = await client.store(json);
-  return metadata.ipnft;
+  console.log(metadata);
+  return metadata.url;
 }

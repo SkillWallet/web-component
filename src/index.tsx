@@ -8,11 +8,11 @@ import { StyledEngineProvider } from '@mui/material';
 import { AutTheme } from './theme';
 import store from './store/store';
 import { EventsHandlerWrapper } from './components/EventsHandlerWrapper';
-import SwAuthModal, { SwAuthButton } from './SwAuth';
+import SwAuthModal, { AutButton } from './Aut';
 import { AttributeCallbackFn, SwAuthConfig } from './types/sw-auth-config';
 import { AttributeNames, createShadowElement, extractAttributes, isElement } from './utils/utils';
 
-export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
+export function Init(authConfig: SwAuthConfig<CSSObject> = null) {
   const TAG_NAME = 'sw-auth';
   // we don't to initialized again when saving changes on hot-reloading
   if (customElements.get(TAG_NAME)) {
@@ -62,7 +62,7 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
           content = (
             <>
               <CacheProvider value={bConfig.cache}>
-                <SwAuthButton
+                <AutButton
                   buttonStyles={authConfig && authConfig.buttonStyles}
                   dropdownStyles={authConfig && authConfig.dropdownStyles}
                   container={bConfig.root}
@@ -81,7 +81,7 @@ export function InitSwAuth(authConfig: SwAuthConfig<CSSObject> = null) {
           content = (
             <>
               <CacheProvider value={config.cache}>
-                <SwAuthButton
+                <AutButton
                   buttonStyles={authConfig && authConfig.buttonStyles}
                   dropdownStyles={authConfig && authConfig.dropdownStyles}
                   container={config.root}

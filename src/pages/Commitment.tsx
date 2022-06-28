@@ -11,6 +11,7 @@ import { mintMembership } from '../services/web3/api';
 import AutLogo from '../components/AutLogo';
 import { AutSlider } from '../components/CommitmentSlider';
 import { AutButton } from '../components/AutButton';
+import { AutBackButton } from '../components/AutBackButton';
 
 interface Role {
   roleId: number;
@@ -29,23 +30,12 @@ const Commitment: React.FunctionComponent = (props) => {
     formState: { isValid, errors },
   } = useForm({
     mode: 'onChange',
-    defaultValues: { commitment: 0 },
+    defaultValues: userInput,
   });
 
   const onSubmit = async (data: any) => {
+    console.log(data);
     dispatch(mintMembership({ userData: userInput, commitment: data.commitment }));
-  };
-
-  useEffect(() => {
-    console.log(userInput);
-  }, [userInput]);
-
-  const handleSliderChange = (value) => {
-    console.log(value);
-  };
-
-  const handleBackClick = async () => {
-    history.goBack();
   };
 
   return (
@@ -58,7 +48,8 @@ const Commitment: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box sx={{ mt: '40px' }}>
+      <AutBackButton />
+      <Box>
         <AutLogo />
       </Box>
       <Typography sx={{ mt: '25px' }} variant="h3">
@@ -83,9 +74,12 @@ const Commitment: React.FunctionComponent = (props) => {
                   defaultValue: 0,
                   step: 1,
                   marks: true,
+                  onChange(event, value, activeThumb) {
+                    dispatch(setUserData({ commitment: value }));
+                    onChange(value);
+                  },
                   name,
                   value: value || 0,
-                  onChange,
                   min: 0,
                   max: 10,
                 }}
@@ -102,10 +96,12 @@ const Commitment: React.FunctionComponent = (props) => {
             )}
           />
         </Box>
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <AutButton sx={{ mt: '56px' }} type="submit" disabled={!isValid}>
+            Join the Community
+          </AutButton>
+        </Box>
       </form>
-      <AutButton sx={{ mt: '56px' }} type="submit" disabled={!isValid}>
-        Join the Community
-      </AutButton>
     </Box>
   );
 };

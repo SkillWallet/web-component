@@ -1,6 +1,6 @@
 export enum OutputEventTypes {
-  Login = 'onSkillwalletLogin',
-  SkillWalletActivated = 'onSkillWalletActivated',
+  Connected = 'aut-onConnected',
+  Disconnected = 'aut-onDisconnected',
   Init = 'initSkillwalletAuth',
   ActivateSuccess = 'activateSkillWalletCommunitySuccess',
   ActivateError = 'activateSkillWalletCommunityError',

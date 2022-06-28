@@ -4,9 +4,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { ReactComponent as Metamask } from '../assets/metamask.svg';
 import { ReactComponent as WalletConnect } from '../assets/wallet-connect.svg';
+import { AutBackButton } from '../components/AutBackButton';
 import { useAppDispatch } from '../store/store.model';
 import AutLogo from '../components/AutLogo';
 import { AutButton, ButtonIcon } from '../components/AutButton';
+import { getAutId } from '../services/web3/api';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useAppDispatch();
@@ -17,6 +19,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
 
   const handleMetamaskClick = async () => {
     // performMetamaskLogin();
+    dispatch(getAutId(null));
   };
 
   const handleBackClick = async () => {
@@ -33,7 +36,8 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
         alignItems: 'center',
       }}
     >
-      <Box sx={{ mt: '76px' }}>
+      <AutBackButton />
+      <Box sx={{ mt: '16px' }}>
         <AutLogo />
       </Box>
       <Typography sx={{ mt: '25px' }} variant="h3">
@@ -57,7 +61,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           sx={{ mt: '29px' }}
           onClick={handleMetamaskClick}
         >
-          Login with MetaMask
+          Login with MetaMaskg
         </AutButton>
         <AutButton
           startIcon={

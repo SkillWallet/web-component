@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
-import { fetchCommunity, injectMetamask } from '../services/web3/api';
+import { fetchCommunity, getAutId, injectMetamask } from '../services/web3/api';
+import { OutputEventTypes } from '../types/event-types';
+import { dispatchEvent } from '../utils/utils';
 import { ActionPayload } from './action-payload';
 
 export interface Community {
@@ -25,11 +27,17 @@ export enum ResultState {
 
 export interface AutState {
   community?: Community;
+  communityExtensionAddress: string;
+  isConnected: boolean;
+  showDialog: boolean;
   status: ResultState;
 }
 
 export const initialState: AutState = {
   community: null,
+  communityExtensionAddress: null,
+  isConnected: false,
+  showDialog: false,
   status: ResultState.Idle,
 };
 
@@ -51,6 +59,12 @@ export const autSlice = createSlice({
     setCommunity: (state, action: ActionPayload<any>) => {
       state.community = action.payload;
     },
+    setCommunityExtesnionAddress: (state, action: ActionPayload<string>) => {
+      state.communityExtensionAddress = action.payload;
+    },
+    showDialog: (state, action: ActionPayload<boolean>) => {
+      state.showDialog = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -65,15 +79,32 @@ export const autSlice = createSlice({
       })
       .addCase(fetchCommunity.rejected, (state) => {
         state.status = ResultState.Failed;
+      })
+      .addCase(getAutId.pending, (state) => {
+        state.status = ResultState.Loading;
+      })
+      .addCase(getAutId.fulfilled, (state, action) => {
+        state.isConnected = true;
+        state.showDialog = false;
+        dispatchEvent(OutputEventTypes.Connected, action.payload);
+        state.status = ResultState.Idle;
+      })
+      .addCase(getAutId.rejected, (state) => {
+        state.status = ResultState.Failed;
       });
   },
 });
 
-export const { setCommunity } = autSlice.actions;
+export const { setCommunity, setCommunityExtesnionAddress, showDialog } = autSlice.actions;
 
 export const community = createSelector(
   (state) => state.aut.community,
   (community) => community
+);
+
+export const autUiState = createSelector(
+  (state) => state.aut,
+  (aut) => aut
 );
 // export const currentCommunity = createSelector(
 //   (state) => state.swAuth.community as Community & PartnerAgreementKey,

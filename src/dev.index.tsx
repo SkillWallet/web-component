@@ -1,9 +1,9 @@
 // THIS FILE IS FOR DEVELOPMENT ONLY!!!
 
-import { InitSwAuth } from './index';
+import { Init } from './index';
 
 setTimeout(() => {
-  InitSwAuth({
+  Init({
     buttonStyles: {
       cursor: 'pointer',
       background: '#000000',
