@@ -13,7 +13,7 @@ import { AttributeCallbackFn, SwAuthConfig } from './types/sw-auth-config';
 import { AttributeNames, createShadowElement, extractAttributes, isElement } from './utils/utils';
 
 export function Init(authConfig: SwAuthConfig<CSSObject> = null) {
-  const TAG_NAME = 'sw-auth';
+  const TAG_NAME = 'd-aut';
   // we don't to initialized again when saving changes on hot-reloading
   if (customElements.get(TAG_NAME)) {
     return;

@@ -19,6 +19,8 @@ const rootReducer = (state, action) => {
     state = {
       aut: {
         ...initAutState,
+        showDialog: state.aut.showDialog,
+        communityExtensionAddress: state.aut.communityExtensionAddress,
       },
       userData: {
         ...initUserDataState,

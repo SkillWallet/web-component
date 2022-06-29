@@ -1,6 +1,6 @@
 {
-  "name": "@skill-wallet/auth",
-  "version": "1.0.66",
+  "name": "d-aut-alpha",
+  "version": "0.0.2",
   "main": "build/cjs/index.js",
   "module": "build/ems/index.js",
   "types": "build/index.d.ts",

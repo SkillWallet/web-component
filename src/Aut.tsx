@@ -68,6 +68,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
 
   const setAttributes = () => {
     if (attributes.communityAddress) {
+      console.log(attributes.communityAddress);
       dispatch(setCommunityExtesnionAddress(attributes.communityAddress as string));
     } else {
       // Probably throw error cause we can't do anything without it

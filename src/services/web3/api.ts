@@ -17,7 +17,11 @@ export function ipfsCIDToHttpUrl(url: string, isJson = false) {
 // }
 
 export function cidToHttpUrl(cid: string) {
-  return `${cid.replace('ipfs://', 'https://nftstorage.link/ipfs/')}`;
+  // TODO: this should not be required
+  if (cid.includes('ipfs://')) {
+    return `${cid.replace('ipfs://', 'https://nftstorage.link/ipfs/')}`;
+  }
+  return `https://nftstorage.link/ipfs/${cid}`;
 }
 const communityProvider = Web3ThunkProviderFactory('Community', {
   provider: Web3CommunityExtensionProvider,
@@ -33,16 +37,18 @@ export const fetchCommunity = communityProvider(
   },
   (thunkAPI) => {
     // console.log(thunkAPI.getState());
-    // const { auth } = thunkAPI.getState();
-    return Promise.resolve('0xFc53e464D257F0614132D20293154eaE5CE25734');
+    const { aut } = thunkAPI.getState();
+    console.log(aut.communityExtensionAddress);
+    // return Promise.resolve('0xFc53e464D257F0614132D20293154eaE5CE25734');
 
     // const { aut } = thunkAPI.getState();
-    // return Promise.resolve(aut.communityExtensionAddress);
+    return Promise.resolve(aut.communityExtensionAddress);
   },
   async (contract) => {
     const resp = await contract.getComData();
     console.log(resp);
-    const communityMetadata = await fetch(cidToHttpUrl(`${resp[2]}/metadata.json`));
+    // const communityMetadata = await fetch(cidToHttpUrl(`${resp[2]}/metadata.json`));
+    const communityMetadata = await fetch(cidToHttpUrl(`${resp[2]}`));
     const communityJson = await communityMetadata.json();
     console.log(communityJson);
     console.log(communityJson.rolesSets[0].roles);
@@ -69,7 +75,6 @@ export const mintMembership = autIdProvider(
   },
   (thunkAPI) => {
     // console.log(thunkAPI.getState());
-    // const { auth } = thunkAPI.getState();
     return Promise.resolve('0xCeb3300b7de5061c633555Ac593C84774D160309');
 
     // const { aut } = thunkAPI.getState();
@@ -134,7 +139,7 @@ export const getAutId = autIdProvider(
     // const { auth } = thunkAPI.getState();
     return Promise.resolve('0xCeb3300b7de5061c633555Ac593C84774D160309');
   },
-  async (contract, args) => {
+  async (contract, args, thunkAPI) => {
     const { selectedAddress } = window.ethereum;
     const tokenId = await contract.getAutIDByOwner(selectedAddress);
     const tokenURI = await contract.tokenURI(tokenId);
