@@ -1,7 +1,7 @@
 import { withRouter, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Avatar, Box, Button, Menu, MenuItem, Typography } from '@mui/material';
+import { Avatar, Box, Button, ButtonProps, Menu, MenuItem, Typography } from '@mui/material';
 import Portal from '@mui/material/Portal';
 import { CSSObject } from '@emotion/react';
 import MainDialog from './components/MainDialog';
@@ -77,7 +77,8 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
   };
 
   const initializeAut = async () => {
-    // const sw = JSON.parse(sessionStorage.getItem('skillWallet'));
+    // check timestamp
+    // const sw = JSON.parse(sessionStorage.getItem('aut-data'));
     // if (sw) {
     //   const currentTime = new Date().getTime();
     //   // 8 Hours
@@ -124,7 +125,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
   };
 
   const handleMenuButtonClicked = () => {
-    window.sessionStorage.removeItem('skillWallet');
+    window.sessionStorage.removeItem('aut-data');
     dispatch(resetUIState);
     // dispatchEvent(OutputEventTypes.Connected, false);
     setAnchorEl(null);
@@ -163,96 +164,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
       <Portal container={container}>
         {!buttonHidden && (
           <>
-            <RoundedWebButton />
-            <Button
-              sx={{
-                cursor: 'pointer',
-                background: '#000000',
-                '& .MuiTypography-root': {
-                  textTransform: 'none',
-                  fontSize: '14px',
-                  lineHeight: '25px',
-                  fontWeight: '500',
-                },
-                '& .swButtonAvatar': { width: '36px', height: '36px' },
-                boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
-                '&:hover': {
-                  background: '#FFFFFF',
-                  borderColor: '#000000',
-                  '& .swButtonText': {
-                    color: '#000000',
-                    mt: '4px',
-                  },
-                },
-                height: '47px',
-                width: '180px',
-                ...buttonStyles,
-              }}
-              onClick={handleButtonClick}
-              onMouseEnter={handleMouseEnter}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', height: '100%' }}>
-                {false && (
-                  <Avatar
-                    className="swButtonAvatar"
-                    src={
-                      // currentUser.profileImageUrl
-                      null
-                    }
-                  />
-                )}
-                <Typography className="swButtonText" variant="h2" color="#FFFFFF">
-                  {/* {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'} */}
-                  {uiState.user ? 'Connected' : 'Connect with āut'}
-                </Typography>
-              </Box>
-            </Button>
-            <Menu
-              sx={{
-                '& .MuiMenu-list': {
-                  padding: '0px',
-                },
-                '& .swButtonOption': {
-                  cursor: 'pointer',
-                  background: '#000000',
-                  '& .swButtonOptionText': {
-                    textTransform: 'none',
-                    fontSize: '14px',
-                    lineHeight: '25px',
-                    fontWeight: '500',
-                  },
-                  '&:hover': {
-                    background: '#FFFFFF',
-                    borderColor: '#000000',
-                    '& .swButtonOptionText': {
-                      color: '#000000',
-                      mt: '4px',
-                    },
-                  },
-
-                  height: '40px',
-                  width: '180px',
-                  border: '0px',
-                },
-                boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px',
-                ...dropdownStyles,
-              }}
-              container={container}
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleHideMenu}
-              MenuListProps={{ onMouseLeave: handleHideMenu }}
-            >
-              <MenuItem sx={{ p: '0px' }}>
-                <Button className="swButtonOption" onClick={handleMenuButtonClicked}>
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%' }}>
-                    <Typography className="swButtonOptionText" variant="h2" color="#FFFFFF">
-                      Logout
-                    </Typography>
-                  </Box>
-                </Button>
-              </MenuItem>
-            </Menu>
+            <RoundedWebButton userData={uiState.user} onClick={handleButtonClick} onMouseEnter={handleMouseEnter} />
           </>
         )}
       </Portal>

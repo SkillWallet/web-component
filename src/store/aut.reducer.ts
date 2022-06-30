@@ -85,6 +85,7 @@ export const autSlice = createSlice({
       })
       .addCase(getAutId.fulfilled, (state, action) => {
         state.showDialog = false;
+        console.log(action.payload);
         state.user = action.payload;
         dispatchEvent(OutputEventTypes.Connected, action.payload);
       })
