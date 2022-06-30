@@ -3,13 +3,12 @@ import { useHistory } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { ReactComponent as Metamask } from '../assets/metamask.svg';
 import { ReactComponent as WalletConnect } from '../assets/wallet-connect.svg';
-import BackButton from '../components/BackButton';
 import AutLogo from '../components/AutLogo';
 import { AutButton, ButtonIcon } from '../components/AutButton';
 import { useAppDispatch } from '../store/store.model';
-import { injectMetamask } from '../services/web3/api';
 import { EnableAndChangeNetwork } from '../services/ProviderFactory/web3.network';
 import { AutBackButton } from '../components/AutBackButton';
+import { AutPageBox } from '../components/AutPageBox';
 
 const NewUser: React.FunctionComponent = (props) => {
   const dispatch = useAppDispatch();
@@ -31,19 +30,9 @@ const NewUser: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <AutBackButton />
-      <Box sx={{ mt: '16px' }}>
-        <AutLogo />
-      </Box>
+      <AutLogo />
       <Typography sx={{ mt: '25px' }} variant="h3">
         WELCOME
       </Typography>
@@ -83,7 +72,7 @@ const NewUser: React.FunctionComponent = (props) => {
           Create Social Account
         </AutButton>
       </Box>
-    </Box>
+    </AutPageBox>
   );
 };
 

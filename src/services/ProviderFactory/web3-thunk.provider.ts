@@ -1,5 +1,6 @@
 import { AsyncThunk, createAsyncThunk } from '@reduxjs/toolkit';
-import { updateTransactionState } from '../../store/sw-ui-reducer';
+// import { updateTransactionState } from '../../store/sw-ui-reducer';
+import { updateTransactionState, updateErrorState } from '../../store/aut.reducer';
 import { ParseSWErrorMessage } from '../../utils/error-parser';
 import { EnableAndChangeNetwork } from './web3.network';
 import { BaseThunkArgs, ThunkArgs, GetThunkAPI, AsyncThunkConfig, ProviderEvent, AsyncThunkPayloadCreator } from './web3.thunk.type';
@@ -7,6 +8,9 @@ import { BaseThunkArgs, ThunkArgs, GetThunkAPI, AsyncThunkConfig, ProviderEvent,
 const DefaultProviders: Partial<BaseThunkArgs<any, any>> = {
   updateTransactionStateAction: (state: string, dispatch) => {
     dispatch(updateTransactionState(state));
+  },
+  updateErrorStateAction: (state: string, dispatch) => {
+    dispatch(updateErrorState(state));
   },
 };
 

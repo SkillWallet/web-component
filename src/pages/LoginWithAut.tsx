@@ -9,6 +9,7 @@ import { useAppDispatch } from '../store/store.model';
 import AutLogo from '../components/AutLogo';
 import { AutButton, ButtonIcon } from '../components/AutButton';
 import { getAutId } from '../services/web3/api';
+import { AutPageBox } from '../components/AutPageBox';
 
 const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   const dispatch = useAppDispatch();
@@ -27,15 +28,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <AutBackButton />
       <Box sx={{ mt: '16px' }}>
         <AutLogo />
@@ -75,7 +68,7 @@ const LoginWithSkillWallet: React.FunctionComponent = (props) => {
           Use your password
         </AutButton>
       </Box>
-    </Box>
+    </AutPageBox>
   );
 };
 

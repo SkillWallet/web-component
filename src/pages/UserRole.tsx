@@ -10,6 +10,7 @@ import { setUserData } from '../store/user-data.reducer';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
 import { AutBackButton } from '../components/AutBackButton';
+import { AutPageBox } from '../components/AutPageBox';
 
 const UserRole: React.FunctionComponent = (props) => {
   const dipsatch = useAppDispatch();
@@ -36,15 +37,7 @@ const UserRole: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <AutBackButton />
       <Box>
         <AutLogo />
@@ -87,7 +80,7 @@ const UserRole: React.FunctionComponent = (props) => {
           label="That's it - join this community!"
         /> */}
       </Box>
-    </Box>
+    </AutPageBox>
   );
 };
 

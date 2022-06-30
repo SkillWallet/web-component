@@ -6,15 +6,14 @@ import Portal from '@mui/material/Portal';
 import { CSSObject } from '@emotion/react';
 import MainDialog from './components/MainDialog';
 import { resetUIState } from './store/store';
-import { isOpen, setDisableCreateNewUser, showGlobalError, startValidatingDomain, finishValidatingDomain } from './store/sw-ui-reducer';
-import { setLoggedIn, setUserData, currentUserState } from './store/sw-user-data.reducer';
 import { setUseDev } from './services/web3/env';
 // import { validateDomain } from './services/web3/web3Service';
 import { AttributeNames, checkIfAttributeHasChanged, dispatchEvent, parseAttributeValue } from './utils/utils';
 import { AutButtonProps } from './types/sw-auth-config';
 import { OutputEventTypes } from './types/event-types';
-import { autUiState, setCommunityExtesnionAddress, showDialog } from './store/aut.reducer';
+import { autUiState, ResultState, setCommunityExtesnionAddress, showDialog } from './store/aut.reducer';
 import { useAppDispatch } from './store/store.model';
+import { RoundedWebButton } from './components/WebButton';
 
 const AutModal = withRouter(({ container, rootContainer = null }: any) => {
   const dispatch = useAppDispatch();
@@ -72,7 +71,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
       dispatch(setCommunityExtesnionAddress(attributes.communityAddress as string));
     } else {
       // Probably throw error cause we can't do anything without it
-      dispatch(showGlobalError('Community address attribute is missing.'));
+      // dispatch(showGlobalError('Community address attribute is missing.'));
     }
     selectEnvironment();
   };
@@ -106,7 +105,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
   const handleButtonClick = () => {
     // if (currentUser.isLoggedIn) {
 
-    if (uiState.isConnected) {
+    if (uiState.user) {
       // if (!attributes.useButtonOptions) {
       window.sessionStorage.removeItem('aut-data');
       dispatch(resetUIState);
@@ -137,6 +136,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
 
   useEffect(() => {
     setAttributes();
+    dispatchEvent(OutputEventTypes.Init);
     // setButtonHidden(attributes.hideButton as boolean);
     // dispatch(setDisableCreateNewUser(attributes.disableCreateNewUser as boolean));
 
@@ -163,6 +163,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
       <Portal container={container}>
         {!buttonHidden && (
           <>
+            <RoundedWebButton />
             <Button
               sx={{
                 cursor: 'pointer',
@@ -202,7 +203,7 @@ export const AutButton = ({ buttonStyles, dropdownStyles, attributes, container,
                 )}
                 <Typography className="swButtonText" variant="h2" color="#FFFFFF">
                   {/* {currentUser.isLoggedIn ? currentUser.username : 'Connect Wallet'} */}
-                  {uiState.isConnected ? 'Connected' : 'Connect with āut'}
+                  {uiState.user ? 'Connected' : 'Connect with āut'}
                 </Typography>
               </Box>
             </Button>

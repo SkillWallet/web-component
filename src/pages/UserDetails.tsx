@@ -12,6 +12,7 @@ import { AutTextField, FormHelperText } from '../components/Fields';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
 import { AutBackButton } from '../components/AutBackButton';
+import { AutPageBox } from '../components/AutPageBox';
 
 interface Values {
   picture?: File;
@@ -38,15 +39,7 @@ const UserDetails: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <AutBackButton />
       <Box>
         <AutLogo />
@@ -118,7 +111,7 @@ const UserDetails: React.FunctionComponent = (props) => {
           </AutButton>
         </Box>
       </form>
-    </Box>
+    </AutPageBox>
     // <Box
     //   sx={{
     //     width: '100%',

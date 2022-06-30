@@ -1,6 +1,6 @@
 {
   "name": "d-aut-alpha",
-  "version": "0.0.2",
+  "version": "0.0.9",
   "main": "build/cjs/index.js",
   "module": "build/ems/index.js",
   "types": "build/index.d.ts",
@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "@lottiefiles/lottie-player": "^1.5.7",
+    "@lottiefiles/react-lottie-player": "^3.4.7",
     "react-dropzone": "^14.2.1"
   }
 }

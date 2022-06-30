@@ -1,12 +1,11 @@
 import { Web3AutIDProvider, Web3CommunityExtensionProvider } from '@skill-wallet/sw-abi-types';
-import { ConstructorFragment } from 'ethers/lib/utils';
 import dateFormat from 'dateformat';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { UserData } from '../../store/user-data.reducer';
 import { Web3ThunkProviderFactory } from '../ProviderFactory/web3-thunk.provider';
 import { storeMetadata, uploadFile } from '../textile/textile.hub';
 import { EnableAndChangeNetwork } from '../ProviderFactory/web3.network';
 import { ParseSWErrorMessage } from './utils';
+import { BaseNFTModel } from './models';
 
 export function ipfsCIDToHttpUrl(url: string, isJson = false) {
   return `${url.replace('https://hub.textile.io/', 'https://ipfs.io/')}`;
@@ -36,28 +35,23 @@ export const fetchCommunity = communityProvider(
     type: 'community/get',
   },
   (thunkAPI) => {
-    // console.log(thunkAPI.getState());
     const { aut } = thunkAPI.getState();
-    console.log(aut.communityExtensionAddress);
-    // return Promise.resolve('0xFc53e464D257F0614132D20293154eaE5CE25734');
-
-    // const { aut } = thunkAPI.getState();
     return Promise.resolve(aut.communityExtensionAddress);
   },
   async (contract) => {
     const resp = await contract.getComData();
     console.log(resp);
     // const communityMetadata = await fetch(cidToHttpUrl(`${resp[2]}/metadata.json`));
-    const communityMetadata = await fetch(cidToHttpUrl(`${resp[2]}`));
+    const communityMetadata = await fetch(cidToHttpUrl(resp[2]));
     const communityJson = await communityMetadata.json();
     console.log(communityJson);
-    console.log(communityJson.rolesSets[0].roles);
+    console.log(communityJson.properties.rolesSets[0].roles);
     return {
       // address: communityAddress,
       // image: ipfsCIDToHttpUrl(communityJson.image, false),
       name: communityJson.name,
       description: communityJson.description,
-      roles: communityJson.rolesSets[0].roles,
+      roles: communityJson.properties.rolesSets[0].roles,
       // commitment: details[2].toString(),
     };
   }
@@ -74,13 +68,9 @@ export const mintMembership = autIdProvider(
     type: 'membership/mint',
   },
   (thunkAPI) => {
-    // console.log(thunkAPI.getState());
     return Promise.resolve('0xCeb3300b7de5061c633555Ac593C84774D160309');
-
-    // const { aut } = thunkAPI.getState();
-    // return Promise.resolve(aut.communityExtensionAddress);
   },
-  async (contract, args) => {
+  async (contract, args, thunkAPI) => {
     const timeStamp = dateFormat(new Date(), 'HH:MM:ss | dd/mm/yyyy');
 
     const file = await dataUrlToFile(args.userData.picture, 'avatar');
@@ -103,18 +93,12 @@ export const mintMembership = autIdProvider(
     console.log(url);
     console.log(metadataJson);
     console.log(fileUrl);
+
+    const { aut } = thunkAPI.getState();
     console.log({ name: args.userData.username, url, role: args.userData.role, cmtmt: args.commitment });
-    const response = await contract.mint(
-      args.userData.username,
-      url,
-      args.userData.role,
-      args.commitment,
-      // TODO: dynamic community extension
-      '0xFc53e464D257F0614132D20293154eaE5CE25734',
-      {
-        gasLimit: 1000000,
-      }
-    );
+    const response = await contract.mint(args.userData.username, url, args.userData.role, args.commitment, aut.communityExtensionAddress, {
+      gasLimit: 1000000,
+    });
     console.log(response);
   }
 );
@@ -135,20 +119,22 @@ export const getAutId = autIdProvider(
     type: 'membership/get',
   },
   (thunkAPI) => {
-    // console.log(thunkAPI.getState());
-    // const { auth } = thunkAPI.getState();
     return Promise.resolve('0xCeb3300b7de5061c633555Ac593C84774D160309');
   },
   async (contract, args, thunkAPI) => {
     const { selectedAddress } = window.ethereum;
+    const { aut } = thunkAPI.getState();
     const tokenId = await contract.getAutIDByOwner(selectedAddress);
     const tokenURI = await contract.tokenURI(tokenId);
     const response = await fetch(cidToHttpUrl(tokenURI));
     const autId = await response.json();
     const holderCommunities = await contract.getCommunities(selectedAddress);
+    const communityExtensioncontract = await Web3CommunityExtensionProvider(aut.communityExtensionAddress);
+
     const communities = await Promise.all(
       (holderCommunities as any).map(async (communityAddress) => {
         const details = await contract.getCommunityData(selectedAddress, communityAddress);
+
         /**
          * [
                 "0xFc53e464D257F0614132D20293154eaE5CE25734",
@@ -163,8 +149,8 @@ export const getAutId = autIdProvider(
                 true
             ]
          */
-        const communityExtensioncontract = await Web3CommunityExtensionProvider('0x96dCCC06b1729CD8ccFe849CE9cA7e020e19515c');
         const resp = await communityExtensioncontract.getComData();
+
         /**
          * [
               {
@@ -184,8 +170,9 @@ export const getAutId = autIdProvider(
               ""
           ]
          */
-        const communityMetadata = await fetch(resp[2]);
+        const communityMetadata = await fetch(cidToHttpUrl(resp[2]));
         const communityJson = await communityMetadata.json();
+
         /**
          * {
               "name": "Test Community",
@@ -213,17 +200,22 @@ export const getAutId = autIdProvider(
               "image": "https://hub.textile.io/ipfs/bafybeig3voiu5ak7gxxuqaluodcsa2mxrfoi7j4gmw5jetbzca5zljld3i/daohacks.png"
           }
          */
-        return {
-          address: communityAddress,
-          picture: ipfsCIDToHttpUrl(communityJson.image, false),
-          name: communityJson.name,
-          description: communityJson.description,
-          role: communityJson.rolesSets[0].roles.find((x) => x.id.toString() === details[1].toString()).roleName,
-          commitment: details[2].toString(),
-        };
+        const a = new BaseNFTModel({
+          ...communityJson,
+          properties: {
+            address: communityAddress,
+            ...communityJson.properties,
+            userData: {
+              role: details[1].toString(),
+              commitment: details[2].toString(),
+            },
+          },
+        });
+
+        return a;
       })
     );
-    autId.communities = communities;
+    autId.properties.communities = communities;
     console.log(autId);
     window.sessionStorage.setItem('aut-data', JSON.stringify(autId));
     return autId;

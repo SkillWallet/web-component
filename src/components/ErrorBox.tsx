@@ -1,40 +1,38 @@
-import { Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import { SwButton } from 'sw-web-shared';
+import { Box, Typography } from '@mui/material';
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { errorAction, errorState } from '../store/aut.reducer';
+import AutLogo from './AutLogo';
+import { AutButton } from './AutButton';
 
-const ErrorBox = ({ errorData }) => {
-  const handleOnClick = () => {
-    console.log(errorData);
-    if (errorData) {
-      errorData.action();
-    }
+export const ErrorBox = () => {
+  const errorMessage = useSelector(errorState);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const handleError = () => {
+    dispatch(errorAction(null));
+    history.push('/');
   };
   return (
     <Box
       sx={{
         width: '100%',
-        minHeight: '460px',
+        height: '100%',
         display: 'flex',
-        justifyContent: 'center',
         flexDirection: 'column',
         alignItems: 'center',
       }}
     >
-      <Typography sx={{ mb: '26px', width: '90%' }} variant="h2">
-        {errorData.errorMessage}
+      <Box sx={{ mt: '16px' }}>
+        <AutLogo />
+      </Box>
+      <Typography sx={{ color: '#B10000', mt: '25px' }} variant="h1">
+        {errorMessage}
       </Typography>
-      <SwButton
-        sx={{
-          borderColor: 'primary.main',
-          mb: '26px',
-        }}
-        onClick={handleOnClick}
-        btnType="large"
-        mode="dark"
-        label={errorData.actionLabel}
-      />
+      <AutButton sx={{ mt: '40px' }} onClick={handleError}>
+        Return
+      </AutButton>
     </Box>
   );
 };
-
-export default ErrorBox;

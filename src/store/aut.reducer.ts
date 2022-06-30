@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createSelector } from 'reselect';
-import { fetchCommunity, getAutId, injectMetamask } from '../services/web3/api';
+import { fetchCommunity, getAutId, injectMetamask, mintMembership } from '../services/web3/api';
+import { BaseNFTModel } from '../services/web3/models';
 import { OutputEventTypes } from '../types/event-types';
 import { dispatchEvent } from '../utils/utils';
 import { ActionPayload } from './action-payload';
@@ -28,42 +29,41 @@ export enum ResultState {
 export interface AutState {
   community?: Community;
   communityExtensionAddress: string;
-  isConnected: boolean;
   showDialog: boolean;
   status: ResultState;
+  errorStateAction: string;
+  transactionState: string;
+  user: BaseNFTModel<any>;
 }
 
 export const initialState: AutState = {
   community: null,
   communityExtensionAddress: null,
-  isConnected: false,
   showDialog: false,
   status: ResultState.Idle,
+  errorStateAction: null,
+  transactionState: null,
+  user: null,
 };
-
-export interface UserData {
-  username: string;
-  profileImageUrl: string;
-}
-
-export interface UserState {
-  username: string;
-  profileImageUrl: string;
-  isLoggedIn: boolean;
-}
 
 export const autSlice = createSlice({
   name: 'aut',
   initialState,
   reducers: {
-    setCommunity: (state, action: ActionPayload<any>) => {
-      state.community = action.payload;
-    },
     setCommunityExtesnionAddress: (state, action: ActionPayload<string>) => {
       state.communityExtensionAddress = action.payload;
     },
     showDialog: (state, action: ActionPayload<boolean>) => {
       state.showDialog = action.payload;
+    },
+    updateTransactionState(state, action) {
+      state.transactionState = action.payload;
+    },
+    updateErrorState(state, action) {
+      state.errorStateAction = action.payload;
+    },
+    errorAction(state, action) {
+      state.status = ResultState.Idle;
     },
   },
   extraReducers: (builder) => {
@@ -84,18 +84,26 @@ export const autSlice = createSlice({
         state.status = ResultState.Loading;
       })
       .addCase(getAutId.fulfilled, (state, action) => {
-        state.isConnected = true;
         state.showDialog = false;
+        state.user = action.payload;
         dispatchEvent(OutputEventTypes.Connected, action.payload);
-        state.status = ResultState.Idle;
       })
       .addCase(getAutId.rejected, (state) => {
+        state.status = ResultState.Failed;
+      })
+      .addCase(mintMembership.pending, (state) => {
+        state.status = ResultState.Loading;
+      })
+      .addCase(mintMembership.fulfilled, (state, action) => {
+        state.status = ResultState.Idle;
+      })
+      .addCase(mintMembership.rejected, (state) => {
         state.status = ResultState.Failed;
       });
   },
 });
 
-export const { setCommunity, setCommunityExtesnionAddress, showDialog } = autSlice.actions;
+export const { setCommunityExtesnionAddress, showDialog, updateTransactionState, updateErrorState, errorAction } = autSlice.actions;
 
 export const community = createSelector(
   (state) => state.aut.community,
@@ -104,7 +112,22 @@ export const community = createSelector(
 
 export const autUiState = createSelector(
   (state) => state.aut,
-  (aut) => aut
+  (aut) => aut as typeof initialState
+);
+
+export const loadingStatus = createSelector(
+  (state) => state.aut.status,
+  (status) => status
+);
+
+export const user = createSelector(
+  (state) => state.aut.user,
+  (user) => user
+);
+
+export const errorState = createSelector(
+  (state) => state.aut.errorStateAction,
+  (state) => state
 );
 // export const currentCommunity = createSelector(
 //   (state) => state.swAuth.community as Community & PartnerAgreementKey,

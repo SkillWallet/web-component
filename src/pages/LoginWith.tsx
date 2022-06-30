@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import AutLogo from '../components/AutLogo';
 import { AutButton } from '../components/AutButton';
-import { AutBackButton } from '../components/AutBackButton';
+import { AutPageBox } from '../components/AutPageBox';
 
-const LoginWith: React.FunctionComponent = (props) => {
+const LoginWith: React.FunctionComponent = () => {
   const history = useHistory();
 
   const handleAutIdClicked = () => {
@@ -18,15 +18,7 @@ const LoginWith: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <Box sx={{ mt: '76px' }}>
         <AutLogo />
       </Box>
@@ -49,7 +41,7 @@ const LoginWith: React.FunctionComponent = (props) => {
           New User
         </AutButton>
       </Box>
-    </Box>
+    </AutPageBox>
   );
 };
 

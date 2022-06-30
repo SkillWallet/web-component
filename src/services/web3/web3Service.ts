@@ -2,7 +2,6 @@ import { SkillWalletIDBadgeGenerator } from 'sw-web-shared';
 import axios from 'axios';
 import dateFormat from 'dateformat';
 import { SkillWalletCommunityContractEventType } from '@skill-wallet/sw-abi-types';
-import { setLoadingMessage, startLoading } from '../../store/sw-ui-reducer';
 import { ipfsCIDToHttpUrl, storeMetadata } from '../textile/textile.hub';
 // import {
 //   changeNetwork,

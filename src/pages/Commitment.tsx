@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Box, Button, Slider, Typography } from '@mui/material';
 import { Controller, useForm } from 'react-hook-form';
-import { setCommitment } from '../store/sw-user-data.reducer';
 import BackButton from '../components/BackButton';
 import { setUserData, userData } from '../store/user-data.reducer';
 import { useAppDispatch } from '../store/store.model';
@@ -12,6 +11,7 @@ import AutLogo from '../components/AutLogo';
 import { AutSlider } from '../components/CommitmentSlider';
 import { AutButton } from '../components/AutButton';
 import { AutBackButton } from '../components/AutBackButton';
+import { AutPageBox } from '../components/AutPageBox';
 
 interface Role {
   roleId: number;
@@ -39,15 +39,7 @@ const Commitment: React.FunctionComponent = (props) => {
   };
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <AutPageBox>
       <AutBackButton />
       <Box>
         <AutLogo />
@@ -102,7 +94,7 @@ const Commitment: React.FunctionComponent = (props) => {
           </AutButton>
         </Box>
       </form>
-    </Box>
+    </AutPageBox>
   );
 };
 

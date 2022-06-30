@@ -4,13 +4,11 @@ import logger from 'redux-logger';
 import { combineReducers } from 'redux';
 import autSliceReducer, { initialState as initAutState } from './aut.reducer';
 // import swUserDataReducer, { initialState as initUserDataState } from './sw-user-data.reducer';
-import swUIReducer, { initialState as initUIState } from './sw-ui-reducer';
 import userDataReducer, { initialState as initUserDataState } from './user-data.reducer';
 
 const appReducer = combineReducers({
   aut: autSliceReducer,
   userData: userDataReducer,
-  swUI: swUIReducer,
 });
 
 const rootReducer = (state, action) => {
@@ -24,14 +22,6 @@ const rootReducer = (state, action) => {
       },
       userData: {
         ...initUserDataState,
-      },
-      swUI: {
-        ...initUIState,
-        showDialog: state.swUI.showDialog,
-        validatingDomain: state.swUI.validatingDomain,
-        globalErrorMessage: state.swUI.globalErrorMessage,
-        showGlobalError: state.swUI.showGlobalError,
-        disableCreateNewUser: state.swUI.disableCreateNewUser,
       },
     };
   }
